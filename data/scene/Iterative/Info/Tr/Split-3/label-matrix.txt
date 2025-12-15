@@ -1,0 +1,112 @@
+, , FallFoliage = 0, Field = 0, Mountain = 0, Urban = 0
+
+     Sunset
+Beach   0   1
+    0   0 243
+    1 243   0
+
+, , FallFoliage = 1, Field = 0, Mountain = 0, Urban = 0
+
+     Sunset
+Beach   0   1
+    0 244   0
+    1   0   0
+
+, , FallFoliage = 0, Field = 1, Mountain = 0, Urban = 0
+
+     Sunset
+Beach   0   1
+    0 219   0
+    1   1   0
+
+, , FallFoliage = 1, Field = 1, Mountain = 0, Urban = 0
+
+     Sunset
+Beach   0   1
+    0  13   0
+    1   0   0
+
+, , FallFoliage = 0, Field = 0, Mountain = 1, Urban = 0
+
+     Sunset
+Beach   0   1
+    0 268   0
+    1  29   0
+
+, , FallFoliage = 1, Field = 0, Mountain = 1, Urban = 0
+
+     Sunset
+Beach   0   1
+    0   6   0
+    1   0   0
+
+, , FallFoliage = 0, Field = 1, Mountain = 1, Urban = 0
+
+     Sunset
+Beach   0   1
+    0  50   0
+    1   0   0
+
+, , FallFoliage = 1, Field = 1, Mountain = 1, Urban = 0
+
+     Sunset
+Beach   0   1
+    0   1   0
+    1   0   0
+
+, , FallFoliage = 0, Field = 0, Mountain = 0, Urban = 1
+
+     Sunset
+Beach   0   1
+    0 270   0
+    1  11   0
+
+, , FallFoliage = 1, Field = 0, Mountain = 0, Urban = 1
+
+     Sunset
+Beach   0   1
+    0   0   0
+    1   0   0
+
+, , FallFoliage = 0, Field = 1, Mountain = 0, Urban = 1
+
+     Sunset
+Beach   0   1
+    0   5   0
+    1   0   0
+
+, , FallFoliage = 1, Field = 1, Mountain = 0, Urban = 1
+
+     Sunset
+Beach   0   1
+    0   0   0
+    1   0   0
+
+, , FallFoliage = 0, Field = 0, Mountain = 1, Urban = 1
+
+     Sunset
+Beach   0   1
+    0   1   0
+    1   0   0
+
+, , FallFoliage = 1, Field = 0, Mountain = 1, Urban = 1
+
+     Sunset
+Beach   0   1
+    0   0   0
+    1   0   0
+
+, , FallFoliage = 0, Field = 1, Mountain = 1, Urban = 1
+
+     Sunset
+Beach   0   1
+    0   0   0
+    1   0   0
+
+, , FallFoliage = 1, Field = 1, Mountain = 1, Urban = 1
+
+     Sunset
+Beach   0   1
+    0   0   0
+    1   0   0
+

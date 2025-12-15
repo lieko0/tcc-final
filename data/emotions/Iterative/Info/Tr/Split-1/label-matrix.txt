@@ -1,0 +1,112 @@
+, , relaxing.calm = 0, quiet.still = 0, sad.lonely = 0, angry.aggresive = 0
+
+               happy.pleased
+amazed.suprised  0  1
+              0  0 18
+              1 15 28
+
+, , relaxing.calm = 1, quiet.still = 0, sad.lonely = 0, angry.aggresive = 0
+
+               happy.pleased
+amazed.suprised  0  1
+              0 29 44
+              1  1  7
+
+, , relaxing.calm = 0, quiet.still = 1, sad.lonely = 0, angry.aggresive = 0
+
+               happy.pleased
+amazed.suprised  0  1
+              0  2  0
+              1  0  0
+
+, , relaxing.calm = 1, quiet.still = 1, sad.lonely = 0, angry.aggresive = 0
+
+               happy.pleased
+amazed.suprised  0  1
+              0 22  4
+              1  0  0
+
+, , relaxing.calm = 0, quiet.still = 0, sad.lonely = 1, angry.aggresive = 0
+
+               happy.pleased
+amazed.suprised  0  1
+              0  6  1
+              1  4  0
+
+, , relaxing.calm = 1, quiet.still = 0, sad.lonely = 1, angry.aggresive = 0
+
+               happy.pleased
+amazed.suprised  0  1
+              0 16  0
+              1  0  0
+
+, , relaxing.calm = 0, quiet.still = 1, sad.lonely = 1, angry.aggresive = 0
+
+               happy.pleased
+amazed.suprised  0  1
+              0 22  0
+              1  0  0
+
+, , relaxing.calm = 1, quiet.still = 1, sad.lonely = 1, angry.aggresive = 0
+
+               happy.pleased
+amazed.suprised  0  1
+              0 48  0
+              1  0  0
+
+, , relaxing.calm = 0, quiet.still = 0, sad.lonely = 0, angry.aggresive = 1
+
+               happy.pleased
+amazed.suprised  0  1
+              0 46  4
+              1 54  4
+
+, , relaxing.calm = 1, quiet.still = 0, sad.lonely = 0, angry.aggresive = 1
+
+               happy.pleased
+amazed.suprised  0  1
+              0  3  0
+              1  0  0
+
+, , relaxing.calm = 0, quiet.still = 1, sad.lonely = 0, angry.aggresive = 1
+
+               happy.pleased
+amazed.suprised  0  1
+              0  0  0
+              1  0  0
+
+, , relaxing.calm = 1, quiet.still = 1, sad.lonely = 0, angry.aggresive = 1
+
+               happy.pleased
+amazed.suprised  0  1
+              0  0  0
+              1  0  0
+
+, , relaxing.calm = 0, quiet.still = 0, sad.lonely = 1, angry.aggresive = 1
+
+               happy.pleased
+amazed.suprised  0  1
+              0 10  0
+              1  2  0
+
+, , relaxing.calm = 1, quiet.still = 0, sad.lonely = 1, angry.aggresive = 1
+
+               happy.pleased
+amazed.suprised  0  1
+              0  2  0
+              1  0  0
+
+, , relaxing.calm = 0, quiet.still = 1, sad.lonely = 1, angry.aggresive = 1
+
+               happy.pleased
+amazed.suprised  0  1
+              0  1  0
+              1  0  0
+
+, , relaxing.calm = 1, quiet.still = 1, sad.lonely = 1, angry.aggresive = 1
+
+               happy.pleased
+amazed.suprised  0  1
+              0  0  0
+              1  0  0
+

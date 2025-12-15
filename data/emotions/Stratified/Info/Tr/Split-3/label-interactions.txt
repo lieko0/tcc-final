@@ -1,0 +1,20 @@
+$indexes
+[1] 76 77 74
+
+$interactions
+$interactions$quiet.still
+
+75 78 
+69  2 
+
+$interactions$sad.lonely
+
+75 78 
+63 14 
+
+$interactions$happy.pleased
+
+75 78 
+62  8 
+
+

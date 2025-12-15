@@ -1,0 +1,329 @@
+```{r}
+#| warning: false
+library("foreign")
+library("tidyverse")
+library("caret")
+library("kohonen")
+library("dplyr")
+library("tidyr")
+```
+
+
+Partição 2 e 3 dos folds 1, 2 e 3.
+- comparar entre os folds, mais frequente (rotulo/ labelset)
+
+Análise de particionamentos baseadas no ultimo artigo (multilabel classification)
+
+Comparar entre os datasets
+- os mais frequentes estão em mesmos grupos ou diferentes / comportamento padrão independente de datasets
+
+```{r}
+file.emotions.fold1.tr <- "E:\\git-tcc\\tcc\\data\\emotions\\Stratified\\CrossValidation\\Tr\\emotions-Split-Tr-1.csv"
+
+emotions.tr <- read.csv(file.emotions.fold1.tr)
+emotions.tr.attr <- emotions.tr[, 1:72]
+emotions.tr.labels <- emotions.tr[, 73:78]
+glimpse(emotions.tr.labels)
+```
+
+```{r}
+file.scene.fold1.tr <- "E:\\git-tcc\\tcc\\data\\scene\\Stratified\\CrossValidation\\Tr\\scene-Split-Tr-1.csv"
+
+scene.tr <- read.csv(file.scene.fold1.tr)
+scene.tr.attr <- scene.tr[, 1:294]
+scene.tr.labels <- scene.tr[, 295:300]
+glimpse(scene.tr.labels)
+```
+
+```{r}
+file.flags.fold1.tr <- "E:\\git-tcc\\tcc\\data\\flags\\Stratified\\CrossValidation\\Tr\\flags-Split-Tr-1.csv"
+
+flags.tr <- read.csv(file.flags.fold1.tr)
+flags.tr.attr <- flags.tr[, 1:19]
+flags.tr.labels <- flags.tr[, 20:26]
+glimpse(flags.tr.labels)
+```
+
+```{r}
+file.emotions.fold1.ts <- "E:\\git-tcc\\tcc\\data\\emotions\\Stratified\\CrossValidation\\Ts\\emotions-Split-Ts-1.csv"
+
+emotions.ts <- read.csv(file.emotions.fold1.ts)
+emotions.ts.attr <- emotions.ts[, 1:72]
+emotions.ts.labels <- emotions.ts[, 73:78]
+glimpse(emotions.ts.labels)
+```
+
+```{r}
+emotions.tr.labels.matrix <- as.matrix(emotions.tr.labels)
+emotions.ts.labels.matrix <- as.matrix(emotions.ts.labels)
+glimpse(emotions.tr.labels.matrix)
+glimpse(emotions.ts.labels.matrix)
+```
+
+
+```{r}
+som.grid.xdim = 3
+som.grid.ydim = 3
+
+som.grid.gaussian.rectangular <- somgrid(
+    xdim = som.grid.xdim, ydim = som.grid.ydim,
+    topo = "rectangular",
+    neighbourhood.fct = "gaussian"
+)
+
+som.grid.gaussian.hexagonal <- somgrid(
+    xdim = som.grid.xdim, ydim = som.grid.ydim,
+    topo = "hexagonal",
+    neighbourhood.fct = "gaussian"
+)
+
+grids.list.gaussian <- list(
+    som.grid.gaussian.rectangular,
+    som.grid.gaussian.hexagonal
+)
+
+names(grids.list.gaussian) <- c(
+    "gaussian_rectangular",
+    "gaussian_hexagonal"
+)
+```
+
+```{r}
+som.grid.bubble.rectangular <- somgrid(
+    xdim = som.grid.xdim, ydim = som.grid.ydim,
+    topo = "rectangular",
+    neighbourhood.fct = "bubble"
+)
+
+som.grid.bubble.hexagonal <- somgrid(
+    xdim = som.grid.xdim, ydim = som.grid.ydim,
+    topo = "hexagonal",
+    neighbourhood.fct = "bubble"
+)
+
+grids.list.bubble <- list(
+    som.grid.bubble.rectangular,
+    som.grid.bubble.hexagonal
+)
+
+names(grids.list.bubble) <- c(
+    "bubble_rectangular",
+    "bubble_hexagonal"
+)
+```
+
+```{r}
+param.grid.bubble <- expand.grid(
+    rlen = c(500, 1000, 1500),
+    radius = c(3, 5, 8, 13),
+    alpha1 = c(0.5, 0.1, 0.05),
+    alpha2 = c(0.01, 0.005, 0.001),
+    grid_index = 1:length(grids.list.bubble)
+)
+param.grid.bubble
+```
+
+```{r}
+set.seed(1234)
+param.grid <- param.grid.bubble
+grids.list <- grids.list.bubble
+X.train <- as.matrix(emotions.tr.attr)
+X.test <- as.matrix(emotions.ts.attr)
+Y.train <- emotions.tr.labels.matrix
+Y.test <- emotions.ts.labels.matrix
+results <- list()
+
+for (i in 1:nrow(param.grid)) {
+    params <- param.grid[i, ]
+    grid <- grids.list[[params$grid_index]]
+    grid.name <- names(grids.list)[params$grid_index]
+
+    model <- tryCatch(
+        {
+            supersom(
+                data = list(Y = Y.train),
+                grid = grid,
+                rlen = params$rlen,
+                radius = params$radius,
+                alpha = c(params$alpha1, params$alpha2),
+                keep.data = TRUE
+            )
+        },
+        error = function(e) {
+            cat("Erro ao treinar o modelo SOM:", e$message, "\n")
+            return(NULL)
+        }
+    )
+
+    if (is.null(model)) next
+
+    mapped.test <- kohonen::map(
+        model,
+        newdata = list(Y = Y.test)
+    )
+
+    qe.test <- mean(mapped.test$distances)
+
+    results[[i]] <- list(
+        params = params,
+        model = model,
+        qe.test = qe.test
+    )
+
+    cat(sprintf(
+        "N: %d/%d | Grid: %s | rlen: %d | radius: %d | alpha1: %.3f | alpha2: %.3f | QE Teste: %.4f\n",
+        i,
+        nrow(param.grid),
+        grid.name,
+        params$rlen,
+        params$radius,
+        params$alpha1,
+        params$alpha2,
+        qe.test
+    ))
+}
+```
+
+```{r}
+# best result based on QE Teste
+best.result <- NULL
+best.qe.test <- Inf
+
+for (res in results) {
+    if (res$qe.test < best.qe.test) {
+        best.qe.test <- res$qe.test
+        best.result <- res
+    }
+}
+cat("Melhor Resultado:\n")
+cat(sprintf(
+    "Grid: %s | rlen: %d | radius: %d | alpha1: %.3f | alpha2: %.3f | QE Teste: %.4f\n",
+    names(grids.list)[best.result$params$grid_index],
+    best.result$params$rlen,
+    best.result$params$radius,
+    best.result$params$alpha1,
+    best.result$params$alpha2,
+    best.result$qe.test
+))
+```
+
+```{r}
+print(plot(best.result$model, type = "counts"))
+print(plot(best.result$model, type = "mapping", pchs = 20, heatkey = TRUE))
+print(plot(best.result$model, type = "changes"))
+print(plot(best.result$model, type = "dist.neighbours"))
+print(plot(best.result$model, type = "codes", codeRendering = "segments"))
+print(plot(best.result$model, type = "codes", codeRendering = "stars"))
+print(plot(best.result$model, type = "codes", codeRendering = "lines"))
+print(plot(best.result$model, type = "quality", heatkey = TRUE))
+```
+
+```{r}
+# pegando as informações do modelo
+# distances of objects to their corresponding winning unit,
+# only returned if keep.data == TRUE.
+distance.best.result <- data.frame(best.result$model$distances)
+
+# matrix of mean average deviations from code vectors;
+# every map corresponds with one column.
+change.best.result <- data.frame(best.result$model$changes)
+
+# contem os IDs das instancias e seus respectivos neuronios
+# winning units for all data objects, only returned if keep.data == TRUE.
+uc.best.result <- data.frame(best.result$model$unit.classif)
+
+glimpse(distance.best.result)
+glimpse(change.best.result)
+glimpse(uc.best.result)
+
+names(uc.best.result) <- c("neuron")
+glimpse(uc.best.result)
+
+data.best.result <- data.frame(best.result$model$data)
+neuron.data.best.result <- data.frame(uc.best.result, data.best.result)
+glimpse(data.best.result)
+glimpse(neuron.data.best.result)
+
+# valores de ativação dos neuronios
+# a list of matrices containing codebook vectors.
+codes.best.result <- data.frame(best.result$model$codes)
+glimpse(codes.best.result)
+rownames(codes.best.result) <- paste0("N", seq_len(nrow(codes.best.result)))
+codes.best.result
+
+train.dataset.best.result <- data.frame(X.train, neuron.data.best.result)
+glimpse(train.dataset.best.result)
+
+neuron.ids <- unique(train.dataset.best.result$neuron)
+
+# criar uma lista de dataframes, um por neurônio
+neuron.dataframes <- lapply(neuron.ids, function(n) {
+    subset(train.dataset.best.result, neuron == n)
+})
+names(neuron.dataframes) <- paste0("N", neuron.ids)
+
+glimpse(neuron.dataframes)
+```
+
+
+```{r}
+# calcular estatísticas básicas para cada neuronio
+
+neuron.num <- som.grid.xdim * som.grid.ydim 
+
+# 2. Vamos cortar o mapa bidimensional em grid clusters
+# separando em X clusters
+codebook.matrix.best.result <- as.matrix(codes.best.result)
+glimpse(codebook.matrix.best.result)
+codebook.matrix.best.result
+
+
+# den <- hclust(dist(codebook.matrix.best.result))
+# plot(den)
+# ans <- cutree(den, 7)
+# ans
+
+
+
+apagar <- c(0)
+neuron <- c(seq(from = 1, to = neuron.num, by = 1))
+AllPartitions <- data.frame(apagar, neuron)
+
+
+i <- 2
+while (i <= neuron.num) {
+    den <- hclust(dist(codebook.matrix.best.result))
+    cluster <- cutree(den, i)
+
+    nam <- names(grids.list)[best.result$params$grid_index]
+    pdf(paste("mapa_som_clusters-",nam,"-", i, ".pdf", sep = ""), width = 18, height = 18)
+    plot(best.result$model,
+        type = "codes", codeRendering = "segments", bgcol = rainbow(i)[cluster],
+        main = paste("SOM - Clusters (k =", i, ")")
+    )
+    add.cluster.boundaries(best.result$model, cluster)
+    dev.off()
+
+    cluster <- data.frame(neuron = names(cluster), cluster = as.numeric(cluster))
+    cluster$neuron <- gsub("neuron_", "", cluster$neuron)
+    str(cluster)
+    AllPartitions <- cbind(AllPartitions, cluster$cluster)
+    names(AllPartitions)[i + 1] <- paste("partition-", i, sep = "")
+    i <- i + 1
+    gc()
+    
+    head(cluster$neuron)
+    
+}
+
+AllPartitions <- AllPartitions[, -1]
+AllPartitions
+```
+
+
+
+
+```{r}
+cat("Informações da Sessão R:\n")
+sessionInfo()
+```
