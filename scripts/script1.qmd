@@ -18,7 +18,7 @@ Comparar entre os datasets
 - os mais frequentes estão em mesmos grupos ou diferentes / comportamento padrão independente de datasets
 
 ```{r}
-file.emotions.fold1.tr <- "E:\\git-tcc\\tcc\\data\\emotions\\Stratified\\CrossValidation\\Tr\\emotions-Split-Tr-1.csv"
+file.emotions.fold1.tr <- "E:\\git-tcc\\tcc-final\\data\\emotions\\Stratified\\CrossValidation\\Tr\\emotions-Split-Tr-1.csv"
 
 emotions.tr <- read.csv(file.emotions.fold1.tr)
 emotions.tr.attr <- emotions.tr[, 1:72]
@@ -27,7 +27,16 @@ glimpse(emotions.tr.labels)
 ```
 
 ```{r}
-file.scene.fold1.tr <- "E:\\git-tcc\\tcc\\data\\scene\\Stratified\\CrossValidation\\Tr\\scene-Split-Tr-1.csv"
+file.emotions.fold1.tr <- "E:\\git-tcc\\tcc-final\\data\\emotions\\Stratified\\CrossValidation\\Tr\\emotions-Split-Tr-1.csv"
+
+emotions.tr <- read.csv(file.emotions.fold1.tr)
+emotions.tr.attr <- emotions.tr[, 1:72]
+emotions.tr.labels <- emotions.tr[, 73:78]
+glimpse(emotions.tr.labels)
+```
+
+```{r}
+file.scene.fold1.tr <- "E:\\git-tcc\\tcc-final\\data\\scene\\Stratified\\CrossValidation\\Tr\\scene-Split-Tr-1.csv"
 
 scene.tr <- read.csv(file.scene.fold1.tr)
 scene.tr.attr <- scene.tr[, 1:294]
@@ -36,7 +45,7 @@ glimpse(scene.tr.labels)
 ```
 
 ```{r}
-file.flags.fold1.tr <- "E:\\git-tcc\\tcc\\data\\flags\\Stratified\\CrossValidation\\Tr\\flags-Split-Tr-1.csv"
+file.flags.fold1.tr <- "E:\\git-tcc\\tcc-final\\data\\flags\\Stratified\\CrossValidation\\Tr\\flags-Split-Tr-1.csv"
 
 flags.tr <- read.csv(file.flags.fold1.tr)
 flags.tr.attr <- flags.tr[, 1:19]
@@ -45,7 +54,7 @@ glimpse(flags.tr.labels)
 ```
 
 ```{r}
-file.emotions.fold1.ts <- "E:\\git-tcc\\tcc\\data\\emotions\\Stratified\\CrossValidation\\Ts\\emotions-Split-Ts-1.csv"
+file.emotions.fold1.ts <- "E:\\git-tcc\\tcc-final\\data\\emotions\\Stratified\\CrossValidation\\Ts\\emotions-Split-Ts-1.csv"
 
 emotions.ts <- read.csv(file.emotions.fold1.ts)
 emotions.ts.attr <- emotions.ts[, 1:72]
@@ -54,11 +63,68 @@ glimpse(emotions.ts.labels)
 ```
 
 ```{r}
-emotions.tr.labels.matrix <- as.matrix(emotions.tr.labels)
-emotions.ts.labels.matrix <- as.matrix(emotions.ts.labels)
-glimpse(emotions.tr.labels.matrix)
-glimpse(emotions.ts.labels.matrix)
+# Configuração dos datasets
+base_path <- "E:\\git-tcc\\tcc-final\\data"
+
+datasets_config <- list(
+  emotions = list(attr_cols = 1:72, label_cols = 73:78),
+  scene = list(attr_cols = 1:294, label_cols = 295:300),
+  flags = list(attr_cols = 1:19, label_cols = 20:26)
+)
+
+# Inicializar listas vazias
+emotions <- list()
+scene <- list()
+flags <- list()
+
+# Loop para carregar todos os dados
+for (dataset_name in names(datasets_config)) {
+  for (fold in 1:3) {
+    for (type in c("Tr", "Ts")) {
+      # Construir caminho do arquivo
+      file_path <- file.path(
+        base_path, 
+        dataset_name, 
+        "Stratified", 
+        "CrossValidation", 
+        type,
+        paste0(dataset_name, "-Split-", type, "-", fold, ".csv")
+      )
+      
+      # Ler dados
+      data <- read.csv(file_path)
+      
+      # Separar atributos e labels
+      attr_cols <- datasets_config[[dataset_name]]$attr_cols
+      label_cols <- datasets_config[[dataset_name]]$label_cols
+      
+      # Salvar na estrutura hierárquica
+      fold_name <- paste0("fold", fold)
+      type_lower <- tolower(type)
+      
+      assign(dataset_name, {
+        temp_list <- get(dataset_name)
+        temp_list[[fold_name]][[type_lower]]$attr <- data[, attr_cols]
+        temp_list[[fold_name]][[type_lower]]$labels <- data[, label_cols]
+        temp_list
+      })
+    }
+  }
+}
+
+# Exemplos de acesso aos dados:
+glimpse(flags)
+head(flags$fold1$tr$labels)
+head(flags$fold1$ts$labels)
+head(flags$fold2$tr$labels)
+head(flags$fold2$ts$labels)
+head(flags$fold3$tr$labels)
+head(flags$fold3$ts$labels)
+# emotions$fold1$ts$attr
+# scene$fold2$tr$labels
+# flags$fold3$ts$attr
 ```
+
 
 
 ```{r}
@@ -89,6 +155,17 @@ names(grids.list.gaussian) <- c(
 ```
 
 ```{r}
+param.grid.gaussian <- expand.grid(
+    rlen = c(500, 1000, 1500),
+    radius = c(3, 5, 7),
+    alpha1 = c(0.5, 0.1, 0.05),
+    alpha2 = c(0.01, 0.005, 0.001),
+    grid_index = 1:length(grids.list.gaussian)
+)
+param.grid.gaussian
+```
+
+```{r}
 som.grid.bubble.rectangular <- somgrid(
     xdim = som.grid.xdim, ydim = som.grid.ydim,
     topo = "rectangular",
@@ -115,7 +192,7 @@ names(grids.list.bubble) <- c(
 ```{r}
 param.grid.bubble <- expand.grid(
     rlen = c(500, 1000, 1500),
-    radius = c(3, 5, 8, 13),
+    radius = c(3, 5, 7),
     alpha1 = c(0.5, 0.1, 0.05),
     alpha2 = c(0.01, 0.005, 0.001),
     grid_index = 1:length(grids.list.bubble)
@@ -123,14 +200,45 @@ param.grid.bubble <- expand.grid(
 param.grid.bubble
 ```
 
+
 ```{r}
-set.seed(1234)
+current <- "emotions-f3"
+
+tr.labels.matrix <- as.matrix(emotions$fold3$tr$labels)
+ts.labels.matrix <- as.matrix(emotions$fold3$ts$labels)
+glimpse(tr.labels.matrix)
+glimpse(ts.labels.matrix)
+
+X.train <- as.matrix(emotions$fold3$tr$attr)
+X.test <- as.matrix(emotions$fold3$ts$attr)
+Y.train <- tr.labels.matrix
+Y.test <- ts.labels.matrix
+
+# gaussian/bubble
+# param.grid <- param.grid.gaussian
+# grids.list <- grids.list.gaussian
+
 param.grid <- param.grid.bubble
 grids.list <- grids.list.bubble
-X.train <- as.matrix(emotions.tr.attr)
-X.test <- as.matrix(emotions.ts.attr)
-Y.train <- emotions.tr.labels.matrix
-Y.test <- emotions.ts.labels.matrix
+
+# Lista das colunas de rótulos
+rotulos <- c(
+    "Y.amazed.suprised", "Y.happy.pleased", "Y.relaxing.calm",
+    "Y.quiet.still", "Y.sad.lonely", "Y.angry.aggresive"
+)
+
+rotulosPlusCluster<- c(
+    "cluster", "Y.amazed.suprised", "Y.happy.pleased", "Y.relaxing.calm",
+    "Y.quiet.still", "Y.sad.lonely", "Y.angry.aggresive"
+)
+
+
+```
+
+
+```{r}
+set.seed(1234)
+
 results <- list()
 
 for (i in 1:nrow(param.grid)) {
@@ -208,14 +316,14 @@ cat(sprintf(
 ```
 
 ```{r}
-print(plot(best.result$model, type = "counts"))
-print(plot(best.result$model, type = "mapping", pchs = 20, heatkey = TRUE))
-print(plot(best.result$model, type = "changes"))
-print(plot(best.result$model, type = "dist.neighbours"))
-print(plot(best.result$model, type = "codes", codeRendering = "segments"))
-print(plot(best.result$model, type = "codes", codeRendering = "stars"))
-print(plot(best.result$model, type = "codes", codeRendering = "lines"))
-print(plot(best.result$model, type = "quality", heatkey = TRUE))
+# print(plot(best.result$model, type = "counts"))
+# print(plot(best.result$model, type = "mapping", pchs = 20, heatkey = TRUE))
+# print(plot(best.result$model, type = "changes"))
+# print(plot(best.result$model, type = "dist.neighbours"))
+# print(plot(best.result$model, type = "codes", codeRendering = "segments"))
+# print(plot(best.result$model, type = "codes", codeRendering = "stars"))
+# print(plot(best.result$model, type = "codes", codeRendering = "lines"))
+# print(plot(best.result$model, type = "quality", heatkey = TRUE))
 ```
 
 ```{r}
@@ -232,95 +340,241 @@ change.best.result <- data.frame(best.result$model$changes)
 # winning units for all data objects, only returned if keep.data == TRUE.
 uc.best.result <- data.frame(best.result$model$unit.classif)
 
-glimpse(distance.best.result)
-glimpse(change.best.result)
-glimpse(uc.best.result)
+# glimpse(distance.best.result)
+# glimpse(change.best.result)
+# glimpse(uc.best.result)
 
 names(uc.best.result) <- c("neuron")
-glimpse(uc.best.result)
+# glimpse(uc.best.result)
 
 data.best.result <- data.frame(best.result$model$data)
 neuron.data.best.result <- data.frame(uc.best.result, data.best.result)
-glimpse(data.best.result)
-glimpse(neuron.data.best.result)
+# glimpse(data.best.result)
+# glimpse(neuron.data.best.result)
 
 # valores de ativação dos neuronios
 # a list of matrices containing codebook vectors.
 codes.best.result <- data.frame(best.result$model$codes)
-glimpse(codes.best.result)
+# glimpse(codes.best.result)
 rownames(codes.best.result) <- paste0("N", seq_len(nrow(codes.best.result)))
-codes.best.result
+# codes.best.result
 
 train.dataset.best.result <- data.frame(X.train, neuron.data.best.result)
-glimpse(train.dataset.best.result)
+# glimpse(train.dataset.best.result)
 
 neuron.ids <- unique(train.dataset.best.result$neuron)
+# neuron.ids
 
-# criar uma lista de dataframes, um por neurônio
-neuron.dataframes <- lapply(neuron.ids, function(n) {
-    subset(train.dataset.best.result, neuron == n)
-})
-names(neuron.dataframes) <- paste0("N", neuron.ids)
+# # criar uma lista de dataframes, um por neurônio
+# neuron.dataframes <- lapply(neuron.ids, function(n) {
+#     subset(train.dataset.best.result, neuron == n)
+# })
+# names(neuron.dataframes) <- paste0("N", neuron.ids)
 
-glimpse(neuron.dataframes)
+# glimpse(neuron.dataframes)
 ```
 
 
 ```{r}
 # calcular estatísticas básicas para cada neuronio
-
 neuron.num <- som.grid.xdim * som.grid.ydim 
+# neuron.num
 
 # 2. Vamos cortar o mapa bidimensional em grid clusters
 # separando em X clusters
 codebook.matrix.best.result <- as.matrix(codes.best.result)
-glimpse(codebook.matrix.best.result)
-codebook.matrix.best.result
+# glimpse(codebook.matrix.best.result)
+# codebook.matrix.best.result
 
-
+# debug
+# distin <- dist(codebook.matrix.best.result)
+# distin
 # den <- hclust(dist(codebook.matrix.best.result))
 # plot(den)
-# ans <- cutree(den, 7)
+# ans <- cutree(den, 2)
 # ans
 
+# aggregate(codebook.matrix.best.result, by=list(Grupo=ans), FUN=mean)
+# plot(den)
+# rect.hclust(den, k=3, border="red")
 
 
 apagar <- c(0)
 neuron <- c(seq(from = 1, to = neuron.num, by = 1))
 AllPartitions <- data.frame(apagar, neuron)
-
+# AllPartitions
 
 i <- 2
-while (i <= neuron.num) {
+while (i < neuron.num) {
+
+    # debug
+    distin <- dist(codebook.matrix.best.result)
+    partin <- i
+    
+    # par(mfrow=c(2,2))
+    
+    # # Complete linkage (padrão) - distância máxima
+    # plot(hclust(distin, method="complete"), main="Complete - distância máxima")
+    # rect.hclust(hclust(distin, method="complete"), k=partin, border="red")
+    
+    # # Single linkage - distância mínima
+    # plot(hclust(distin, method="single"), main="Single - distância mínima")
+    # rect.hclust(hclust(distin, method="single"), k=partin, border="red")
+    
+    # # Average linkage - distância média
+    # plot(hclust(distin, method="average"), main="Average - distância média")
+    # rect.hclust(hclust(distin, method="average"), k=partin, border="red")
+    
+    # # Ward - minimiza variância intra-cluster
+    # plot(hclust(distin, method="ward.D2"), main="Ward - minimiza variância intra-cluster")
+    # rect.hclust(hclust(distin, method="ward.D2"), k=partin, border="red")
+      
+    
+
+
     den <- hclust(dist(codebook.matrix.best.result))
     cluster <- cutree(den, i)
 
+    # debug
+    # plot(den)
+    # rect.hclust(den, k = i, border = "red")
+    
     nam <- names(grids.list)[best.result$params$grid_index]
-    pdf(paste("mapa_som_clusters-",nam,"-", i, ".pdf", sep = ""), width = 18, height = 18)
+
+    pdf(paste(current,"-",nam,"-", i, ".pdf", sep = ""), width = 11, height = 7)
+
     plot(best.result$model,
         type = "codes", codeRendering = "segments", bgcol = rainbow(i)[cluster],
         main = paste("SOM - Clusters (k =", i, ")")
     )
     add.cluster.boundaries(best.result$model, cluster)
-    dev.off()
+    
+    # ADICIONAR LABELS DOS NEURÔNIOS COM NÚMERO DO CLUSTER
+    grid_positions <- best.result$model$grid$pts
+    text(grid_positions[,1], grid_positions[,2] - 0.2, 
+         labels = paste0("N", 1:nrow(grid_positions), "\n(C", cluster, ")"),
+     cex = 1, font = 1, col = "black")
+    
 
     cluster <- data.frame(neuron = names(cluster), cluster = as.numeric(cluster))
     cluster$neuron <- gsub("neuron_", "", cluster$neuron)
     str(cluster)
     AllPartitions <- cbind(AllPartitions, cluster$cluster)
+
     names(AllPartitions)[i + 1] <- paste("partition-", i, sep = "")
+    
+    
+    particaoX.info <- data.frame(
+        neuron = AllPartitions$neuron,
+        cluster = AllPartitions[[paste("partition-", i, sep = "")]]
+    )
+
+    particaoX.data <- merge(train.dataset.best.result, particaoX.info,
+        by = "neuron", all.x = TRUE
+    )
+
+    particaoX.info2 <- particaoX.data[, c(1, 74:80)]
+
+
+    # Exibe o total de rótulos por neurônio
+    totais_rotulos_por_neuronio <- particaoX.info2 %>%
+        group_by(neuron) %>%
+        summarise(across(all_of(rotulos), sum))
+    
+    plot.new()
+    df <- as.data.frame(totais_rotulos_por_neuronio)
+    gridExtra::grid.table(df)
+    
+    text(0.5, 0.1, paste(
+    "Grid:",
+    names(grids.list)[best.result$params$grid_index],
+    " | rlen: ",
+    best.result$params$rlen,
+    " | radius: ",
+    best.result$params$radius,
+    " | alpha1: ",
+    best.result$params$alpha1,
+    " | alpha2: ",
+    best.result$params$alpha2,
+    " | QE Teste: ",
+    best.result$qe.test
+    ))
+
+    # Exibe o dendrograma com os clusters
+    plot(den)
+    rect.hclust(den, k = i, border = "red")
+
+    # Exibe o total de rótulos por cluster
+    totais_rotulos_por_cluster <- particaoX.info2 %>%
+        group_by(cluster) %>%
+        summarise(across(all_of(rotulos), sum))
+    
+    plot.new()
+    df <- as.data.frame(totais_rotulos_por_cluster)
+    gridExtra::grid.table(df)
+    
+    n <- 1
+    while(n <= i) {
+        cluster.n.train <- particaoX.data %>% filter(cluster == n)
+
+        rotulos_cluster <- cluster.n.train[, rotulosPlusCluster]
+        rotulos_cluster$combinacao <- apply(rotulos_cluster[, -1], 1, paste, collapse = "")
+
+        # # Conte quantas vezes cada combinação aparece por cluster
+        tabela_combinacoes <- as.data.frame(table(rotulos_cluster$cluster, rotulos_cluster$combinacao))
+        colnames(tabela_combinacoes) <- c("cluster", "combinacao", "frequencia")
+
+        # Visualize
+        # print(tabela_combinacoes)
+
+        # # Ordena pela frequência (crescente)
+        tabela_combinacoes_ordenada <- tabela_combinacoes[order(tabela_combinacoes$frequencia), ]
+
+        # # Exibe
+        # print(tabela_combinacoes_ordenada)
+
+        plot.new()
+        df <- data.frame(tabela_combinacoes_ordenada)
+        gridExtra::grid.table(df)
+
+        n <- n + 1
+    }
+
+
+
+    dev.off()
     i <- i + 1
     gc()
-    
-    head(cluster$neuron)
-    
 }
 
 AllPartitions <- AllPartitions[, -1]
-AllPartitions
+# AllPartitions
 ```
 
 
+```{r}
+# distin <- dist(codebook.matrix.best.result)
+# distin
+# partin <- 3
+
+# par(mfrow=c(2,2))
+
+# # Complete
+# plot(hclust(distin, method="complete"), main="Complete")
+# rect.hclust(hclust(distin, method="complete"), k=partin, border="red")
+
+# # Single
+# plot(hclust(distin, method="single"), main="Single")
+# rect.hclust(hclust(distin, method="single"), k=partin, border="red")
+
+# # Average
+# plot(hclust(distin, method="average"), main="Average")
+# rect.hclust(hclust(distin, method="average"), k=partin, border="red")
+
+# # Ward
+# plot(hclust(distin, method="ward.D2"), main="Ward")
+# rect.hclust(hclust(distin, method="ward.D2"), k=partin, border="red")
+```
 
 
 ```{r}
