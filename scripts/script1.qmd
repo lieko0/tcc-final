@@ -1,26 +1,20 @@
 ```{r}
 #| warning: false
-library("foreign")
-library("tidyverse")
-library("caret")
-library("kohonen")
-library("dplyr")
-library("tidyr")
+# library("foreign")
+# library("tidyverse")
+# library("caret")
+# library("kohonen")
+# library(gridExtra)
 
-# uninstall packages as test
-
-
-
-necessary.packages <- c("foreign", "tidyverse", "caret", "kohonen", "dplyr", "tidyr")
+necessary.packages <- c("foreign", "tidyverse", "caret", "kohonen", "gridExtra")
 installed.packages <- rownames(installed.packages())
 i <- 1
 for (pkg in necessary.packages) {
-    cat (paste("Verificando o pacote", pkg, "(", i, "de", length(necessary.packages), ")...\n"))
+    cat(sprintf("Verificando o pacote %s (%d de %d)...\n", pkg, i, length(necessary.packages) ))
     if (!pkg %in% installed.packages) {
-        cat(paste("Por favor instale o pacote", pkg, "...\n\n  install.packages(\"",pkg,"\", dependencies=TRUE)\n\n"))
-        
+        cat(sprintf("Por favor instale o pacote %s...\n\n  install.packages(\"%s\", dependencies=TRUE)\n\n", pkg, pkg))
     } else {
-        cat(paste("O pacote", pkg, "já está instalado.\n\n"))
+        cat(sprintf("Pacote %s já está instalado.\n", pkg))
     }
     i <- i + 1
 }
@@ -475,7 +469,7 @@ while (i < neuron.num) {
         type = "codes", codeRendering = "segments", bgcol = rainbow(i)[cluster],
         main = paste("SOM - Clusters (k =", i, ")")
     )
-    add.cluster.boundaries(best.result$model, cluster)
+    kohonen::add.cluster.boundaries(best.result$model, cluster)
     
     # ADICIONAR LABELS DOS NEURÔNIOS COM NÚMERO DO CLUSTER
     grid_positions <- best.result$model$grid$pts
@@ -505,9 +499,9 @@ while (i < neuron.num) {
 
 
     # Exibe o total de rótulos por neurônio
-    totais_rotulos_por_neuronio <- particaoX.info2 %>%
-        group_by(neuron) %>%
-        summarise(across(all_of(rotulos), sum))
+    totais_rotulos_por_neuronio <- particaoX.info2 |>
+        dplyr::group_by(neuron) |>
+        dplyr::summarise(across(all_of(rotulos), sum))
     
     plot.new()
     df <- as.data.frame(totais_rotulos_por_neuronio)
@@ -533,17 +527,18 @@ while (i < neuron.num) {
     rect.hclust(den, k = i, border = "red")
 
     # Exibe o total de rótulos por cluster
-    totais_rotulos_por_cluster <- particaoX.info2 %>%
-        group_by(cluster) %>%
-        summarise(across(all_of(rotulos), sum))
+    totais_rotulos_por_cluster <- particaoX.info2 |>
+        dplyr::group_by(cluster) |>
+        dplyr::summarise(across(all_of(rotulos), sum))
     
     plot.new()
     df <- as.data.frame(totais_rotulos_por_cluster)
     gridExtra::grid.table(df)
     
+    # TODO
     n <- 1
     while(n <= i) {
-        cluster.n.train <- particaoX.data %>% filter(cluster == n)
+        cluster.n.train <- particaoX.data |> dplyr::filter(cluster == n)
 
         rotulos_cluster <- cluster.n.train[, rotulosPlusCluster]
         rotulos_cluster$combinacao <- apply(rotulos_cluster[, -1], 1, paste, collapse = "")
