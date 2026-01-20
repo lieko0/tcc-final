@@ -10,7 +10,7 @@ necessary.packages <- c("foreign", "tidyverse", "caret", "kohonen", "gridExtra")
 installed.packages <- rownames(installed.packages())
 i <- 1
 for (pkg in necessary.packages) {
-    cat(sprintf("Verificando o pacote %s (%d de %d)...\n", pkg, i, length(necessary.packages) ))
+    cat(sprintf("Verificando o pacote %s (%d de %d)...\n", pkg, i, length(necessary.packages)))
     if (!pkg %in% installed.packages) {
         cat(sprintf("Por favor instale o pacote %s...\n\n  install.packages(\"%s\", dependencies=TRUE)\n\n", pkg, pkg))
     } else {
@@ -79,9 +79,9 @@ Comparar entre os datasets
 base_path <- "E:\\git-tcc\\tcc-final\\data"
 
 datasets_config <- list(
-  emotions = list(attr_cols = 1:72, label_cols = 73:78),
-  scene = list(attr_cols = 1:294, label_cols = 295:300),
-  flags = list(attr_cols = 1:19, label_cols = 20:26)
+    emotions = list(attr_cols = 1:72, label_cols = 73:78),
+    scene = list(attr_cols = 1:294, label_cols = 295:300),
+    flags = list(attr_cols = 1:19, label_cols = 20:26)
 )
 
 # Inicializar listas vazias
@@ -91,37 +91,37 @@ flags <- list()
 
 # Loop para carregar todos os dados
 for (dataset_name in names(datasets_config)) {
-  for (fold in 1:3) {
-    for (type in c("Tr", "Ts")) {
-      # Construir caminho do arquivo
-      file_path <- file.path(
-        base_path, 
-        dataset_name, 
-        "Stratified", 
-        "CrossValidation", 
-        type,
-        paste0(dataset_name, "-Split-", type, "-", fold, ".csv")
-      )
-      
-      # Ler dados
-      data <- read.csv(file_path)
-      
-      # Separar atributos e labels
-      attr_cols <- datasets_config[[dataset_name]]$attr_cols
-      label_cols <- datasets_config[[dataset_name]]$label_cols
-      
-      # Salvar na estrutura hierárquica
-      fold_name <- paste0("fold", fold)
-      type_lower <- tolower(type)
-      
-      assign(dataset_name, {
-        temp_list <- get(dataset_name)
-        temp_list[[fold_name]][[type_lower]]$attr <- data[, attr_cols]
-        temp_list[[fold_name]][[type_lower]]$labels <- data[, label_cols]
-        temp_list
-      })
+    for (fold in 1:3) {
+        for (type in c("Tr", "Ts")) {
+            # Construir caminho do arquivo
+            file_path <- file.path(
+                base_path,
+                dataset_name,
+                "Stratified",
+                "CrossValidation",
+                type,
+                paste0(dataset_name, "-Split-", type, "-", fold, ".csv")
+            )
+
+            # Ler dados
+            data <- read.csv(file_path)
+
+            # Separar atributos e labels
+            attr_cols <- datasets_config[[dataset_name]]$attr_cols
+            label_cols <- datasets_config[[dataset_name]]$label_cols
+
+            # Salvar na estrutura hierárquica
+            fold_name <- paste0("fold", fold)
+            type_lower <- tolower(type)
+
+            assign(dataset_name, {
+                temp_list <- get(dataset_name)
+                temp_list[[fold_name]][[type_lower]]$attr <- data[, attr_cols]
+                temp_list[[fold_name]][[type_lower]]$labels <- data[, label_cols]
+                temp_list
+            })
+        }
     }
-  }
 }
 
 # Exemplos de acesso aos dados:
@@ -133,8 +133,8 @@ dplyr::glimpse(emotions$fold3$tr$labels)
 
 
 ```{r}
-som.grid.xdim = 3
-som.grid.ydim = 3
+som.grid.xdim <- 3
+som.grid.ydim <- 3
 
 som.grid.gaussian.rectangular <- kohonen::somgrid(
     xdim = som.grid.xdim, ydim = som.grid.ydim,
@@ -232,7 +232,7 @@ rotulos <- c(
     "Y.quiet.still", "Y.sad.lonely", "Y.angry.aggresive"
 )
 
-rotulosPlusCluster<- c(
+rotulosPlusCluster <- c(
     "cluster", "Y.amazed.suprised", "Y.happy.pleased", "Y.relaxing.calm",
     "Y.quiet.still", "Y.sad.lonely", "Y.angry.aggresive"
 )
@@ -399,7 +399,7 @@ if(dir.exists(file.path(current_dir, git_dir))){
 
 ```{r}
 # calcular estatísticas básicas para cada neuronio
-neuron.num <- som.grid.xdim * som.grid.ydim 
+neuron.num <- som.grid.xdim * som.grid.ydim
 # neuron.num
 
 # 2. Vamos cortar o mapa bidimensional em grid clusters
@@ -428,30 +428,27 @@ AllPartitions <- data.frame(apagar, neuron)
 
 i <- 2
 while (i < neuron.num) {
-
     # debug
     distin <- dist(codebook.matrix.best.result)
     partin <- i
-    
+
     # par(mfrow=c(2,2))
-    
+
     # # Complete linkage (padrão) - distância máxima
     # plot(hclust(distin, method="complete"), main="Complete - distância máxima")
     # rect.hclust(hclust(distin, method="complete"), k=partin, border="red")
-    
+
     # # Single linkage - distância mínima
     # plot(hclust(distin, method="single"), main="Single - distância mínima")
     # rect.hclust(hclust(distin, method="single"), k=partin, border="red")
-    
+
     # # Average linkage - distância média
     # plot(hclust(distin, method="average"), main="Average - distância média")
     # rect.hclust(hclust(distin, method="average"), k=partin, border="red")
-    
+
     # # Ward - minimiza variância intra-cluster
     # plot(hclust(distin, method="ward.D2"), main="Ward - minimiza variância intra-cluster")
     # rect.hclust(hclust(distin, method="ward.D2"), k=partin, border="red")
-      
-    
 
 
     den <- hclust(dist(codebook.matrix.best.result))
@@ -460,23 +457,24 @@ while (i < neuron.num) {
     # debug
     # plot(den)
     # rect.hclust(den, k = i, border = "red")
-    
+
     nam <- names(grids.list)[best.result$params$grid_index]
 
-    pdf(paste(current,"-",nam,"-", i, ".pdf", sep = ""), width = 11, height = 7)
+    pdf(paste(current, "-", nam, "-", i, ".pdf", sep = ""), width = 11, height = 7)
 
     plot(best.result$model,
         type = "codes", codeRendering = "segments", bgcol = rainbow(i)[cluster],
         main = paste("SOM - Clusters (k =", i, ")")
     )
     kohonen::add.cluster.boundaries(best.result$model, cluster)
-    
+
     # ADICIONAR LABELS DOS NEURÔNIOS COM NÚMERO DO CLUSTER
     grid_positions <- best.result$model$grid$pts
-    text(grid_positions[,1], grid_positions[,2] - 0.2, 
-         labels = paste0("N", 1:nrow(grid_positions), "\n(C", cluster, ")"),
-     cex = 1, font = 1, col = "black")
-    
+    text(grid_positions[, 1], grid_positions[, 2] - 0.2,
+        labels = paste0("N", 1:nrow(grid_positions), "\n(C", cluster, ")"),
+        cex = 1, font = 1, col = "black"
+    )
+
 
     cluster <- data.frame(neuron = names(cluster), cluster = as.numeric(cluster))
     cluster$neuron <- gsub("neuron_", "", cluster$neuron)
@@ -484,8 +482,8 @@ while (i < neuron.num) {
     AllPartitions <- cbind(AllPartitions, cluster$cluster)
 
     names(AllPartitions)[i + 1] <- paste("partition-", i, sep = "")
-    
-    
+
+
     particaoX.info <- data.frame(
         neuron = AllPartitions$neuron,
         cluster = AllPartitions[[paste("partition-", i, sep = "")]]
@@ -502,24 +500,24 @@ while (i < neuron.num) {
     totais_rotulos_por_neuronio <- particaoX.info2 |>
         dplyr::group_by(neuron) |>
         dplyr::summarise(across(all_of(rotulos), sum))
-    
+
     plot.new()
     df <- as.data.frame(totais_rotulos_por_neuronio)
     gridExtra::grid.table(df)
-    
+
     text(0.5, 0.1, paste(
-    "Grid:",
-    names(grids.list)[best.result$params$grid_index],
-    " | rlen: ",
-    best.result$params$rlen,
-    " | radius: ",
-    best.result$params$radius,
-    " | alpha1: ",
-    best.result$params$alpha1,
-    " | alpha2: ",
-    best.result$params$alpha2,
-    " | QE Teste: ",
-    best.result$qe.test
+        "Grid:",
+        names(grids.list)[best.result$params$grid_index],
+        " | rlen: ",
+        best.result$params$rlen,
+        " | radius: ",
+        best.result$params$radius,
+        " | alpha1: ",
+        best.result$params$alpha1,
+        " | alpha2: ",
+        best.result$params$alpha2,
+        " | QE Teste: ",
+        best.result$qe.test
     ))
 
     # Exibe o dendrograma com os clusters
@@ -530,14 +528,14 @@ while (i < neuron.num) {
     totais_rotulos_por_cluster <- particaoX.info2 |>
         dplyr::group_by(cluster) |>
         dplyr::summarise(across(all_of(rotulos), sum))
-    
+
     plot.new()
     df <- as.data.frame(totais_rotulos_por_cluster)
     gridExtra::grid.table(df)
-    
+
     # TODO
     n <- 1
-    while(n <= i) {
+    while (n <= i) {
         cluster.n.train <- particaoX.data |> dplyr::filter(cluster == n)
 
         rotulos_cluster <- cluster.n.train[, rotulosPlusCluster]
@@ -562,7 +560,6 @@ while (i < neuron.num) {
 
         n <- n + 1
     }
-
 
 
     dev.off()
