@@ -6,6 +6,24 @@ library("caret")
 library("kohonen")
 library("dplyr")
 library("tidyr")
+
+# uninstall packages as test
+
+
+
+necessary.packages <- c("foreign", "tidyverse", "caret", "kohonen", "dplyr", "tidyr")
+installed.packages <- rownames(installed.packages())
+i <- 1
+for (pkg in necessary.packages) {
+    cat (paste("Verificando o pacote", pkg, "(", i, "de", length(necessary.packages), ")...\n"))
+    if (!pkg %in% installed.packages) {
+        cat(paste("Por favor instale o pacote", pkg, "...\n\n  install.packages(\"",pkg,"\", dependencies=TRUE)\n\n"))
+        
+    } else {
+        cat(paste("O pacote", pkg, "já está instalado.\n\n"))
+    }
+    i <- i + 1
+}
 ```
 
 
@@ -18,48 +36,48 @@ Comparar entre os datasets
 - os mais frequentes estão em mesmos grupos ou diferentes / comportamento padrão independente de datasets
 
 ```{r}
-file.emotions.fold1.tr <- "E:\\git-tcc\\tcc-final\\data\\emotions\\Stratified\\CrossValidation\\Tr\\emotions-Split-Tr-1.csv"
+# file.emotions.fold1.tr <- "E:\\git-tcc\\tcc-final\\data\\emotions\\Stratified\\CrossValidation\\Tr\\emotions-Split-Tr-1.csv"
 
-emotions.tr <- read.csv(file.emotions.fold1.tr)
-emotions.tr.attr <- emotions.tr[, 1:72]
-emotions.tr.labels <- emotions.tr[, 73:78]
-glimpse(emotions.tr.labels)
+# emotions.tr <- read.csv(file.emotions.fold1.tr)
+# emotions.tr.attr <- emotions.tr[, 1:72]
+# emotions.tr.labels <- emotions.tr[, 73:78]
+# dplyr::glimpse(emotions.tr.labels)
 ```
 
 ```{r}
-file.emotions.fold1.tr <- "E:\\git-tcc\\tcc-final\\data\\emotions\\Stratified\\CrossValidation\\Tr\\emotions-Split-Tr-1.csv"
+# file.emotions.fold1.tr <- "E:\\git-tcc\\tcc-final\\data\\emotions\\Stratified\\CrossValidation\\Tr\\emotions-Split-Tr-1.csv"
 
-emotions.tr <- read.csv(file.emotions.fold1.tr)
-emotions.tr.attr <- emotions.tr[, 1:72]
-emotions.tr.labels <- emotions.tr[, 73:78]
-glimpse(emotions.tr.labels)
+# emotions.tr <- read.csv(file.emotions.fold1.tr)
+# emotions.tr.attr <- emotions.tr[, 1:72]
+# emotions.tr.labels <- emotions.tr[, 73:78]
+# dplyr::glimpse(emotions.tr.labels)
 ```
 
 ```{r}
-file.scene.fold1.tr <- "E:\\git-tcc\\tcc-final\\data\\scene\\Stratified\\CrossValidation\\Tr\\scene-Split-Tr-1.csv"
+# file.scene.fold1.tr <- "E:\\git-tcc\\tcc-final\\data\\scene\\Stratified\\CrossValidation\\Tr\\scene-Split-Tr-1.csv"
 
-scene.tr <- read.csv(file.scene.fold1.tr)
-scene.tr.attr <- scene.tr[, 1:294]
-scene.tr.labels <- scene.tr[, 295:300]
-glimpse(scene.tr.labels)
+# scene.tr <- read.csv(file.scene.fold1.tr)
+# scene.tr.attr <- scene.tr[, 1:294]
+# scene.tr.labels <- scene.tr[, 295:300]
+# dplyr::glimpse(scene.tr.labels)
 ```
 
 ```{r}
-file.flags.fold1.tr <- "E:\\git-tcc\\tcc-final\\data\\flags\\Stratified\\CrossValidation\\Tr\\flags-Split-Tr-1.csv"
+# file.flags.fold1.tr <- "E:\\git-tcc\\tcc-final\\data\\flags\\Stratified\\CrossValidation\\Tr\\flags-Split-Tr-1.csv"
 
-flags.tr <- read.csv(file.flags.fold1.tr)
-flags.tr.attr <- flags.tr[, 1:19]
-flags.tr.labels <- flags.tr[, 20:26]
-glimpse(flags.tr.labels)
+# flags.tr <- read.csv(file.flags.fold1.tr)
+# flags.tr.attr <- flags.tr[, 1:19]
+# flags.tr.labels <- flags.tr[, 20:26]
+# dplyr::glimpse(flags.tr.labels)
 ```
 
 ```{r}
-file.emotions.fold1.ts <- "E:\\git-tcc\\tcc-final\\data\\emotions\\Stratified\\CrossValidation\\Ts\\emotions-Split-Ts-1.csv"
+# file.emotions.fold1.ts <- "E:\\git-tcc\\tcc-final\\data\\emotions\\Stratified\\CrossValidation\\Ts\\emotions-Split-Ts-1.csv"
 
-emotions.ts <- read.csv(file.emotions.fold1.ts)
-emotions.ts.attr <- emotions.ts[, 1:72]
-emotions.ts.labels <- emotions.ts[, 73:78]
-glimpse(emotions.ts.labels)
+# emotions.ts <- read.csv(file.emotions.fold1.ts)
+# emotions.ts.attr <- emotions.ts[, 1:72]
+# emotions.ts.labels <- emotions.ts[, 73:78]
+# glimpse(emotions.ts.labels)
 ```
 
 ```{r}
@@ -113,16 +131,9 @@ for (dataset_name in names(datasets_config)) {
 }
 
 # Exemplos de acesso aos dados:
-glimpse(flags)
-head(flags$fold1$tr$labels)
-head(flags$fold1$ts$labels)
-head(flags$fold2$tr$labels)
-head(flags$fold2$ts$labels)
-head(flags$fold3$tr$labels)
-head(flags$fold3$ts$labels)
-# emotions$fold1$ts$attr
-# scene$fold2$tr$labels
-# flags$fold3$ts$attr
+dplyr::glimpse(flags$fold1$tr$labels)
+dplyr::glimpse(scene$fold2$tr$labels)
+dplyr::glimpse(emotions$fold3$tr$labels)
 ```
 
 
@@ -131,13 +142,13 @@ head(flags$fold3$ts$labels)
 som.grid.xdim = 3
 som.grid.ydim = 3
 
-som.grid.gaussian.rectangular <- somgrid(
+som.grid.gaussian.rectangular <- kohonen::somgrid(
     xdim = som.grid.xdim, ydim = som.grid.ydim,
     topo = "rectangular",
     neighbourhood.fct = "gaussian"
 )
 
-som.grid.gaussian.hexagonal <- somgrid(
+som.grid.gaussian.hexagonal <- kohonen::somgrid(
     xdim = som.grid.xdim, ydim = som.grid.ydim,
     topo = "hexagonal",
     neighbourhood.fct = "gaussian"
@@ -166,13 +177,13 @@ param.grid.gaussian
 ```
 
 ```{r}
-som.grid.bubble.rectangular <- somgrid(
+som.grid.bubble.rectangular <- kohonen::somgrid(
     xdim = som.grid.xdim, ydim = som.grid.ydim,
     topo = "rectangular",
     neighbourhood.fct = "bubble"
 )
 
-som.grid.bubble.hexagonal <- somgrid(
+som.grid.bubble.hexagonal <- kohonen::somgrid(
     xdim = som.grid.xdim, ydim = som.grid.ydim,
     topo = "hexagonal",
     neighbourhood.fct = "bubble"
@@ -206,8 +217,8 @@ current <- "emotions-f3"
 
 tr.labels.matrix <- as.matrix(emotions$fold3$tr$labels)
 ts.labels.matrix <- as.matrix(emotions$fold3$ts$labels)
-glimpse(tr.labels.matrix)
-glimpse(ts.labels.matrix)
+dplyr::glimpse(tr.labels.matrix)
+dplyr::glimpse(ts.labels.matrix)
 
 X.train <- as.matrix(emotions$fold3$tr$attr)
 X.test <- as.matrix(emotions$fold3$ts$attr)
@@ -248,7 +259,7 @@ for (i in 1:nrow(param.grid)) {
 
     model <- tryCatch(
         {
-            supersom(
+            kohonen::supersom(
                 data = list(Y = Y.train),
                 grid = grid,
                 rlen = params$rlen,
@@ -372,6 +383,23 @@ neuron.ids <- unique(train.dataset.best.result$neuron)
 # names(neuron.dataframes) <- paste0("N", neuron.ids)
 
 # glimpse(neuron.dataframes)
+```
+
+```{r}
+# Verify if im in the correct directory (tcc-final/outputs)
+git_dir <- "tcc-final"
+output_dir <- "outputs"
+current_dir <- getwd()
+
+if(base::basename(current_dir) == output_dir){
+    cat("Diretório de output já está correto:", getwd(), "\n")
+} else 
+if(dir.exists(file.path(current_dir, git_dir))){
+    setwd(file.path(current_dir, git_dir, "outputs"))
+    cat("Diretório de output alterado para:", getwd(), "\n")
+} else {
+    cat("***Warning!!!***", "\n", " Diretório output não encontrado. Diretório atual será usado para output!")
+}
 ```
 
 
