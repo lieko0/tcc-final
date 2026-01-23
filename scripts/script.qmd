@@ -5,8 +5,11 @@
 # library("caret")
 # library("kohonen")
 # library(gridExtra)
+# library(lintr)
+# library(httpgd)
+# remotes::install_github("nx10/httpgd")
 
-necessary.packages <- c("foreign", "tidyverse", "caret", "kohonen", "gridExtra")
+necessary.packages <- c("foreign", "tidyverse", "caret", "kohonen", "gridExtra", "httpgd")
 installed.packages <- rownames(installed.packages())
 i <- 1
 for (pkg in necessary.packages) {
@@ -28,51 +31,6 @@ Análise de particionamentos baseadas no ultimo artigo (multilabel classificatio
 
 Comparar entre os datasets
 - os mais frequentes estão em mesmos grupos ou diferentes / comportamento padrão independente de datasets
-
-```{r}
-# file.emotions.fold1.tr <- "E:\\git-tcc\\tcc-final\\data\\emotions\\Stratified\\CrossValidation\\Tr\\emotions-Split-Tr-1.csv"
-
-# emotions.tr <- read.csv(file.emotions.fold1.tr)
-# emotions.tr.attr <- emotions.tr[, 1:72]
-# emotions.tr.labels <- emotions.tr[, 73:78]
-# dplyr::glimpse(emotions.tr.labels)
-```
-
-```{r}
-# file.emotions.fold1.tr <- "E:\\git-tcc\\tcc-final\\data\\emotions\\Stratified\\CrossValidation\\Tr\\emotions-Split-Tr-1.csv"
-
-# emotions.tr <- read.csv(file.emotions.fold1.tr)
-# emotions.tr.attr <- emotions.tr[, 1:72]
-# emotions.tr.labels <- emotions.tr[, 73:78]
-# dplyr::glimpse(emotions.tr.labels)
-```
-
-```{r}
-# file.scene.fold1.tr <- "E:\\git-tcc\\tcc-final\\data\\scene\\Stratified\\CrossValidation\\Tr\\scene-Split-Tr-1.csv"
-
-# scene.tr <- read.csv(file.scene.fold1.tr)
-# scene.tr.attr <- scene.tr[, 1:294]
-# scene.tr.labels <- scene.tr[, 295:300]
-# dplyr::glimpse(scene.tr.labels)
-```
-
-```{r}
-# file.flags.fold1.tr <- "E:\\git-tcc\\tcc-final\\data\\flags\\Stratified\\CrossValidation\\Tr\\flags-Split-Tr-1.csv"
-
-# flags.tr <- read.csv(file.flags.fold1.tr)
-# flags.tr.attr <- flags.tr[, 1:19]
-# flags.tr.labels <- flags.tr[, 20:26]
-# dplyr::glimpse(flags.tr.labels)
-```
-
-```{r}
-# file.emotions.fold1.ts <- "E:\\git-tcc\\tcc-final\\data\\emotions\\Stratified\\CrossValidation\\Ts\\emotions-Split-Ts-1.csv"
-
-# emotions.ts <- read.csv(file.emotions.fold1.ts)
-# emotions.ts.attr <- emotions.ts[, 1:72]
-# emotions.ts.labels <- emotions.ts[, 73:78]
-# glimpse(emotions.ts.labels)
-```
 
 ```{r}
 # Configuração dos datasets
@@ -207,15 +165,85 @@ param.grid.bubble
 
 
 ```{r}
-current <- "emotions-f3"
+# current <- "emotions-f3"
 
-tr.labels.matrix <- as.matrix(emotions$fold3$tr$labels)
-ts.labels.matrix <- as.matrix(emotions$fold3$ts$labels)
+# tr.labels.matrix <- as.matrix(emotions$fold3$tr$labels)
+# ts.labels.matrix <- as.matrix(emotions$fold3$ts$labels)
+# dplyr::glimpse(tr.labels.matrix)
+# dplyr::glimpse(ts.labels.matrix)
+
+# X.train <- as.matrix(emotions$fold3$tr$attr)
+# X.test <- as.matrix(emotions$fold3$ts$attr)
+# Y.train <- tr.labels.matrix
+# Y.test <- ts.labels.matrix
+
+# # gaussian/bubble
+# param.grid <- param.grid.gaussian
+# grids.list <- grids.list.gaussian
+
+# # param.grid <- param.grid.bubble
+# # grids.list <- grids.list.bubble
+
+# # Lista das colunas de rótulos
+# rotulos <- c(
+#     "Y.amazed.suprised", "Y.happy.pleased", "Y.relaxing.calm",
+#     "Y.quiet.still", "Y.sad.lonely", "Y.angry.aggresive"
+# )
+
+# rotulosPlusCluster <- c(
+#     "cluster", "Y.amazed.suprised", "Y.happy.pleased", "Y.relaxing.calm",
+#     "Y.quiet.still", "Y.sad.lonely", "Y.angry.aggresive"
+# )
+
+# label.col.left <- 73
+# label.col.right <- 78
+```
+
+```{r}
+# current <- "scene-f3"
+
+# tr.labels.matrix <- as.matrix(scene$fold3$tr$labels)
+# ts.labels.matrix <- as.matrix(scene$fold3$ts$labels)
+# dplyr::glimpse(tr.labels.matrix)
+# dplyr::glimpse(ts.labels.matrix)
+
+# X.train <- as.matrix(scene$fold3$tr$attr)
+# X.test <- as.matrix(scene$fold3$ts$attr)
+# Y.train <- tr.labels.matrix
+# Y.test <- ts.labels.matrix
+
+# # gaussian/bubble
+# # param.grid <- param.grid.gaussian
+# # grids.list <- grids.list.gaussian
+
+# param.grid <- param.grid.bubble
+# grids.list <- grids.list.bubble
+
+# # Lista das colunas de rótulos
+# rotulos <- c(
+#     "Y.Beach", "Y.Sunset", "Y.FallFoliage",
+#     "Y.Field", "Y.Mountain", "Y.Urban"
+# )
+
+# rotulosPlusCluster <- c(
+#     "cluster", "Y.Beach", "Y.Sunset", "Y.FallFoliage",
+#     "Y.Field", "Y.Mountain", "Y.Urban"
+# )
+
+# label.col.left <- 295
+# label.col.right <- 300
+```
+
+```{r}
+current <- "flags-f3"
+
+tr.labels.matrix <- as.matrix(flags$fold3$tr$labels)
+ts.labels.matrix <- as.matrix(flags$fold3$ts$labels)
 dplyr::glimpse(tr.labels.matrix)
 dplyr::glimpse(ts.labels.matrix)
 
-X.train <- as.matrix(emotions$fold3$tr$attr)
-X.test <- as.matrix(emotions$fold3$ts$attr)
+X.train <- as.matrix(flags$fold3$tr$attr)
+X.test <- as.matrix(flags$fold3$ts$attr)
 Y.train <- tr.labels.matrix
 Y.test <- ts.labels.matrix
 
@@ -228,18 +256,20 @@ grids.list <- grids.list.bubble
 
 # Lista das colunas de rótulos
 rotulos <- c(
-    "Y.amazed.suprised", "Y.happy.pleased", "Y.relaxing.calm",
-    "Y.quiet.still", "Y.sad.lonely", "Y.angry.aggresive"
+    "Y.red", "Y.green", "Y.blue",
+    "Y.yellow", "Y.white", "Y.black",
+    "Y.orange"
 )
 
 rotulosPlusCluster <- c(
-    "cluster", "Y.amazed.suprised", "Y.happy.pleased", "Y.relaxing.calm",
-    "Y.quiet.still", "Y.sad.lonely", "Y.angry.aggresive"
+    "cluster", "Y.red", "Y.green", "Y.blue",
+    "Y.yellow", "Y.white", "Y.black",
+    "Y.orange"
 )
 
-
+label.col.left <- 20
+label.col.right <- 26
 ```
-
 
 ```{r}
 set.seed(1234)
@@ -308,9 +338,11 @@ for (res in results) {
         best.result <- res
     }
 }
-cat("Melhor Resultado:\n")
+
+# dplyr::glimpse(best.result$model$data$Y)
+# best.result$model$data$Y
 cat(sprintf(
-    "Grid: %s | rlen: %d | radius: %d | alpha1: %.3f | alpha2: %.3f | QE Teste: %.4f\n",
+    "Melhor Resultado:\n\nGrid: %s | rlen: %d | radius: %d | alpha1: %.3f | alpha2: %.3f | QE Teste: %.4f\n",
     names(grids.list)[best.result$params$grid_index],
     best.result$params$rlen,
     best.result$params$radius,
@@ -321,14 +353,16 @@ cat(sprintf(
 ```
 
 ```{r}
-# print(plot(best.result$model, type = "counts"))
-# print(plot(best.result$model, type = "mapping", pchs = 20, heatkey = TRUE))
-# print(plot(best.result$model, type = "changes"))
-# print(plot(best.result$model, type = "dist.neighbours"))
-# print(plot(best.result$model, type = "codes", codeRendering = "segments"))
-# print(plot(best.result$model, type = "codes", codeRendering = "stars"))
-# print(plot(best.result$model, type = "codes", codeRendering = "lines"))
-# print(plot(best.result$model, type = "quality", heatkey = TRUE))
+httpgd::hgd()
+httpgd::hgd_browse()
+print(plot(best.result$model, type = "counts"))
+print(plot(best.result$model, type = "mapping", pchs = 20, heatkey = TRUE))
+print(plot(best.result$model, type = "changes"))
+print(plot(best.result$model, type = "dist.neighbours"))
+print(plot(best.result$model, type = "codes", codeRendering = "segments"))
+print(plot(best.result$model, type = "codes", codeRendering = "stars"))
+print(plot(best.result$model, type = "codes", codeRendering = "lines"))
+print(plot(best.result$model, type = "quality", heatkey = TRUE))
 ```
 
 ```{r}
@@ -376,7 +410,7 @@ neuron.ids <- unique(train.dataset.best.result$neuron)
 # })
 # names(neuron.dataframes) <- paste0("N", neuron.ids)
 
-# glimpse(neuron.dataframes)
+# dplyr::glimpse(neuron.dataframes)
 ```
 
 ```{r}
@@ -432,35 +466,17 @@ while (i < neuron.num) {
     distin <- dist(codebook.matrix.best.result)
     partin <- i
 
-    # par(mfrow=c(2,2))
-
-    # # Complete linkage (padrão) - distância máxima
-    # plot(hclust(distin, method="complete"), main="Complete - distância máxima")
-    # rect.hclust(hclust(distin, method="complete"), k=partin, border="red")
-
-    # # Single linkage - distância mínima
-    # plot(hclust(distin, method="single"), main="Single - distância mínima")
-    # rect.hclust(hclust(distin, method="single"), k=partin, border="red")
-
-    # # Average linkage - distância média
-    # plot(hclust(distin, method="average"), main="Average - distância média")
-    # rect.hclust(hclust(distin, method="average"), k=partin, border="red")
-
-    # # Ward - minimiza variância intra-cluster
-    # plot(hclust(distin, method="ward.D2"), main="Ward - minimiza variância intra-cluster")
-    # rect.hclust(hclust(distin, method="ward.D2"), k=partin, border="red")
-
-
     den <- hclust(dist(codebook.matrix.best.result))
     cluster <- cutree(den, i)
 
-    # debug
-    # plot(den)
-    # rect.hclust(den, k = i, border = "red")
-
     nam <- names(grids.list)[best.result$params$grid_index]
 
-    pdf(paste(current, "-", nam, "-", i, ".pdf", sep = ""), width = 11, height = 7)
+    pdf(paste(current, "-", nam, "-", i, ".pdf", sep = ""), width = 11, height = 11)
+
+    plot(best.result$model,
+        type = "counts",
+        main = paste("SOM - Counts (k =", i, ")")
+    )
 
     plot(best.result$model,
         type = "codes", codeRendering = "segments", bgcol = rainbow(i)[cluster],
@@ -472,9 +488,8 @@ while (i < neuron.num) {
     grid_positions <- best.result$model$grid$pts
     text(grid_positions[, 1], grid_positions[, 2] - 0.2,
         labels = paste0("N", 1:nrow(grid_positions), "\n(C", cluster, ")"),
-        cex = 1, font = 1, col = "black"
+        cex = 1, font = 1, col = "white"
     )
-
 
     cluster <- data.frame(neuron = names(cluster), cluster = as.numeric(cluster))
     cluster$neuron <- gsub("neuron_", "", cluster$neuron)
@@ -493,13 +508,18 @@ while (i < neuron.num) {
         by = "neuron", all.x = TRUE
     )
 
-    particaoX.info2 <- particaoX.data[, c(1, 74:80)]
-
+    # col 1 - neuron
+    # (label.col.left+1) - correção +1 do neuron
+    # (label.col.right+2) - correção +1 do neuron & +1 do cluster
+    particaoX.info2 <- particaoX.data[, c(1, (label.col.left+1):(label.col.right+2))]
+    # dplyr::glimpse(particaoX.data)
+    # dplyr::glimpse(particaoX.info2)
 
     # Exibe o total de rótulos por neurônio
     totais_rotulos_por_neuronio <- particaoX.info2 |>
         dplyr::group_by(neuron) |>
         dplyr::summarise(across(all_of(rotulos), sum))
+    # dplyr::glimpse(totais_rotulos_por_neuronio)
 
     plot.new()
     df <- as.data.frame(totais_rotulos_por_neuronio)
