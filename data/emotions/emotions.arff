@@ -1,4 +1,4 @@
-@relation 'musicout: -C -6'
+@relation 'emotions: -C -6'
 @attribute Mean_Acc1298_Mean_Mem40_Centroid numeric
 @attribute Mean_Acc1298_Mean_Mem40_Rolloff numeric
 @attribute Mean_Acc1298_Mean_Mem40_Flux numeric
