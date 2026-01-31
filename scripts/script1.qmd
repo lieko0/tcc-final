@@ -1,0 +1,372 @@
+```{r}
+# Verificação e instalação de pacotes necessários
+#| echo: false
+#| warning: false
+# library("foreign")
+# library("tidyverse")
+# library("caret")
+# library("kohonen")
+# library(gridExtra)
+# library(lintr)
+# library(httpgd)
+# remotes::install_github("nx10/httpgd")
+
+necessary.packages <- c("foreign", "tidyverse", "caret", "kohonen", "gridExtra", "httpgd")
+installed.packages <- rownames(installed.packages())
+i <- 1
+for (pkg in necessary.packages) {
+    cat(sprintf("Verificando o pacote %s (%d de %d)...\n", pkg, i, length(necessary.packages)))
+    if (!pkg %in% installed.packages) {
+        cat(sprintf("Por favor instale o pacote %s...\n\n  install.packages(\"%s\", dependencies=TRUE)\n\n", pkg, pkg))
+    } else {
+        cat(sprintf("Pacote %s já está instalado.\n", pkg))
+    }
+    i <- i + 1
+}
+```
+
+
+```{r}
+# Configuração dos datasets
+base_path <- "E:\\git-tcc\\tcc-final\\data"
+
+datasets_config <- list(
+    emotions = list(attr_cols = 1:72, label_cols = 73:78, label_names = c("amazed.suprised", "happy.pleased", "relaxing.calm", "quiet.still", "sad.lonely", "angry.aggresive")),
+    scene = list(attr_cols = 1:294, label_cols = 295:300, label_names = c("Beach", "Sunset", "FallFoliage", "Field", "Mountain", "Urban")),
+    flags = list(attr_cols = 1:19, label_cols = 20:26, label_names = c("red", "green", "blue", "yellow", "white", "black", "orange"))
+)
+
+# Inicializar lista única
+datasets <- list()
+
+# Loop para carregar todos os dados
+for (dataset_name in names(datasets_config)) {
+    datasets[[dataset_name]] <- list()
+
+    datasets[[dataset_name]][["config"]][["name"]] <- dataset_name
+    datasets[[dataset_name]][["config"]][["attr_cols"]] <- datasets_config[[dataset_name]]$attr_cols
+    datasets[[dataset_name]][["config"]][["label_cols"]] <- datasets_config[[dataset_name]]$label_cols
+    datasets[[dataset_name]][["config"]][["label_names"]] <- datasets_config[[dataset_name]]$label_names
+
+    
+    
+    for (fold in 1:3) {
+        fold_name <- paste0("fold", fold)
+        datasets[[dataset_name]][[fold_name]] <- list()
+        
+        for (type in c("Tr", "Ts", "Vl")) {
+            # Construir caminho do arquivo
+            file_path <- file.path(
+                base_path,
+                dataset_name,
+                "Stratified",
+                "CrossValidation",
+                type,
+                paste0(dataset_name, "-Split-", type, "-", fold, ".csv")
+            )
+
+            # Ler dados
+            data <- read.csv(file_path)
+
+            # Separar atributos e labels
+            attr_cols <- datasets_config[[dataset_name]]$attr_cols
+            label_cols <- datasets_config[[dataset_name]]$label_cols
+
+            # Salvar na estrutura hierárquica
+            type_lower <- tolower(type)
+            datasets[[dataset_name]][[fold_name]][[type_lower]]$attr <- data[, attr_cols]
+            datasets[[dataset_name]][[fold_name]][[type_lower]]$labels <- data[, label_cols]
+        }
+    }
+}
+
+# Exemplos de acesso aos dados:
+dplyr::glimpse(datasets$flags)
+dplyr::glimpse(datasets$scene)
+dplyr::glimpse(datasets$emotions)
+```
+
+```{r}
+# Configuração das grades do SOM
+som.grid.xdim <- 3
+som.grid.ydim <- 3
+
+som.grid.gaussian.rectangular.3x3 <- kohonen::somgrid(
+    xdim = som.grid.xdim, ydim = som.grid.ydim,
+    topo = "rectangular",
+    neighbourhood.fct = "gaussian"
+)
+
+som.grid.gaussian.hexagonal.3x3 <- kohonen::somgrid(
+    xdim = som.grid.xdim, ydim = som.grid.ydim,
+    topo = "hexagonal",
+    neighbourhood.fct = "gaussian"
+)
+
+som.grid.bubble.rectangular.3x3 <- kohonen::somgrid(
+    xdim = som.grid.xdim, ydim = som.grid.ydim,
+    topo = "rectangular",
+    neighbourhood.fct = "bubble"
+)
+
+som.grid.bubble.hexagonal.3x3 <- kohonen::somgrid(
+    xdim = som.grid.xdim, ydim = som.grid.ydim,
+    topo = "hexagonal",
+    neighbourhood.fct = "bubble"
+)
+
+som.grid.xdim <- 3
+som.grid.ydim <- 2
+
+som.grid.gaussian.rectangular.3x2 <- kohonen::somgrid(
+    xdim = som.grid.xdim, ydim = som.grid.ydim,
+    topo = "rectangular",
+    neighbourhood.fct = "gaussian"
+)
+
+som.grid.gaussian.hexagonal.3x2 <- kohonen::somgrid(
+    xdim = som.grid.xdim, ydim = som.grid.ydim,
+    topo = "hexagonal",
+    neighbourhood.fct = "gaussian"
+)
+
+som.grid.bubble.rectangular.3x2 <- kohonen::somgrid(
+    xdim = som.grid.xdim, ydim = som.grid.ydim,
+    topo = "rectangular",
+    neighbourhood.fct = "bubble"
+)
+
+som.grid.bubble.hexagonal.3x2 <- kohonen::somgrid(
+    xdim = som.grid.xdim, ydim = som.grid.ydim,
+    topo = "hexagonal",
+    neighbourhood.fct = "bubble"
+)
+
+som.grid.xdim <- 2
+som.grid.ydim <- 3
+
+som.grid.gaussian.rectangular.2x3 <- kohonen::somgrid(
+    xdim = som.grid.xdim, ydim = som.grid.ydim,
+    topo = "rectangular",
+    neighbourhood.fct = "gaussian"
+)
+
+som.grid.gaussian.hexagonal.2x3 <- kohonen::somgrid(
+    xdim = som.grid.xdim, ydim = som.grid.ydim,
+    topo = "hexagonal",
+    neighbourhood.fct = "gaussian"
+)
+
+som.grid.bubble.rectangular.2x3 <- kohonen::somgrid(
+    xdim = som.grid.xdim, ydim = som.grid.ydim,
+    topo = "rectangular",
+    neighbourhood.fct = "bubble"
+)
+
+som.grid.bubble.hexagonal.2x3 <- kohonen::somgrid(
+    xdim = som.grid.xdim, ydim = som.grid.ydim,
+    topo = "hexagonal",
+    neighbourhood.fct = "bubble"
+)
+
+som.grid.xdim <- 2
+som.grid.ydim <- 2
+
+som.grid.gaussian.rectangular.2x2 <- kohonen::somgrid(
+    xdim = som.grid.xdim, ydim = som.grid.ydim,
+    topo = "rectangular",
+    neighbourhood.fct = "gaussian"
+)
+
+som.grid.gaussian.hexagonal.2x2 <- kohonen::somgrid(
+    xdim = som.grid.xdim, ydim = som.grid.ydim,
+    topo = "hexagonal",
+    neighbourhood.fct = "gaussian"
+)
+
+som.grid.bubble.rectangular.2x2 <- kohonen::somgrid(
+    xdim = som.grid.xdim, ydim = som.grid.ydim,
+    topo = "rectangular",
+    neighbourhood.fct = "bubble"
+)
+
+som.grid.bubble.hexagonal.2x2 <- kohonen::somgrid(
+    xdim = som.grid.xdim, ydim = som.grid.ydim,
+    topo = "hexagonal",
+    neighbourhood.fct = "bubble"
+)
+
+
+grids.list.all <- list(
+    som.grid.gaussian.rectangular.3x3,
+    som.grid.gaussian.hexagonal.3x3,
+    som.grid.bubble.rectangular.3x3,
+    som.grid.bubble.hexagonal.3x3,
+    som.grid.gaussian.rectangular.3x2,
+    som.grid.gaussian.hexagonal.3x2,
+    som.grid.bubble.rectangular.3x2,
+    som.grid.bubble.hexagonal.3x2,
+    som.grid.gaussian.rectangular.2x3,
+    som.grid.gaussian.hexagonal.2x3,
+    som.grid.bubble.rectangular.2x3,
+    som.grid.bubble.hexagonal.2x3,
+    som.grid.gaussian.rectangular.2x2,
+    som.grid.gaussian.hexagonal.2x2,
+    som.grid.bubble.rectangular.2x2,
+    som.grid.bubble.hexagonal.2x2
+)
+
+names(grids.list.all) <- c(
+    "gaussian_rectangular_3x3",
+    "gaussian_hexagonal_3x3",
+    "bubble_rectangular_3x3",
+    "bubble_hexagonal_3x3",
+    "gaussian_rectangular_3x2",
+    "gaussian_hexagonal_3x2",
+    "bubble_rectangular_3x2",
+    "bubble_hexagonal_3x2",
+    "gaussian_rectangular_2x3",
+    "gaussian_hexagonal_2x3",
+    "bubble_rectangular_2x3",
+    "bubble_hexagonal_2x3",
+    "gaussian_rectangular_2x2",
+    "gaussian_hexagonal_2x2",
+    "bubble_rectangular_2x2",
+    "bubble_hexagonal_2x2"
+)
+```
+
+```{r}
+param.grid.all <- expand.grid(
+    rlen = c(500, 1000, 1500),
+    radius = c(3, 5, 7),
+    alpha1 = c(0.5, 0.1, 0.05),
+    alpha2 = c(0.01, 0.005, 0.001),
+    grid_index = 1:length(grids.list.all),
+    dataset_name = c("emotions", "scene", "flags"),
+    fold_name = c("fold1", "fold2", "fold3")
+)
+dplyr::glimpse(param.grid.all)
+```
+
+```{r}
+# t1 <- proc.time()
+# # ...
+# t2 <- proc.time()
+# execution.time <- t2 - t1
+# print(execution.time)
+# print(execution.time[[3]])
+```
+
+```{r}
+seed <- 1234
+set.seed(seed)
+
+# results <- list()
+output.csv <- list()
+
+start.time <- proc.time()
+
+for (i in 1:nrow(param.grid.all)) {
+# for (i in 1:10) {
+    local.time <- proc.time()
+
+    Y.train <- as.matrix(datasets[[param.grid.all$dataset_name[i]]][[as.character(param.grid.all$fold_name[i])]][["tr"]]$labels)
+
+    Y.val <- as.matrix(datasets[[param.grid.all$dataset_name[i]]][[as.character(param.grid.all$fold_name[i])]][["vl"]]$labels)
+
+    params <- param.grid.all[i, ]
+    grid <- grids.list.all[[params$grid_index]]
+    # teste
+    # grid <- kohonen::somgrid(
+    #     xdim = 4, ydim = 4,
+    #     topo = "hexagonal",
+    #     neighbourhood.fct = "gaussian"
+    # )
+
+    grid.name <- names(grids.list.all)[params$grid_index]
+
+    model <- tryCatch(
+        {
+            kohonen::supersom(
+                data = list(Y = Y.train),
+                grid = grid,
+                rlen = params$rlen,
+                radius = params$radius,
+                alpha = c(params$alpha1, params$alpha2),
+                keep.data = TRUE
+            )
+        },
+        error = function(e) {
+            cat("Erro ao treinar o modelo SOM:", e$message, "\n")
+            return(NULL)
+        }
+    )
+    empty.neurons <- 0
+    if (is.null(model)) {
+        empty.neurons <- NA
+        qe.val <- NA
+    } else {
+        grid.size <- model$grid$xdim * model$grid$ydim
+        valid.neurons <- length(unique(model$unit.classif))
+        
+        if (valid.neurons < grid.size) {
+            cat(sprintf("==========HAVE EMPTY NEURONS(%d<%d)==========\n", valid.neurons, grid.size))
+            empty.neurons <- grid.size - valid.neurons
+        } else {
+            # Avaliação no conjunto de validação
+            mapped.val <- kohonen::map(
+                model,
+                newdata = list(Y = Y.val)
+            )
+            qe.val <- mean(mapped.val$distances)
+    }}
+
+    # results[[i]] <- list(
+    #     params = params,
+    #     model = model,
+    #     qe.val = qe.val
+    # )
+
+    parcial.time <- proc.time() - start.time
+    parcial.local.time <- proc.time() - local.time
+    cat(sprintf(
+        "-> %.2fs | %.2fs %d/%d | %s | %s | %s | rlen: %d | radius: %d | alpha1: %.3f | alpha2: %.3f | empty: %d | QE Val: %.4f\n",
+        parcial.time[[3]],
+        parcial.local.time[[3]],
+        i,
+        nrow(param.grid.all),
+        params$dataset_name,
+        params$fold_name,
+        grid.name,
+        params$rlen,
+        params$radius,
+        params$alpha1,
+        params$alpha2,
+        empty.neurons,
+        qe.val
+    ))
+
+    output.csv[[i]] <- data.frame(
+        dataset = params$dataset_name,
+        fold = params$fold_name,
+        grid_neighborhood = grid$neighbourhood.fct,
+        grid_topology = grid$topo,
+        grid_size_x = grid$xdim,
+        grid_size_y = grid$ydim,
+        rlen = params$rlen,
+        radius = params$radius,
+        alpha1 = params$alpha1,
+        alpha2 = params$alpha2,
+        empty_neurons = empty.neurons,
+        qe_val = qe.val
+    )
+}
+
+output.df <- do.call(rbind, output.csv)
+write.csv(output.df, file = paste0("results-seed", seed, ".csv"), row.names = FALSE)
+
+end.time <- proc.time()
+total.time <- end.time - start.time
+cat(sprintf("Total execution time: %.2f seconds\n", total.time[[3]]))
+```
