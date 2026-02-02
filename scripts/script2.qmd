@@ -1,0 +1,107 @@
+```{r}
+# library(dplyr)
+# library(ggplot2)
+# library(tidyr)
+```
+
+```{r}
+setwd("../../")
+dados <- read.csv("./results-seed1234.csv")
+head(dados, 10)
+```
+
+```{r}
+summary(dados)
+
+colSums(is.na(dados))
+
+```
+
+```{r}
+table(dados$dataset)
+```
+
+```{r}
+options(dplyr.width = Inf)
+
+resumo_csv <- dados |>
+    dplyr::group_by(grid_size_x, grid_size_y, dataset, grid_neighborhood) |>
+    dplyr::slice_min(qe_val, n = 3) |>
+    dplyr::ungroup()
+
+print(resumo_csv, n = 150)
+
+# Salvando resumo dos melhores resultados
+getwd()
+
+write.csv(resumo_csv, file = "ordered-top3-results-seed1234.csv", row.names = FALSE)
+```
+
+
+```{r}
+options(dplyr.width = Inf)
+
+
+# Analisando os melhores resultados por tamanho de grade
+dados |>
+    dplyr::filter(grid_size_x == "3", grid_size_y == "3") |>
+    dplyr::group_by(dataset) |>
+    dplyr::slice_min(qe_val, n = 5) |>
+    dplyr::arrange(qe_val) |>
+    show()
+
+dados |>
+    dplyr::filter(grid_size_x == "3", grid_size_y == "2") |>
+    dplyr::group_by(dataset) |>
+    dplyr::slice_min(qe_val, n = 5) |>
+    dplyr::arrange(qe_val) |>
+    show()
+
+dados |>
+    dplyr::filter(grid_size_x == "2", grid_size_y == "3") |>
+    dplyr::group_by(dataset) |>
+    dplyr::slice_min(qe_val, n = 5) |>
+    dplyr::arrange(qe_val) |>
+    show()
+
+dados |>
+    dplyr::filter(grid_size_x == "2", grid_size_y == "2") |>
+    dplyr::group_by(dataset) |>
+    dplyr::slice_min(qe_val, n = 5) |>
+    dplyr::arrange(qe_val) |>
+    show()
+
+# Verificando existencia de empty_neurons baseado em grades
+dados |>
+    dplyr::group_by(grid_size_x, grid_size_y, dataset, grid_neighborhood) |>
+    dplyr::slice_min(qe_val, n = 3) |>
+    dplyr::ungroup() |>
+    print(n = 150)
+
+
+melhores_por_dataset <- dados |>
+    dplyr::group_by(dataset) |>
+    dplyr::slice_min(qe_val, n = 5) |>
+    dplyr::ungroup()
+
+show(melhores_por_dataset)
+
+best_non_empty_gaussian <- dados |>
+    dplyr::filter(empty_neurons == 0, grid_neighborhood == "gaussian") |>
+    dplyr::group_by(dataset) |>
+    dplyr::slice_min(qe_val, n = 5) |>
+    dplyr::ungroup()
+
+show(best_non_empty_gaussian)
+
+best_non_empty_bubble <- dados |>
+    dplyr::filter(empty_neurons == 0, grid_neighborhood == "bubble") |>
+    dplyr::group_by(dataset) |>
+    dplyr::slice_min(qe_val, n = 5) |>
+    dplyr::ungroup()
+
+show(best_non_empty_bubble)
+```
+
+
+

@@ -48,12 +48,11 @@ for (dataset_name in names(datasets_config)) {
     datasets[[dataset_name]][["config"]][["label_cols"]] <- datasets_config[[dataset_name]]$label_cols
     datasets[[dataset_name]][["config"]][["label_names"]] <- datasets_config[[dataset_name]]$label_names
 
-    
-    
+
     for (fold in 1:3) {
         fold_name <- paste0("fold", fold)
         datasets[[dataset_name]][[fold_name]] <- list()
-        
+
         for (type in c("Tr", "Ts", "Vl")) {
             # Construir caminho do arquivo
             file_path <- file.path(
@@ -268,7 +267,7 @@ output.csv <- list()
 start.time <- proc.time()
 
 for (i in 1:nrow(param.grid.all)) {
-# for (i in 1:10) {
+    # for (i in 1:10) {
     local.time <- proc.time()
 
     Y.train <- as.matrix(datasets[[param.grid.all$dataset_name[i]]][[as.character(param.grid.all$fold_name[i])]][["tr"]]$labels)
@@ -309,7 +308,7 @@ for (i in 1:nrow(param.grid.all)) {
     } else {
         grid.size <- model$grid$xdim * model$grid$ydim
         valid.neurons <- length(unique(model$unit.classif))
-        
+
         if (valid.neurons < grid.size) {
             cat(sprintf("==========HAVE EMPTY NEURONS(%d<%d)==========\n", valid.neurons, grid.size))
             empty.neurons <- grid.size - valid.neurons
@@ -320,7 +319,8 @@ for (i in 1:nrow(param.grid.all)) {
                 newdata = list(Y = Y.val)
             )
             qe.val <- mean(mapped.val$distances)
-    }}
+        }
+    }
 
     # results[[i]] <- list(
     #     params = params,
