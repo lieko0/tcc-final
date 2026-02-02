@@ -5,7 +5,7 @@
 ```
 
 ```{r}
-setwd("../../")
+setwd("E:\\git-tcc\\tcc-final\\")
 dados <- read.csv("./results-seed1234.csv")
 head(dados, 10)
 ```
@@ -21,6 +21,105 @@ colSums(is.na(dados))
 table(dados$dataset)
 ```
 
+
+```{r}
+melhores <- dados |>
+    dplyr::filter(dataset == "flags") |>
+    dplyr::arrange(qe_val) |>
+    head(20)
+print(melhores)
+```
+
+```{r}
+resumo_dataset <- dados |>
+  dplyr::group_by(dataset) |>
+  dplyr::summarise(
+    n_configs = dplyr::n(),
+    qe_medio = mean(qe_val),
+    qe_mediano = median(qe_val),
+    qe_min = min(qe_val),
+    qe_max = max(qe_val),
+    qe_dp = sd(qe_val)
+  )
+print(resumo_dataset)
+write.csv(resumo_dataset, "resumo_por_dataset.csv", row.names = FALSE)
+```
+
+```{r}
+resumo_dataset_neighborhood <- dados |>
+  dplyr::group_by(dataset, grid_neighborhood) |>
+  dplyr::summarise(
+    n_configs = dplyr::n(),
+    qe_medio = mean(qe_val),
+    qe_mediano = median(qe_val),
+    qe_min = min(qe_val),
+    qe_max = max(qe_val),
+    qe_dp = sd(qe_val)
+  )
+print(resumo_dataset_neighborhood)
+write.csv(resumo_dataset_neighborhood, "resumo_por_dataset_neighborhood.csv", row.names = FALSE)
+```
+
+```{r}
+resumo_dataset_neighborhood_size <- dados |>
+  dplyr::group_by(dataset, grid_neighborhood, grid_size_x, grid_size_y) |>
+  dplyr::summarise(
+    n_configs = dplyr::n(),
+    qe_medio = mean(qe_val),
+    qe_mediano = median(qe_val),
+    qe_min = min(qe_val),
+    qe_max = max(qe_val),
+    qe_dp = sd(qe_val)
+  )
+print(resumo_dataset_neighborhood_size)
+write.csv(resumo_dataset_neighborhood_size, "resumo_por_dataset_neighborhood_size.csv", row.names = FALSE)
+```
+
+```{r}
+resumo_neighborhood <- dados |>
+  dplyr::group_by(grid_neighborhood) |>
+  dplyr::summarise(
+    n_configs = dplyr::n(),
+    qe_medio = mean(qe_val),
+    qe_mediano = median(qe_val),
+    qe_min = min(qe_val),
+    qe_max = max(qe_val),
+    qe_dp = sd(qe_val)
+  )
+print(resumo_neighborhood)
+write.csv(resumo_neighborhood, "resumo_por_neighborhood.csv", row.names = FALSE)
+```
+
+```{r}
+resumo_topology <- dados |>
+  dplyr::group_by(grid_topology) |>
+  dplyr::summarise(
+    n_configs = dplyr::n(),
+    qe_medio = mean(qe_val),
+    qe_mediano = median(qe_val),
+    qe_min = min(qe_val),
+    qe_max = max(qe_val),
+    qe_dp = sd(qe_val)
+  )
+print(resumo_topology)
+write.csv(resumo_topology, "resumo_por_topology.csv", row.names = FALSE)
+```
+
+```{r}
+resumo_dataset_topology <- dados |>
+  dplyr::group_by(dataset, grid_topology) |>
+  dplyr::summarise(
+    n_configs = dplyr::n(),
+    qe_medio = mean(qe_val),
+    qe_mediano = median(qe_val),
+    qe_min = min(qe_val),
+    qe_max = max(qe_val),
+    qe_dp = sd(qe_val)
+  )
+print(resumo_dataset_topology)
+write.csv(resumo_dataset_topology, "resumo_por_dataset_topology.csv", row.names = FALSE)
+```
+
 ```{r}
 options(dplyr.width = Inf)
 
@@ -32,9 +131,79 @@ resumo_csv <- dados |>
 print(resumo_csv, n = 150)
 
 # Salvando resumo dos melhores resultados
-getwd()
+write.csv(resumo_csv, file = "top3-ordered_by-grid_size-dataset-grid_neighborhood-results-seed1234.csv", row.names = FALSE)
+```
 
-write.csv(resumo_csv, file = "ordered-top3-results-seed1234.csv", row.names = FALSE)
+```{r}
+options(dplyr.width = Inf)
+
+resumo_csv_all <- dados |>
+    dplyr::group_by(grid_neighborhood) |>
+    dplyr::slice_min(qe_val, n = 10) |>
+    dplyr::ungroup()
+
+print(resumo_csv_all, n = 150)
+
+# Salvando resumo dos melhores resultados
+write.csv(resumo_csv_all, file = "top10-ordered_by-grid_neighborhood-results-seed1234.csv", row.names = FALSE)
+```
+
+```{r}
+options(dplyr.width = Inf)
+
+resumo_csv_all_no_empty <- dados |>
+    dplyr::filter(empty_neurons == 0) |>
+    dplyr::group_by(grid_neighborhood) |>
+    dplyr::slice_min(qe_val, n = 10) |>
+    dplyr::ungroup()
+
+print(resumo_csv_all_no_empty, n = 150)
+
+# Salvando resumo dos melhores resultados
+write.csv(resumo_csv_all_no_empty, file = "top10-ordered_by-grid_neighborhood-results-seed1234-no-empty.csv", row.names = FALSE)
+```
+
+```{r}
+options(dplyr.width = Inf, tibble.width = Inf, pillar.sigfig = 6)
+setwd("E:\\git-tcc\\tcc-final\\scripts")
+
+resumo_csv_gaussian <- dados |>
+    dplyr::filter(grid_neighborhood == "gaussian") |>
+    dplyr::group_by(dataset, grid_size_x, grid_size_y) |>
+    dplyr::slice_min(qe_val, n = 5) |>
+    dplyr::ungroup()
+
+print(resumo_csv_gaussian, n = 150)
+write.csv(resumo_csv_gaussian, file = "top5-test-gaussian-1234.csv", row.names = FALSE)
+
+resumo_csv_gaussian_no_empty <- dados |>
+    dplyr::filter(empty_neurons == 0, grid_neighborhood == "gaussian") |>
+    dplyr::group_by(dataset, grid_size_x, grid_size_y) |>
+    dplyr::slice_min(qe_val, n = 5) |>
+    dplyr::ungroup()
+
+print(resumo_csv_gaussian_no_empty, n = 150)
+write.csv(resumo_csv_gaussian_no_empty, file = "top5-test-gaussian-1234-no-empty.csv", row.names = FALSE)
+
+
+resumo_csv_bubble <- dados |>
+    dplyr::filter(grid_neighborhood == "bubble") |>
+    dplyr::group_by(dataset, grid_size_x, grid_size_y) |>
+    dplyr::slice_min(qe_val, n = 5) |>
+    dplyr::ungroup()
+
+print(resumo_csv_bubble, n = 150)
+write.csv(resumo_csv_bubble, file = "top5-test-bubble-1234.csv", row.names = FALSE)
+
+resumo_csv_bubble_no_empty <- dados |>
+    dplyr::filter(empty_neurons == 0, grid_neighborhood == "bubble") |>
+    dplyr::group_by(dataset, grid_size_x, grid_size_y) |>
+    dplyr::arrange(qe_val) |>
+    dplyr::slice_min(qe_val, n = 5) |>
+    dplyr::ungroup()
+
+print(resumo_csv_bubble_no_empty, n = 150)
+write.csv(resumo_csv_bubble_no_empty, file = "top5-test-bubble-1234-no-empty.csv", row.names = FALSE)
 ```
 
 
