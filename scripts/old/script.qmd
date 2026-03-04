@@ -1,3 +1,4 @@
+# Script antigo - Configuração e execução dos experimentos
 ```{r}
 #| warning: false
 # library("foreign")

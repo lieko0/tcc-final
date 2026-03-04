@@ -1,0 +1,483 @@
+---
+title: "Script 2 — Avaliação do Modelo e Análise de Partições"
+subtitle: "Treino com melhores parâmetros, geração de partições e análise da partição 2"
+format: markdown_github
+---
+
+## Configuração
+```{r setup}
+#| message: false
+#| warning: false
+
+library(tidyverse)
+library(kohonen)
+library(gridExtra)
+library(grid)
+
+GRIDSEARCH_PATH     <- "E:/git-tcc/tcc-final/outputs/gridsearch"
+BASE_PATH           <- "E:/git-tcc/tcc-final/data"
+OUTPUT_PATH         <- "E:/git-tcc/tcc-final/outputs/evaluation"
+SEED                <- 1234L
+TARGET_DATASETS     <- c("emotions", "scene")
+TARGET_NEIGHBORHOODS <- c("gaussian", "bubble")
+
+dir.create(OUTPUT_PATH, recursive = TRUE, showWarnings = FALSE)
+set.seed(SEED)
+```
+
+## Configuração dos Datasets
+```{r config}
+datasets_config <- list(
+    emotions = list(
+        attr_cols   = 1:72,
+        label_cols  = 73:78,
+        label_names = c("amazed.suprised", "happy.pleased", "relaxing.calm",
+                        "quiet.still", "sad.lonely", "angry.aggresive")
+    ),
+    scene = list(
+        attr_cols   = 1:294,
+        label_cols  = 295:300,
+        label_names = c("Beach", "Sunset", "FallFoliage", "Field", "Mountain", "Urban")
+    )
+)
+```
+
+## Carregamento dos Dados e Melhores Parâmetros
+```{r load}
+# Na avaliação usamos treino (Tr) e teste (Ts); validação não é mais necessária
+load_fold <- function(base_path, dataset_name, config, fold, types = c("Tr", "Ts")) {
+    result <- list()
+    for (type in types) {
+        path <- file.path(
+            base_path, dataset_name, "Stratified", "CrossValidation", type,
+            sprintf("%s-Split-%s-%d.csv", dataset_name, type, fold)
+        )
+        raw <- read.csv(path)
+        result[[tolower(type)]] <- list(
+            attr   = raw[, config$attr_cols],
+            labels = raw[, config$label_cols]
+        )
+    }
+    result
+}
+
+datasets <- list()
+for (ds in TARGET_DATASETS) {
+    datasets[[ds]] <- list(config = datasets_config[[ds]])
+    for (fold in 1:3) {
+        datasets[[ds]][[paste0("fold", fold)]] <-
+            load_fold(BASE_PATH, ds, datasets_config[[ds]], fold)
+    }
+}
+
+# best_file <- file.path(GRIDSEARCH_PATH, "best_params_min.csv")
+best_file <- file.path(GRIDSEARCH_PATH, "best_params.csv")
+if (!file.exists(best_file)) {
+    stop(sprintf("Arquivo de melhores parametros nao encontrado: %s\nExecute o script 01_gridsearch.qmd primeiro.", best_file))
+}
+
+best_params <- read.csv(
+    best_file,
+    stringsAsFactors = FALSE
+)
+
+cat("Melhores parametros carregados:\n")
+print(best_params)
+```
+
+## Funções Auxiliares
+```{r functions}
+# Treina um supersom com os parâmetros fornecidos
+train_som <- function(Y_train, topology, neighborhood, rlen, radius, alpha_start, alpha_end) {
+    grid <- kohonen::somgrid(2, 2, topology, neighbourhood.fct = neighborhood)
+    kohonen::supersom(
+        data      = list(Y = Y_train),
+        grid      = grid,
+        rlen      = rlen,
+        radius    = radius,
+        alpha     = c(alpha_start, alpha_end),
+        keep.data = TRUE
+    )
+}
+
+# Aplica clustering hierárquico sobre os codebook vectors
+# Retorna o dendrograma e o vetor de clusters (posição i = cluster do neurônio i)
+cluster_codebook <- function(model, k, method = "complete") {
+    codebook <- model$codes[[1]]
+    dend     <- hclust(dist(codebook), method = method)
+    clusters <- as.integer(cutree(dend, k = k))
+    list(dend = dend, clusters = clusters)
+}
+
+# Constrói dataframe: instância → neurônio, cluster e rótulos
+build_instance_df <- function(model, Y_train, label_names, clusters) {
+    df <- data.frame(
+        neuron  = model$unit.classif,
+        cluster = clusters[model$unit.classif],
+        Y_train
+    )
+    colnames(df) <- c("neuron", "cluster", label_names)
+    df
+}
+
+# Frequência individual dos rótulos por cluster
+label_freq_by_cluster <- function(instance_df, label_names) {
+    instance_df |>
+        dplyr::group_by(cluster) |>
+        dplyr::summarise(
+            n_instancias = dplyr::n(),
+            dplyr::across(dplyr::all_of(label_names), sum),
+            .groups = "drop"
+        )
+}
+
+# Frequência dos labelsets (combinação binária de rótulos) por cluster
+labelset_freq_by_cluster <- function(instance_df, label_names) {
+    instance_df |>
+        dplyr::mutate(
+            labelset = apply(dplyr::pick(dplyr::all_of(label_names)), 1, paste, collapse = "")
+        ) |>
+        dplyr::count(cluster, labelset, name = "frequencia") |>
+        dplyr::arrange(cluster, dplyr::desc(frequencia))
+}
+
+# Renderiza um dataframe como tabela numa nova página do PDF
+render_table_page <- function(df, title = NULL) {
+    grid::grid.newpage()
+    if (!is.null(title)) {
+        grid::pushViewport(grid::viewport(
+            layout = grid::grid.layout(2, 1, heights = grid::unit(c(2, 1), c("lines", "null")))
+        ))
+        grid::pushViewport(grid::viewport(layout.pos.row = 1))
+        grid::grid.text(title, gp = grid::gpar(fontsize = 12, fontface = "bold"))
+        grid::popViewport()
+        grid::pushViewport(grid::viewport(layout.pos.row = 2))
+        gridExtra::grid.table(df, rows = NULL)
+        grid::popViewport()
+        grid::popViewport()
+    } else {
+        gridExtra::grid.table(df, rows = NULL)
+    }
+}
+```
+
+## Treinamento e Avaliação nos 3 Folds
+```{r train_eval}
+# Todos os 3 folds de um dado (dataset, vizinhança) usam EXATAMENTE os mesmos parâmetros
+# encontrados no grid search — topologia, rlen, radius e alpha incluídos
+
+trained_models <- list()
+eval_results   <- list()
+
+for (ds in TARGET_DATASETS) {
+    trained_models[[ds]] <- list()
+
+    for (nbhd in TARGET_NEIGHBORHOODS) {
+        trained_models[[ds]][[nbhd]] <- list()
+
+        bp <- best_params |>
+            dplyr::filter(dataset == ds, neighborhood == nbhd) |>
+            head(1)
+
+        if (nrow(bp) == 0) {
+            warning(sprintf("Parametros nao encontrados para %s + %s. Pulando.", ds, nbhd))
+            next
+        }
+
+        cat(sprintf(
+            "\n=== %s | %s | topology=%s rlen=%d radius=%f alpha=(%.2f, %.3f) ===\n",
+            toupper(ds), toupper(nbhd),
+            bp$topology, bp$rlen, bp$radius, bp$alpha_start, bp$alpha_end
+        ))
+
+        for (fold in 1:3) {
+            fold_key <- paste0("fold", fold)
+
+            Y_tr <- as.matrix(datasets[[ds]][[fold_key]][["tr"]]$labels)
+            Y_ts <- as.matrix(datasets[[ds]][[fold_key]][["ts"]]$labels)
+
+            model <- tryCatch({
+                train_som(Y_tr, bp$topology, nbhd, bp$rlen, bp$radius, bp$alpha_start, bp$alpha_end)
+            }, error = function(e) {
+                message("Erro no fold ", fold, ": ", e$message)
+                NULL
+            })
+
+            if (is.null(model)) next
+
+            grid_size     <- model$grid$xdim * model$grid$ydim
+            empty_neurons <- grid_size - length(unique(model$unit.classif))
+            qe_test       <- mean(kohonen::map(model, newdata = list(Y = Y_ts))$distances)
+
+            cat(sprintf("  Fold %d: QE_test=%.5f | neuronios_vazios=%d\n",
+                        fold, qe_test, empty_neurons))
+
+            trained_models[[ds]][[nbhd]][[fold_key]] <- list(
+                model         = model,
+                Y_tr          = Y_tr,
+                Y_ts          = Y_ts,
+                qe_test       = qe_test,
+                empty_neurons = empty_neurons
+            )
+
+            eval_results[[length(eval_results) + 1]] <- data.frame(
+                dataset       = ds,
+                neighborhood  = nbhd,
+                topology      = bp$topology,
+                fold          = fold,
+                rlen          = bp$rlen,
+                radius        = bp$radius,
+                alpha_start   = bp$alpha_start,
+                alpha_end     = bp$alpha_end,
+                empty_neurons = empty_neurons,
+                qe_test       = qe_test
+            )
+        }
+    }
+}
+
+eval_df <- dplyr::bind_rows(eval_results)
+write.csv(eval_df, file.path(OUTPUT_PATH, "evaluation_results.csv"), row.names = FALSE)
+
+cat("\n=== RESULTADOS DE AVALIACAO ===\n")
+print(eval_df)
+```
+
+## Geração de Partições
+```{r partitions}
+# Para cada (dataset, vizinhança, fold):
+#   - Aplica clustering hierárquico sobre os codebook vectors (k = 2 até n_neurons-1)
+#   - Para 2x2 = 4 neurônios: k pode ser 2 ou 3
+#   - Salva PDF com visualizações de todas as partições
+#   - Guarda dados da partição 2 para análise comparativa
+
+partition2_data <- list()
+
+for (ds in TARGET_DATASETS) {
+    label_names <- datasets_config[[ds]]$label_names
+
+    for (nbhd in TARGET_NEIGHBORHOODS) {
+        combo <- sprintf("%s_%s", ds, nbhd)
+        label_freq_folds    <- list()
+        labelset_freq_folds <- list()
+
+        for (fold in 1:3) {
+            fold_key   <- paste0("fold", fold)
+            model_info <- trained_models[[ds]][[nbhd]][[fold_key]]
+            if (is.null(model_info)) next
+
+            model    <- model_info$model
+            Y_tr     <- model_info$Y_tr
+            n_neur   <- model$grid$xdim * model$grid$ydim
+            max_k    <- n_neur - 1   # Para 2x2: max_k = 3
+
+            pdf_path <- file.path(OUTPUT_PATH, sprintf("%s_fold%d_partitions.pdf", combo, fold))
+            pdf(pdf_path, width = 11, height = 8.5)
+
+            # --- Visão geral do modelo ---
+            par(mfrow = c(2, 2))
+            plot(model, type = "counts",
+                 main = sprintf("%s | %s | Fold %d - Counts", ds, nbhd, fold))
+            plot(model, type = "changes",
+                 main = "Convergencia do treinamento")
+            plot(model, type = "dist.neighbours",
+                 main = "U-Matrix (distancia entre vizinhos)")
+            plot(model, type = "codes", codeRendering = "segments",
+                 main = "Codebook - Segments")
+            par(mfrow = c(1, 1))
+
+            # Clustering hierárquico sobre os codebook vectors — compartilhado entre ks
+            codebook <- model$codes[[1]]
+            dend     <- hclust(dist(codebook), method = "complete")
+
+            # --- Partições k = 2 até max_k ---
+            for (k in 2:max_k) {
+                clusters    <- as.integer(cutree(dend, k = k))
+                instance_df <- build_instance_df(model, Y_tr, label_names, clusters)
+                label_freq  <- label_freq_by_cluster(instance_df, label_names)
+                lset_freq   <- labelset_freq_by_cluster(instance_df, label_names)
+
+                # SOM com cores dos clusters
+                plot(model, type = "codes", codeRendering = "segments",
+                     bgcol = rainbow(k)[clusters],
+                     main  = sprintf("Clusters (k=%d) | %s | %s | Fold %d", k, ds, nbhd, fold))
+                kohonen::add.cluster.boundaries(model, clusters)
+                pts <- model$grid$pts
+                text(pts[, 1], pts[, 2],
+                     labels = sprintf("N%d\nC%d", seq_len(nrow(pts)), clusters),
+                     cex = 0.75, font = 2)
+
+                # Dendrograma
+                plot(dend,
+                     main = sprintf("Dendrograma (k=%d) | %s | %s | Fold %d", k, ds, nbhd, fold),
+                     xlab = "Neuronios", ylab = "Distancia")
+                rect.hclust(dend, k = k, border = "red")
+
+                # Tabela: frequência de rótulos por cluster
+                render_table_page(
+                    as.data.frame(label_freq),
+                    title = sprintf("Frequencia de rotulos por cluster (k=%d) | %s | %s | Fold %d",
+                                    k, ds, nbhd, fold)
+                )
+
+                # Tabela: top 15 labelsets por cluster
+                for (cl_id in sort(unique(lset_freq$cluster))) {
+                    top_ls <- lset_freq |>
+                        dplyr::filter(cluster == cl_id) |>
+                        head(15)
+                    render_table_page(
+                        as.data.frame(top_ls),
+                        title = sprintf("Top 15 labelsets — Cluster %d (k=%d) | %s | %s | Fold %d",
+                                        cl_id, k, ds, nbhd, fold)
+                    )
+                }
+
+                # Guarda dados da partição 2 para análise comparativa posterior
+                if (k == 2) {
+                    label_freq_folds[[fold_key]] <- label_freq |>
+                        dplyr::mutate(fold = fold, dataset = ds, neighborhood = nbhd)
+                    labelset_freq_folds[[fold_key]] <- lset_freq |>
+                        dplyr::mutate(fold = fold, dataset = ds, neighborhood = nbhd)
+                }
+            }
+
+            dev.off()
+            cat(sprintf("  PDF gerado: %s\n", basename(pdf_path)))
+        }
+
+        if (length(label_freq_folds) == 0) next
+
+        # Consolida dados da partição 2 entre os 3 folds
+        lf_p2  <- dplyr::bind_rows(label_freq_folds)
+        lsf_p2 <- dplyr::bind_rows(labelset_freq_folds)
+
+        write.csv(lf_p2,
+                  file.path(OUTPUT_PATH, sprintf("%s_p2_label_freq.csv", combo)),
+                  row.names = FALSE)
+        write.csv(lsf_p2,
+                  file.path(OUTPUT_PATH, sprintf("%s_p2_labelset_freq.csv", combo)),
+                  row.names = FALSE)
+
+        partition2_data[[combo]] <- list(
+            label_freq    = lf_p2,
+            labelset_freq = lsf_p2
+        )
+
+        cat(sprintf("  CSVs da particao 2 salvos para: %s\n", combo))
+    }
+}
+```
+
+## Análise Comparativa da Partição 2
+```{r analysis_p2}
+# A partição 2 divide os neurônios em 2 grupos.
+# Analisamos e comparamos os 3 folds de cada (dataset, vizinhança).
+
+for (ds in TARGET_DATASETS) {
+    label_names <- datasets_config[[ds]]$label_names
+
+    for (nbhd in TARGET_NEIGHBORHOODS) {
+        combo  <- sprintf("%s_%s", ds, nbhd)
+        p2     <- partition2_data[[combo]]
+        if (is.null(p2)) next
+
+        lf  <- p2$label_freq
+        lsf <- p2$labelset_freq
+
+        cat(sprintf("\n=== PARTICAO 2: %s | %s ===\n", toupper(ds), toupper(nbhd)))
+
+        # Sumário: total de instâncias e rótulos por cluster (agregado entre folds)
+        cat("\nFrequencia agregada por cluster (soma dos 3 folds):\n")
+        lf |>
+            dplyr::group_by(cluster) |>
+            dplyr::summarise(
+                total_instancias = sum(n_instancias),
+                dplyr::across(dplyr::all_of(label_names), sum),
+                .groups = "drop"
+            ) |>
+            print()
+
+        # --- Gráfico 1: frequência de rótulos por cluster e fold ---
+        p_labels <- lf |>
+            tidyr::pivot_longer(
+                cols      = dplyr::all_of(label_names),
+                names_to  = "rotulo",
+                values_to = "frequencia"
+            ) |>
+            ggplot2::ggplot(ggplot2::aes(
+                x    = rotulo,
+                y    = frequencia,
+                fill = factor(cluster)
+            )) +
+            ggplot2::geom_col(position = "dodge") +
+            ggplot2::facet_wrap(~ paste("Fold", fold)) +
+            ggplot2::scale_fill_brewer(palette = "Set1", name = "Cluster") +
+            ggplot2::labs(
+                title = sprintf("Frequencia de rotulos por cluster — Particao 2\n%s | %s", ds, nbhd),
+                x = "Rotulo", y = "Frequencia"
+            ) +
+            ggplot2::theme_minimal(base_size = 11) +
+            ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))
+
+        # --- Gráfico 2: top labelsets por cluster e fold ---
+        p_labelsets <- lsf |>
+            dplyr::group_by(fold, cluster) |>
+            dplyr::slice_max(frequencia, n = 8, with_ties = FALSE) |>
+            dplyr::ungroup() |>
+            dplyr::mutate(painel = sprintf("Fold %d — Cluster %d", fold, cluster)) |>
+            ggplot2::ggplot(ggplot2::aes(
+                x    = stats::reorder(labelset, frequencia),
+                y    = frequencia,
+                fill = factor(cluster)
+            )) +
+            ggplot2::geom_col() +
+            ggplot2::coord_flip() +
+            ggplot2::facet_wrap(~ painel, scales = "free_y") +
+            ggplot2::scale_fill_brewer(palette = "Set1", name = "Cluster") +
+            ggplot2::labs(
+                title = sprintf("Top 8 labelsets por cluster — Particao 2\n%s | %s", ds, nbhd),
+                x = "Labelset (combinacao binaria dos rotulos)", y = "Frequencia"
+            ) +
+            ggplot2::theme_minimal(base_size = 10) +
+            ggplot2::theme(axis.text.y = ggplot2::element_text(size = 8))
+
+        # Salva PNGs para o relatório
+        png_labels    <- file.path(OUTPUT_PATH, sprintf("%s_p2_label_freq.png", combo))
+        png_labelsets <- file.path(OUTPUT_PATH, sprintf("%s_p2_labelset_freq.png", combo))
+        ggplot2::ggsave(png_labels,    p_labels,    width = 12, height = 6,  dpi = 150)
+        ggplot2::ggsave(png_labelsets, p_labelsets, width = 14, height = 8,  dpi = 150)
+
+        # PDF de análise comparativa da partição 2
+        pdf_analysis <- file.path(OUTPUT_PATH, sprintf("%s_p2_analysis.pdf", combo))
+        pdf(pdf_analysis, width = 14, height = 9)
+        print(p_labels)
+        print(p_labelsets)
+        dev.off()
+
+        cat(sprintf("  Outputs da particao 2 salvos para: %s\n", combo))
+    }
+}
+```
+
+## Sumário Final dos Outputs
+```{r final_summary}
+cat("=== OUTPUTS GERADOS ===\n\n")
+
+cat("CSVs:\n")
+cat("  evaluation_results.csv            — QE por fold, dataset e vizinhanca\n")
+cat("  {ds}_{nbhd}_p2_label_freq.csv     — frequencia de rotulos na particao 2\n")
+cat("  {ds}_{nbhd}_p2_labelset_freq.csv  — frequencia de labelsets na particao 2\n\n")
+
+cat("PDFs:\n")
+cat("  {ds}_{nbhd}_fold{n}_partitions.pdf — visualizacoes de todas as particoes por fold\n")
+cat("  {ds}_{nbhd}_p2_analysis.pdf        — analise comparativa da particao 2\n\n")
+
+cat("PNGs (para o relatorio):\n")
+cat("  {ds}_{nbhd}_p2_label_freq.png     — grafico de frequencia de rotulos\n")
+cat("  {ds}_{nbhd}_p2_labelset_freq.png  — grafico de top labelsets\n\n")
+
+cat(sprintf("Diretorio de saida: %s\n", OUTPUT_PATH))
+```
+```{r session}
+sessionInfo()
+```

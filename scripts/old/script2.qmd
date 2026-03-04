@@ -1,3 +1,4 @@
+# Script 2 - Análise dos resultados
 ```{r}
 # library(dplyr)
 # library(ggplot2)

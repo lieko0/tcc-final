@@ -1,0 +1,259 @@
+---
+title: "Script 1 — Grid Search"
+subtitle: "Busca pelos melhores hiperparâmetros do SOM por dataset e vizinhança"
+format: markdown_github
+---
+
+## Configuração
+```{r setup}
+#| message: false
+#| warning: false
+
+library(tidyverse)
+library(kohonen)
+
+BASE_PATH      <- "E:/git-tcc/tcc-final/data"
+OUTPUT_PATH    <- "E:/git-tcc/tcc-final/outputs/gridsearch"
+SEED           <- 1234L
+# Conforme o PDF: apenas emotions e scene
+TARGET_DATASETS <- c("emotions", "scene")
+
+dir.create(OUTPUT_PATH, recursive = TRUE, showWarnings = FALSE)
+set.seed(SEED)
+```
+
+## Configuração dos Datasets
+```{r config}
+datasets_config <- list(
+    emotions = list(
+        attr_cols   = 1:72,
+        label_cols  = 73:78,
+        label_names = c("amazed.suprised", "happy.pleased", "relaxing.calm",
+                        "quiet.still", "sad.lonely", "angry.aggresive")
+    ),
+    scene = list(
+        attr_cols   = 1:294,
+        label_cols  = 295:300,
+        label_names = c("Beach", "Sunset", "FallFoliage", "Field", "Mountain", "Urban")
+    )
+)
+```
+
+## Carregamento dos Dados
+```{r load_data}
+# O gridsearch usa apenas treino (Tr) e validação (Vl) — nunca o teste
+load_fold <- function(base_path, dataset_name, config, fold, types = c("Tr", "Vl")) {
+    result <- list()
+    for (type in types) {
+        path <- file.path(
+            base_path, dataset_name, "Stratified", "CrossValidation", type,
+            sprintf("%s-Split-%s-%d.csv", dataset_name, type, fold)
+        )
+        raw <- read.csv(path)
+        result[[tolower(type)]] <- list(
+            attr   = raw[, config$attr_cols],
+            labels = raw[, config$label_cols]
+        )
+    }
+    result
+}
+
+datasets <- list()
+for (ds in TARGET_DATASETS) {
+    datasets[[ds]] <- list(config = datasets_config[[ds]])
+    for (fold in 1:3) {
+        datasets[[ds]][[paste0("fold", fold)]] <-
+            load_fold(BASE_PATH, ds, datasets_config[[ds]], fold)
+    }
+}
+
+cat("Datasets carregados:\n")
+for (ds in TARGET_DATASETS) {
+    cfg <- datasets_config[[ds]]
+    cat(sprintf("  %-10s — %d atributos, %d rotulos\n",
+                ds, length(cfg$attr_cols), length(cfg$label_cols)))
+}
+```
+
+## Definição das Grades SOM (2×2 apenas)
+```{r define_grids}
+# Conforme o PDF: apenas grade 2x2, 2 vizinhancas x 2 topologias = 4 grids
+grids <- list(
+    gaussian_rectangular = kohonen::somgrid(2, 2, "rectangular", neighbourhood.fct = "gaussian"),
+    gaussian_hexagonal   = kohonen::somgrid(2, 2, "hexagonal",   neighbourhood.fct = "gaussian"),
+    bubble_rectangular   = kohonen::somgrid(2, 2, "rectangular", neighbourhood.fct = "bubble"),
+    bubble_hexagonal     = kohonen::somgrid(2, 2, "hexagonal",   neighbourhood.fct = "bubble")
+)
+
+cat("Grades definidas:\n")
+for (name in names(grids)) {
+    g <- grids[[name]]
+    cat(sprintf("  %-28s — %dx%d | topo=%-15s | viz=%s\n",
+                name, g$xdim, g$ydim, g$topo, g$neighbourhood.fct))
+}
+```
+
+## Grade de Parâmetros
+```{r param_grid}
+param_grid <- expand.grid(
+    rlen        = c(100L, 200L, 500L), # default: 100L
+    radius      = c(0.5, 1.0, 1.5), # default: 1.0
+    alpha_start = c(0.05), # default: 0.05
+    alpha_end   = c(0.01), # default: 0.01
+    grid_name   = names(grids),
+    dataset     = TARGET_DATASETS,
+    fold        = 1:3,
+    stringsAsFactors = FALSE
+)
+
+cat(sprintf(
+    "Total de combinacoes: %d\n  (%d grids x %d datasets x %d folds x %d combinacoes de params)\n",
+    nrow(param_grid),
+    length(grids),
+    length(TARGET_DATASETS),
+    3,
+    length(unique(param_grid$rlen)) * length(unique(param_grid$radius)) *
+        length(unique(param_grid$alpha_start)) * length(unique(param_grid$alpha_end))
+))
+```
+
+## Execução do Grid Search
+```{r gridsearch}
+results_list <- vector("list", nrow(param_grid))
+start_time   <- proc.time()
+
+for (i in seq_len(nrow(param_grid))) {
+    p    <- param_grid[i, ]
+    grid <- grids[[p$grid_name]]
+
+    Y_tr <- as.matrix(datasets[[p$dataset]][[paste0("fold", p$fold)]][["tr"]]$labels)
+    Y_vl <- as.matrix(datasets[[p$dataset]][[paste0("fold", p$fold)]][["vl"]]$labels)
+
+    model <- tryCatch({
+        kohonen::supersom(
+            data      = list(Y = Y_tr),
+            grid      = grid,
+            rlen      = p$rlen,
+            radius    = p$radius,
+            alpha     = c(p$alpha_start, p$alpha_end),
+            keep.data = TRUE
+        )
+    }, error = function(e) {
+        message("Erro (i=", i, "): ", e$message)
+        NULL
+    })
+
+    if (is.null(model)) {
+        qe_vl   <- NA_real_
+        empty_n <- NA_integer_
+    } else {
+        grid_size <- grid$xdim * grid$ydim
+        empty_n   <- grid_size - length(unique(model$unit.classif))
+        qe_vl     <- mean(kohonen::map(model, newdata = list(Y = Y_vl))$distances)
+    }
+
+    results_list[[i]] <- data.frame(
+        dataset       = p$dataset,
+        fold          = p$fold,
+        neighborhood  = grid$neighbourhood.fct,
+        topology      = grid$topo,
+        grid_size     = sprintf("%dx%d", grid$xdim, grid$ydim),
+        rlen          = p$rlen,
+        radius        = p$radius,
+        alpha_start   = p$alpha_start,
+        alpha_end     = p$alpha_end,
+        empty_neurons = empty_n,
+        qe_val        = qe_vl
+    )
+
+    elapsed <- round((proc.time() - start_time)[[3]], 1)
+    cat(sprintf(
+        "[%7.1fs] %4d/%d | %-9s fold%d | %-24s | rlen=%4d r=%f a=(%.2f,%.3f) | empty=%s QE=%s\n",
+        elapsed, i, nrow(param_grid),
+        p$dataset, p$fold, p$grid_name,
+        p$rlen, p$radius, p$alpha_start, p$alpha_end,
+        ifelse(is.na(empty_n), "NA", empty_n),
+        ifelse(is.na(qe_vl), "NA", sprintf("%.5f", qe_vl))
+    ))
+}
+
+results_df <- dplyr::bind_rows(results_list)
+results_csv <- file.path(OUTPUT_PATH, sprintf("gridsearch_seed%d.csv", SEED))
+write.csv(results_df, results_csv, row.names = FALSE)
+cat(sprintf("\nResultados brutos salvos em: %s\n", results_csv))
+```
+
+## Seleção dos Melhores Parâmetros
+```{r best_params}
+# Estratégia:
+# 1. Remove configurações com neurônios vazios ou falhas
+# 2. Exige que a configuração tenha rodado nos 3 folds (estabilidade)
+# 3. Calcula QE médio entre os folds
+# 4. Seleciona o melhor por (dataset, vizinhança) — topologia também é fixada aqui
+#    pois todos os 3 folds devem usar a mesma configuração (conforme o PDF)
+best_params_mean <- results_df |>
+    dplyr::filter(empty_neurons == 0, !is.na(qe_val)) |>
+    dplyr::group_by(dataset, neighborhood, topology, rlen, radius, alpha_start, alpha_end) |>
+    dplyr::summarise(
+        mean_qe = mean(qe_val),
+        sd_qe   = sd(qe_val),
+        n_folds = dplyr::n(),
+        .groups = "drop"
+    ) |>
+    dplyr::filter(n_folds == 3) |>
+    dplyr::group_by(dataset, neighborhood) |>
+    dplyr::slice_min(mean_qe, n = 1, with_ties = FALSE) |>
+    dplyr::ungroup()
+
+best_params_min <- results_df |>
+    dplyr::filter(empty_neurons == 0, !is.na(qe_val)) |>
+    dplyr::group_by(dataset, neighborhood, topology, rlen, radius, alpha_start, alpha_end) |>
+    dplyr::summarise(
+        min_qe  = min(qe_val),
+        sd_qe   = sd(qe_val),
+        n_folds = dplyr::n(),
+        .groups = "drop"
+    ) |>
+    dplyr::filter(n_folds == 3) |>
+    dplyr::group_by(dataset, neighborhood) |>
+    dplyr::slice_min(min_qe, n = 1, with_ties = FALSE) |>
+    dplyr::ungroup()
+
+cat("=== MELHORES PARAMETROS POR DATASET E VIZINHANCA ===\n")
+print(best_params_mean)
+print(best_params_min)
+
+best_params_csv <- file.path(OUTPUT_PATH, "best_params.csv")
+write.csv(best_params_mean, best_params_csv, row.names = FALSE)
+cat(sprintf("\nMelhores parametros salvos em: %s\n", best_params_csv))
+
+best_params_csv_min <- file.path(OUTPUT_PATH, "best_params_min.csv")
+write.csv(best_params_min, best_params_csv_min, row.names = FALSE)
+cat(sprintf("Melhores parametros (min) salvos em: %s\n", best_params_csv_min))
+```
+
+## Sumário do Grid Search
+```{r summary}
+cat("=== CONFIGURACOES COM NEURONIOS VAZIOS ===\n")
+results_df |>
+    dplyr::filter(empty_neurons > 0) |>
+    dplyr::count(dataset, neighborhood, topology, empty_neurons) |>
+    print()
+
+cat("\n=== DISTRIBUICAO DE QE POR DATASET E VIZINHANCA ===\n")
+results_df |>
+    dplyr::filter(empty_neurons == 0, !is.na(qe_val)) |>
+    dplyr::group_by(dataset, neighborhood) |>
+    dplyr::summarise(
+        n        = dplyr::n(),
+        qe_min   = min(qe_val),
+        qe_mediana = median(qe_val),
+        qe_mean  = mean(qe_val),
+        qe_max   = max(qe_val),
+        .groups  = "drop"
+    ) |>
+    print()
+```
+```{r session}
+sessionInfo()
+```

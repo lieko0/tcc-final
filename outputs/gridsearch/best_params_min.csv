@@ -1,0 +1,5 @@
+"dataset","neighborhood","topology","rlen","radius","alpha_start","alpha_end","min_qe","sd_qe","n_folds"
+"emotions","bubble","hexagonal",500,0.5,0.05,0.01,0.459176482447584,0.0303605377576671,3
+"emotions","gaussian","hexagonal",500,1,0.05,0.01,0.543646854086256,0.0141354567296531,3
+"scene","bubble","hexagonal",200,0.5,0.05,0.01,0.358395579315035,0.205075539930183,3
+"scene","gaussian","hexagonal",200,1,0.05,0.01,0.428570827367312,0.00963225617801568,3

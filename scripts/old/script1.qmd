@@ -1,3 +1,4 @@
+# Script 1 - Configuração e execução dos experimentos
 ```{r}
 # Verificação e instalação de pacotes necessários
 #| echo: false
