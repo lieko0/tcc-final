@@ -87,16 +87,16 @@ cat("Melhores parametros carregados:\n")
 print(best_params)
 ```
 
-       dataset neighborhood    topology rlen radius alpha_start alpha_end   mean_qe
-    1 emotions       bubble rectangular  200    0.5        0.05      0.01 0.4625923
-    2 emotions     gaussian   hexagonal  200    1.0        0.05      0.01 0.5556086
-    3    scene       bubble   hexagonal  200    1.5        0.05      0.01 0.3693376
-    4    scene     gaussian   hexagonal  500    0.5        0.05      0.01 0.4368954
+       dataset neighborhood  topology rlen radius alpha_start alpha_end   mean_qe
+    1 emotions       bubble hexagonal  500    1.0        0.05      0.01 0.4623441
+    2 emotions     gaussian hexagonal 1000    0.5        0.05      0.01 0.5476190
+    3    scene       bubble hexagonal 1000    2.0        0.05      0.01 0.3672345
+    4    scene     gaussian hexagonal  500    0.5        0.05      0.01 0.4303468
             sd_qe n_folds
-    1 0.002897469       3
-    2 0.008674787       3
-    3 0.007177020       3
-    4 0.007893829       3
+    1 0.002592804       3
+    2 0.007242258       3
+    3 0.011652889       3
+    4 0.007797712       3
 
 ## Funções Auxiliares
 
@@ -253,25 +253,25 @@ for (ds in TARGET_DATASETS) {
 ```
 
 
-    === EMOTIONS | GAUSSIAN | topology=hexagonal rlen=200 radius=1.000000 alpha=(0.05, 0.010) ===
-      Fold 1: QE_test=0.55767 | neuronios_vazios=0
-      Fold 2: QE_test=0.53946 | neuronios_vazios=0
-      Fold 3: QE_test=0.54675 | neuronios_vazios=0
+    === EMOTIONS | GAUSSIAN | topology=hexagonal rlen=1000 radius=0.500000 alpha=(0.05, 0.010) ===
+      Fold 1: QE_test=0.55199 | neuronios_vazios=0
+      Fold 2: QE_test=0.56746 | neuronios_vazios=0
+      Fold 3: QE_test=0.53940 | neuronios_vazios=0
 
-    === EMOTIONS | BUBBLE | topology=rectangular rlen=200 radius=0.500000 alpha=(0.05, 0.010) ===
-      Fold 1: QE_test=0.49786 | neuronios_vazios=0
-      Fold 2: QE_test=0.46441 | neuronios_vazios=0
-      Fold 3: QE_test=0.46263 | neuronios_vazios=0
+    === EMOTIONS | BUBBLE | topology=hexagonal rlen=500 radius=1.000000 alpha=(0.05, 0.010) ===
+      Fold 1: QE_test=0.45958 | neuronios_vazios=0
+      Fold 2: QE_test=0.46762 | neuronios_vazios=0
+      Fold 3: QE_test=0.46240 | neuronios_vazios=0
 
     === SCENE | GAUSSIAN | topology=hexagonal rlen=500 radius=0.500000 alpha=(0.05, 0.010) ===
-      Fold 1: QE_test=0.43620 | neuronios_vazios=0
-      Fold 2: QE_test=0.43223 | neuronios_vazios=0
-      Fold 3: QE_test=0.44360 | neuronios_vazios=0
+      Fold 1: QE_test=0.45182 | neuronios_vazios=0
+      Fold 2: QE_test=0.44747 | neuronios_vazios=0
+      Fold 3: QE_test=0.43546 | neuronios_vazios=0
 
-    === SCENE | BUBBLE | topology=hexagonal rlen=200 radius=1.500000 alpha=(0.05, 0.010) ===
-      Fold 1: QE_test=0.37051 | neuronios_vazios=0
-      Fold 2: QE_test=0.37890 | neuronios_vazios=0
-      Fold 3: QE_test=0.36551 | neuronios_vazios=0
+    === SCENE | BUBBLE | topology=hexagonal rlen=1000 radius=2.000000 alpha=(0.05, 0.010) ===
+      Fold 1: QE_test=0.36884 | neuronios_vazios=0
+      Fold 2: QE_test=0.36506 | neuronios_vazios=0
+      Fold 3: QE_test=0.36721 | neuronios_vazios=0
 
 ``` r
 eval_df <- dplyr::bind_rows(eval_results)
@@ -287,32 +287,32 @@ cat("\n=== RESULTADOS DE AVALIACAO ===\n")
 print(eval_df)
 ```
 
-        dataset neighborhood    topology fold rlen radius alpha_start alpha_end
-    1  emotions     gaussian   hexagonal    1  200    1.0        0.05      0.01
-    2  emotions     gaussian   hexagonal    2  200    1.0        0.05      0.01
-    3  emotions     gaussian   hexagonal    3  200    1.0        0.05      0.01
-    4  emotions       bubble rectangular    1  200    0.5        0.05      0.01
-    5  emotions       bubble rectangular    2  200    0.5        0.05      0.01
-    6  emotions       bubble rectangular    3  200    0.5        0.05      0.01
-    7     scene     gaussian   hexagonal    1  500    0.5        0.05      0.01
-    8     scene     gaussian   hexagonal    2  500    0.5        0.05      0.01
-    9     scene     gaussian   hexagonal    3  500    0.5        0.05      0.01
-    10    scene       bubble   hexagonal    1  200    1.5        0.05      0.01
-    11    scene       bubble   hexagonal    2  200    1.5        0.05      0.01
-    12    scene       bubble   hexagonal    3  200    1.5        0.05      0.01
+        dataset neighborhood  topology fold rlen radius alpha_start alpha_end
+    1  emotions     gaussian hexagonal    1 1000    0.5        0.05      0.01
+    2  emotions     gaussian hexagonal    2 1000    0.5        0.05      0.01
+    3  emotions     gaussian hexagonal    3 1000    0.5        0.05      0.01
+    4  emotions       bubble hexagonal    1  500    1.0        0.05      0.01
+    5  emotions       bubble hexagonal    2  500    1.0        0.05      0.01
+    6  emotions       bubble hexagonal    3  500    1.0        0.05      0.01
+    7     scene     gaussian hexagonal    1  500    0.5        0.05      0.01
+    8     scene     gaussian hexagonal    2  500    0.5        0.05      0.01
+    9     scene     gaussian hexagonal    3  500    0.5        0.05      0.01
+    10    scene       bubble hexagonal    1 1000    2.0        0.05      0.01
+    11    scene       bubble hexagonal    2 1000    2.0        0.05      0.01
+    12    scene       bubble hexagonal    3 1000    2.0        0.05      0.01
        empty_neurons   qe_test
-    1              0 0.5576738
-    2              0 0.5394644
-    3              0 0.5467524
-    4              0 0.4978624
-    5              0 0.4644133
-    6              0 0.4626272
-    7              0 0.4362014
-    8              0 0.4322338
-    9              0 0.4436024
-    10             0 0.3705130
-    11             0 0.3789038
-    12             0 0.3655075
+    1              0 0.5519924
+    2              0 0.5674581
+    3              0 0.5393989
+    4              0 0.4595837
+    5              0 0.4676155
+    6              0 0.4623972
+    7              0 0.4518221
+    8              0 0.4474729
+    9              0 0.4354635
+    10             0 0.3688435
+    11             0 0.3650572
+    12             0 0.3672133
 
 ## Geração de Partições
 
@@ -567,8 +567,8 @@ for (ds in TARGET_DATASETS) {
     # A tibble: 2 × 8
       cluster total_instancias amazed.suprised happy.pleased relaxing.calm
         <int>            <int>           <int>         <int>         <int>
-    1       1              437             143           162           199
-    2       2              156              30             4            65
+    1       1              316             114            73           117
+    2       2              277              59            93           147
     # ℹ 3 more variables: quiet.still <int>, sad.lonely <int>,
     #   angry.aggresive <int>
 
@@ -580,8 +580,8 @@ for (ds in TARGET_DATASETS) {
     # A tibble: 2 × 8
       cluster total_instancias amazed.suprised happy.pleased relaxing.calm
         <int>            <int>           <int>         <int>         <int>
-    1       1              326              64            95           188
-    2       2              267             109            71            76
+    1       1              307              57            92           169
+    2       2              286             116            74            95
     # ℹ 3 more variables: quiet.still <int>, sad.lonely <int>,
     #   angry.aggresive <int>
 
@@ -593,8 +593,8 @@ for (ds in TARGET_DATASETS) {
     # A tibble: 2 × 8
       cluster total_instancias Beach Sunset FallFoliage Field Mountain Urban
         <int>            <int> <int>  <int>       <int> <int>    <int> <int>
-    1       1             1998   414    242         397   429      533   144
-    2       2              409    13    122           0     4        0   287
+    1       1             1964   408    242         392   405      355   288
+    2       2              443    19    122           5    28      178   143
 
       Outputs da particao 2 salvos para: scene_gaussian
 
@@ -604,8 +604,8 @@ for (ds in TARGET_DATASETS) {
     # A tibble: 2 × 8
       cluster total_instancias Beach Sunset FallFoliage Field Mountain Urban
         <int>            <int> <int>  <int>       <int> <int>    <int> <int>
-    1       1             1481   421    121         264   287      367   150
-    2       2              926     6    243         133   146      166   281
+    1       1             1460   278    243         264   286      354   143
+    2       2              947   149    121         133   147      179   288
 
       Outputs da particao 2 salvos para: scene_bubble
 

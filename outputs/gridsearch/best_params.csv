@@ -1,5 +1,5 @@
 "dataset","neighborhood","topology","rlen","radius","alpha_start","alpha_end","mean_qe","sd_qe","n_folds"
-"emotions","bubble","rectangular",200,0.5,0.05,0.01,0.462592275218556,0.00289746938056775,3
-"emotions","gaussian","hexagonal",200,1,0.05,0.01,0.555608639136581,0.00867478705550745,3
-"scene","bubble","hexagonal",200,1.5,0.05,0.01,0.369337624790668,0.00717701954113082,3
-"scene","gaussian","hexagonal",500,0.5,0.05,0.01,0.436895365949784,0.00789382948962739,3
+"emotions","bubble","hexagonal",500,1,0.05,0.01,0.46234406459693,0.00259280354664899,3
+"emotions","gaussian","hexagonal",1000,0.5,0.05,0.01,0.54761900998645,0.0072422580056234,3
+"scene","bubble","hexagonal",1000,2,0.05,0.01,0.367234488123507,0.0116528888797275,3
+"scene","gaussian","hexagonal",500,0.5,0.05,0.01,0.430346818827471,0.00779771159370499,3
