@@ -5,20 +5,19 @@ format: markdown_github
 ---
 
 ## Configuração
-```{r setup}
-#| message: false
-#| warning: false
 
+```{r}
 library(tidyverse)
 library(kohonen)
 library(gridExtra)
 library(grid)
+library(cluster)      # silhouette, agnes
 
-GRIDSEARCH_PATH     <- "E:/git-tcc/tcc-final/outputs/gridsearch"
-BASE_PATH           <- "E:/git-tcc/tcc-final/data"
-OUTPUT_PATH         <- "E:/git-tcc/tcc-final/outputs/evaluation"
-SEED                <- 1234L
-TARGET_DATASETS     <- c("emotions", "scene")
+GRIDSEARCH_PATH      <- "E:/git-tcc/tcc-final/outputs/gridsearch"
+BASE_PATH            <- "E:/git-tcc/tcc-final/data"
+OUTPUT_PATH          <- "E:/git-tcc/tcc-final/outputs/evaluation"
+SEED                 <- 1234L
+TARGET_DATASETS      <- c("emotions", "scene")
 TARGET_NEIGHBORHOODS <- c("gaussian", "bubble")
 
 dir.create(OUTPUT_PATH, recursive = TRUE, showWarnings = FALSE)
@@ -26,7 +25,8 @@ set.seed(SEED)
 ```
 
 ## Configuração dos Datasets
-```{r config}
+
+```{r}
 datasets_config <- list(
     emotions = list(
         attr_cols   = 1:72,
@@ -43,8 +43,8 @@ datasets_config <- list(
 ```
 
 ## Carregamento dos Dados e Melhores Parâmetros
-```{r load}
-# Na avaliação usamos treino (Tr) e teste (Ts); validação não é mais necessária
+
+```{r}
 load_fold <- function(base_path, dataset_name, config, fold, types = c("Tr", "Ts")) {
     result <- list()
     for (type in types) {
@@ -70,23 +70,24 @@ for (ds in TARGET_DATASETS) {
     }
 }
 
-# best_file <- file.path(GRIDSEARCH_PATH, "best_params_min.csv")
-best_file <- file.path(GRIDSEARCH_PATH, "best_params.csv")
+# best_file <- file.path(GRIDSEARCH_PATH, "best_params.csv")
+best_file <- file.path(GRIDSEARCH_PATH, "best_params_min.csv")
 if (!file.exists(best_file)) {
-    stop(sprintf("Arquivo de melhores parametros nao encontrado: %s\nExecute o script 01_gridsearch.qmd primeiro.", best_file))
+    stop(sprintf(
+        "Arquivo de melhores parametros nao encontrado: %s\nExecute o script 01_gridsearch.qmd primeiro.",
+        best_file
+    ))
 }
 
-best_params <- read.csv(
-    best_file,
-    stringsAsFactors = FALSE
-)
+best_params <- read.csv(best_file, stringsAsFactors = FALSE)
 
 cat("Melhores parametros carregados:\n")
 print(best_params)
 ```
 
 ## Funções Auxiliares
-```{r functions}
+
+```{r}
 # Treina um supersom com os parâmetros fornecidos
 train_som <- function(Y_train, topology, neighborhood, rlen, radius, alpha_start, alpha_end) {
     grid <- kohonen::somgrid(2, 2, topology, neighbourhood.fct = neighborhood)
@@ -161,11 +162,105 @@ render_table_page <- function(df, title = NULL) {
 }
 ```
 
-## Treinamento e Avaliação nos 3 Folds
-```{r train_eval}
-# Todos os 3 folds de um dado (dataset, vizinhança) usam EXATAMENTE os mesmos parâmetros
-# encontrados no grid search — topologia, rlen, radius e alpha incluídos
+## Funções de Qualidade de Clustering
 
+```{r}
+# 1. Correlação Cofenética (CCC) — antes do corte
+# Mede o quão bem o dendrograma preserva as distâncias originais entre codebook vectors.
+# Valores > 0.75 indicam boa representação. Usado para comparar linkages e validar
+# que a estrutura hierárquica encontrada é fiel à geometria dos neurônios.
+compute_ccc <- function(codebook, dend) {
+    cor(dist(codebook), cophenetic(dend))
+}
+
+# 2. Coeficiente Aglomerativo (AC) — antes do corte
+# Mede o grau de estrutura hierárquica nos dados: quão "limpas" são as fusões.
+# Complementa o CCC — CCC avalia fidelidade às distâncias, AC avalia clareza da hierarquia.
+# Valores > 0.75 indicam estrutura hierárquica bem definida.
+compute_ac <- function(codebook, method = "complete") {
+    cluster::agnes(dist(codebook), method = method)$ac
+}
+
+# 3. Silhouette médio — após o corte
+# Para cada neurônio: quão similar ele é ao próprio cluster vs. o cluster vizinho.
+# Valores próximos de +1 indicam boa alocação; negativos indicam alocação errada.
+# Métrica mais consolidada na literatura para avaliar qualidade de partições.
+compute_silhouette <- function(clusters, codebook) {
+    if (length(unique(clusters)) < 2) return(NA_real_)
+    sil <- cluster::silhouette(clusters, dist(codebook))
+    mean(sil[, "sil_width"])
+}
+
+# 4. Entropia média dos labelsets por cluster — após o corte
+# Clusters com entropia baixa concentram poucos labelsets dominantes,
+# indicando boa separação semântica no espaço multilabel.
+# Retorna a média da entropia de Shannon entre todos os clusters.
+compute_labelset_entropy <- function(lset_freq) {
+    lset_freq |>
+        dplyr::group_by(cluster) |>
+        dplyr::summarise(
+            entropy = {
+                p <- frequencia / sum(frequencia)
+                -sum(p * log2(p + 1e-10))
+            },
+            .groups = "drop"
+        ) |>
+        dplyr::summarise(mean_entropy = mean(entropy)) |>
+        dplyr::pull(mean_entropy)
+}
+
+# 5. Distância de Hellinger entre distribuições de rótulos — após o corte, k=2
+# Quantifica a separação semântica entre os dois clusters no espaço de rótulos.
+# Varia de 0 (distribuições idênticas) a 1 (distribuições completamente distintas).
+# Aplicável apenas para k=2; retorna NA para k>2.
+compute_hellinger <- function(label_freq, label_names) {
+    if (nrow(label_freq) != 2) return(NA_real_)
+    p <- as.numeric(label_freq[1, label_names])
+    q <- as.numeric(label_freq[2, label_names])
+    p <- p / sum(p)
+    q <- q / sum(q)
+    sqrt(0.5 * sum((sqrt(p) - sqrt(q))^2))
+}
+
+# 6. Consistência entre folds — calculada após consolidar todos os folds
+# Para cada (dataset, vizinhança, k, cluster), computa o desvio padrão da
+# proporção de cada rótulo entre os 3 folds. SD baixo = partição estável e
+# reproduzível — essencial para validar os resultados em cross-validation.
+# Implementada como group_modify para respeitar os label_names de cada dataset.
+compute_fold_consistency <- function(label_freq_consolidated, datasets_config) {
+    label_freq_consolidated |>
+        dplyr::group_by(dataset, neighborhood, k, cluster) |>
+        dplyr::group_modify(function(group_df, keys) {
+            ds_labels <- datasets_config[[keys$dataset]]$label_names
+            group_df |>
+                dplyr::mutate(
+                    dplyr::across(dplyr::all_of(ds_labels),
+                                  ~ .x / n_instancias,
+                                  .names = "prop_{.col}")
+                ) |>
+                dplyr::summarise(
+                    n_folds = dplyr::n(),
+                    dplyr::across(
+                        dplyr::starts_with("prop_"),
+                        list(sd = ~ sd(.x, na.rm = TRUE)),
+                        .names = "{.col}_{.fn}"
+                    ),
+                    mean_sd_props = mean(
+                        dplyr::c_across(
+                            dplyr::starts_with("prop_") & dplyr::ends_with("_sd")
+                        ),
+                        na.rm = TRUE
+                    ),
+                    .groups = "drop"
+                )
+        }) |>
+        dplyr::ungroup()
+}
+```
+
+## Treinamento e Avaliação nos 3 Folds
+
+```{r}
 trained_models <- list()
 eval_results   <- list()
 
@@ -243,15 +338,18 @@ cat("\n=== RESULTADOS DE AVALIACAO ===\n")
 print(eval_df)
 ```
 
-## Geração de Partições
-```{r partitions}
-# Para cada (dataset, vizinhança, fold):
-#   - Aplica clustering hierárquico sobre os codebook vectors (k = 2 até n_neurons-1)
-#   - Para 2x2 = 4 neurônios: k pode ser 2 ou 3
-#   - Salva PDF com visualizações de todas as partições
-#   - Guarda dados da partição 2 para análise comparativa
+## Geração de Partições e Métricas de Qualidade
 
-partition2_data <- list()
+```{r}
+# Para cada (dataset, vizinhança, fold):
+#   - Antes do corte : CCC e AC sobre o dendrograma
+#   - Após o corte   : Silhouette, Entropia dos labelsets e Hellinger (k=2)
+#   - Entre folds    : Consistência (SD das proporções de rótulos) — calculada ao final
+
+partition2_data       <- list()
+hierarchy_results     <- list()   # CCC e AC por fold (pré-corte)
+partition_quality_res <- list()   # Silhouette, Entropia, Hellinger por (fold, k)
+label_freq_all_folds  <- list()   # acumula label_freq de todos os combos/folds/ks
 
 for (ds in TARGET_DATASETS) {
     label_names <- datasets_config[[ds]]$label_names
@@ -266,10 +364,28 @@ for (ds in TARGET_DATASETS) {
             model_info <- trained_models[[ds]][[nbhd]][[fold_key]]
             if (is.null(model_info)) next
 
-            model    <- model_info$model
-            Y_tr     <- model_info$Y_tr
-            n_neur   <- model$grid$xdim * model$grid$ydim
-            max_k    <- n_neur - 1   # Para 2x2: max_k = 3
+            model  <- model_info$model
+            Y_tr   <- model_info$Y_tr
+            n_neur <- model$grid$xdim * model$grid$ydim
+            max_k  <- n_neur - 1
+
+            codebook <- model$codes[[1]]
+            dend     <- hclust(dist(codebook), method = "complete")
+
+            # --- Métricas pré-corte: CCC e AC ---
+            ccc_val <- compute_ccc(codebook, dend)
+            ac_val  <- compute_ac(codebook, method = "complete")
+
+            hierarchy_results[[length(hierarchy_results) + 1]] <- data.frame(
+                dataset      = ds,
+                neighborhood = nbhd,
+                fold         = fold,
+                ccc          = ccc_val,
+                ac           = ac_val
+            )
+
+            cat(sprintf("  [%s | %s | Fold %d] CCC=%.4f | AC=%.4f\n",
+                        ds, nbhd, fold, ccc_val, ac_val))
 
             pdf_path <- file.path(OUTPUT_PATH, sprintf("%s_fold%d_partitions.pdf", combo, fold))
             pdf(pdf_path, width = 11, height = 8.5)
@@ -286,10 +402,6 @@ for (ds in TARGET_DATASETS) {
                  main = "Codebook - Segments")
             par(mfrow = c(1, 1))
 
-            # Clustering hierárquico sobre os codebook vectors — compartilhado entre ks
-            codebook <- model$codes[[1]]
-            dend     <- hclust(dist(codebook), method = "complete")
-
             # --- Partições k = 2 até max_k ---
             for (k in 2:max_k) {
                 clusters    <- as.integer(cutree(dend, k = k))
@@ -297,7 +409,32 @@ for (ds in TARGET_DATASETS) {
                 label_freq  <- label_freq_by_cluster(instance_df, label_names)
                 lset_freq   <- labelset_freq_by_cluster(instance_df, label_names)
 
-                # SOM com cores dos clusters
+                # --- Métricas pós-corte ---
+                sil_val       <- compute_silhouette(clusters, codebook)
+                entropy_val   <- compute_labelset_entropy(lset_freq)
+                hellinger_val <- compute_hellinger(label_freq, label_names)
+
+                partition_quality_res[[length(partition_quality_res) + 1]] <- data.frame(
+                    dataset      = ds,
+                    neighborhood = nbhd,
+                    fold         = fold,
+                    k            = k,
+                    silhouette   = sil_val,
+                    mean_entropy = entropy_val,
+                    hellinger    = hellinger_val
+                )
+
+                cat(sprintf(
+                    "    k=%d: Silhouette=%.4f | Entropia=%.4f | Hellinger=%s\n",
+                    k, sil_val, entropy_val,
+                    ifelse(is.na(hellinger_val), "NA", sprintf("%.4f", hellinger_val))
+                ))
+
+                # Acumula para consistência entre folds (métrica 6)
+                label_freq_all_folds[[length(label_freq_all_folds) + 1]] <- label_freq |>
+                    dplyr::mutate(dataset = ds, neighborhood = nbhd, fold = fold, k = k)
+
+                # --- Visualizações no PDF ---
                 plot(model, type = "codes", codeRendering = "segments",
                      bgcol = rainbow(k)[clusters],
                      main  = sprintf("Clusters (k=%d) | %s | %s | Fold %d", k, ds, nbhd, fold))
@@ -307,20 +444,35 @@ for (ds in TARGET_DATASETS) {
                      labels = sprintf("N%d\nC%d", seq_len(nrow(pts)), clusters),
                      cex = 0.75, font = 2)
 
-                # Dendrograma
                 plot(dend,
                      main = sprintf("Dendrograma (k=%d) | %s | %s | Fold %d", k, ds, nbhd, fold),
                      xlab = "Neuronios", ylab = "Distancia")
                 rect.hclust(dend, k = k, border = "red")
 
-                # Tabela: frequência de rótulos por cluster
+                # Tabela: métricas de qualidade desta partição no PDF
+                quality_row <- data.frame(
+                    Metrica = c("Silhouette medio", "Entropia media dos labelsets",
+                                "Hellinger (rotulos)", "CCC (pre-corte)", "AC (pre-corte)"),
+                    Valor   = c(
+                        sprintf("%.4f", sil_val),
+                        sprintf("%.4f", entropy_val),
+                        ifelse(is.na(hellinger_val), "NA (k>2)", sprintf("%.4f", hellinger_val)),
+                        sprintf("%.4f", ccc_val),
+                        sprintf("%.4f", ac_val)
+                    )
+                )
+                render_table_page(
+                    quality_row,
+                    title = sprintf("Metricas de qualidade (k=%d) | %s | %s | Fold %d",
+                                    k, ds, nbhd, fold)
+                )
+
                 render_table_page(
                     as.data.frame(label_freq),
                     title = sprintf("Frequencia de rotulos por cluster (k=%d) | %s | %s | Fold %d",
                                     k, ds, nbhd, fold)
                 )
 
-                # Tabela: top 15 labelsets por cluster
                 for (cl_id in sort(unique(lset_freq$cluster))) {
                     top_ls <- lset_freq |>
                         dplyr::filter(cluster == cl_id) |>
@@ -332,7 +484,6 @@ for (ds in TARGET_DATASETS) {
                     )
                 }
 
-                # Guarda dados da partição 2 para análise comparativa posterior
                 if (k == 2) {
                     label_freq_folds[[fold_key]] <- label_freq |>
                         dplyr::mutate(fold = fold, dataset = ds, neighborhood = nbhd)
@@ -347,7 +498,6 @@ for (ds in TARGET_DATASETS) {
 
         if (length(label_freq_folds) == 0) next
 
-        # Consolida dados da partição 2 entre os 3 folds
         lf_p2  <- dplyr::bind_rows(label_freq_folds)
         lsf_p2 <- dplyr::bind_rows(labelset_freq_folds)
 
@@ -366,13 +516,148 @@ for (ds in TARGET_DATASETS) {
         cat(sprintf("  CSVs da particao 2 salvos para: %s\n", combo))
     }
 }
+
+# --- Consolida e salva métricas pré e pós corte ---
+hierarchy_df      <- dplyr::bind_rows(hierarchy_results)
+partition_qual_df <- dplyr::bind_rows(partition_quality_res)
+
+write.csv(hierarchy_df,
+          file.path(OUTPUT_PATH, "quality_hierarchy.csv"),
+          row.names = FALSE)
+write.csv(partition_qual_df,
+          file.path(OUTPUT_PATH, "quality_partitions.csv"),
+          row.names = FALSE)
+
+cat("\n=== METRICAS PRE-CORTE (CCC e AC) ===\n")
+print(hierarchy_df)
+
+cat("\n=== METRICAS POS-CORTE (Silhouette, Entropia, Hellinger) ===\n")
+print(partition_qual_df)
+```
+
+## Consistência Entre Folds
+
+```{r}
+# Métrica 6: SD das proporções de rótulos por cluster entre os 3 folds.
+# SD baixo indica que a partição distribui os rótulos de forma estável e
+# reproduzível entre os folds — essencial para confiar nos resultados
+# de cross-validation.
+
+label_freq_consolidated <- dplyr::bind_rows(label_freq_all_folds)
+
+fold_consistency_df <- compute_fold_consistency(label_freq_consolidated, datasets_config)
+
+write.csv(fold_consistency_df,
+          file.path(OUTPUT_PATH, "quality_fold_consistency.csv"),
+          row.names = FALSE)
+
+cat("=== CONSISTENCIA ENTRE FOLDS (mean_sd_props — quanto menor, mais estavel) ===\n")
+fold_consistency_df |>
+    dplyr::select(dataset, neighborhood, k, cluster, n_folds, mean_sd_props) |>
+    print()
+```
+
+## Sumário Visual das Métricas de Qualidade
+
+```{r}
+# Gráfico 1: CCC e AC por (dataset, neighborhood, fold)
+p_hierarchy <- hierarchy_df |>
+    tidyr::pivot_longer(cols = c(ccc, ac), names_to = "metrica", values_to = "valor") |>
+    dplyr::mutate(
+        metrica = dplyr::recode(metrica,
+                                ccc = "Correlacao Cofenotica (CCC)",
+                                ac  = "Coeficiente Aglomerativo (AC)")
+    ) |>
+    ggplot2::ggplot(ggplot2::aes(x = factor(fold), y = valor, fill = neighborhood)) +
+    ggplot2::geom_col(position = "dodge") +
+    ggplot2::geom_hline(yintercept = 0.75, linetype = "dashed", color = "red", linewidth = 0.6) +
+    ggplot2::annotate("text", x = 0.6, y = 0.77, label = "0.75", color = "red", size = 3) +
+    ggplot2::facet_grid(metrica ~ dataset) +
+    ggplot2::scale_fill_brewer(palette = "Set2", name = "Vizinhança") +
+    ggplot2::labs(
+        title = "Métricas Pré-Corte: CCC e AC por Fold",
+        x = "Fold", y = "Valor"
+    ) +
+    ggplot2::theme_minimal(base_size = 11)
+
+# Gráfico 2: Silhouette e Entropia por (dataset, neighborhood, k, fold)
+p_partition <- partition_qual_df |>
+    tidyr::pivot_longer(cols = c(silhouette, mean_entropy),
+                        names_to = "metrica", values_to = "valor") |>
+    dplyr::mutate(
+        metrica = dplyr::recode(metrica,
+                                silhouette   = "Silhouette medio",
+                                mean_entropy = "Entropia media dos labelsets")
+    ) |>
+    ggplot2::ggplot(ggplot2::aes(
+        x     = factor(k),
+        y     = valor,
+        color = neighborhood,
+        group = interaction(neighborhood, fold)
+    )) +
+    ggplot2::geom_line(alpha = 0.6) +
+    ggplot2::geom_point(size = 2) +
+    ggplot2::facet_grid(metrica ~ dataset, scales = "free_y") +
+    ggplot2::scale_color_brewer(palette = "Set1", name = "Vizinhança") +
+    ggplot2::labs(
+        title = "Métricas Pós-Corte: Silhouette e Entropia por k e Fold",
+        x = "k (número de clusters)", y = "Valor"
+    ) +
+    ggplot2::theme_minimal(base_size = 11)
+
+# Gráfico 3: Hellinger (k=2) por fold
+p_hellinger <- partition_qual_df |>
+    dplyr::filter(k == 2) |>
+    ggplot2::ggplot(ggplot2::aes(x = factor(fold), y = hellinger, fill = neighborhood)) +
+    ggplot2::geom_col(position = "dodge") +
+    ggplot2::facet_wrap(~ dataset) +
+    ggplot2::scale_fill_brewer(palette = "Set2", name = "Vizinhança") +
+    ggplot2::labs(
+        title = "Distância de Hellinger entre Clusters (k=2) por Fold",
+        x = "Fold", y = "Hellinger"
+    ) +
+    ggplot2::theme_minimal(base_size = 11)
+
+# Gráfico 4: Consistência entre folds (mean_sd_props)
+p_consistency <- fold_consistency_df |>
+    dplyr::select(dataset, neighborhood, k, cluster, mean_sd_props) |>
+    dplyr::mutate(painel = sprintf("k=%d | Cluster %d", k, cluster)) |>
+    ggplot2::ggplot(ggplot2::aes(x = neighborhood, y = mean_sd_props, fill = neighborhood)) +
+    ggplot2::geom_col() +
+    ggplot2::facet_grid(dataset ~ painel) +
+    ggplot2::scale_fill_brewer(palette = "Set2", name = "Vizinhança") +
+    ggplot2::labs(
+        title = "Consistência entre Folds: SD médio das proporções de rótulos",
+        subtitle = "Valores menores indicam partições mais estáveis",
+        x = "Vizinhança", y = "SD médio das proporções"
+    ) +
+    ggplot2::theme_minimal(base_size = 11) +
+    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 30, hjust = 1))
+
+# Salva PNGs
+ggplot2::ggsave(file.path(OUTPUT_PATH, "quality_hierarchy.png"),
+                p_hierarchy,   width = 10, height = 6, dpi = 150)
+ggplot2::ggsave(file.path(OUTPUT_PATH, "quality_partitions.png"),
+                p_partition,   width = 12, height = 7, dpi = 150)
+ggplot2::ggsave(file.path(OUTPUT_PATH, "quality_hellinger.png"),
+                p_hellinger,   width = 10, height = 5, dpi = 150)
+ggplot2::ggsave(file.path(OUTPUT_PATH, "quality_consistency.png"),
+                p_consistency, width = 12, height = 6, dpi = 150)
+
+# PDF consolidado de métricas de qualidade
+pdf(file.path(OUTPUT_PATH, "quality_summary.pdf"), width = 12, height = 7)
+print(p_hierarchy)
+print(p_partition)
+print(p_hellinger)
+print(p_consistency)
+dev.off()
+
+cat("Graficos de qualidade salvos.\n")
 ```
 
 ## Análise Comparativa da Partição 2
-```{r analysis_p2}
-# A partição 2 divide os neurônios em 2 grupos.
-# Analisamos e comparamos os 3 folds de cada (dataset, vizinhança).
 
+```{r}
 for (ds in TARGET_DATASETS) {
     label_names <- datasets_config[[ds]]$label_names
 
@@ -386,7 +671,6 @@ for (ds in TARGET_DATASETS) {
 
         cat(sprintf("\n=== PARTICAO 2: %s | %s ===\n", toupper(ds), toupper(nbhd)))
 
-        # Sumário: total de instâncias e rótulos por cluster (agregado entre folds)
         cat("\nFrequencia agregada por cluster (soma dos 3 folds):\n")
         lf |>
             dplyr::group_by(cluster) |>
@@ -397,7 +681,6 @@ for (ds in TARGET_DATASETS) {
             ) |>
             print()
 
-        # --- Gráfico 1: frequência de rótulos por cluster e fold ---
         p_labels <- lf |>
             tidyr::pivot_longer(
                 cols      = dplyr::all_of(label_names),
@@ -419,7 +702,6 @@ for (ds in TARGET_DATASETS) {
             ggplot2::theme_minimal(base_size = 11) +
             ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))
 
-        # --- Gráfico 2: top labelsets por cluster e fold ---
         p_labelsets <- lsf |>
             dplyr::group_by(fold, cluster) |>
             dplyr::slice_max(frequencia, n = 8, with_ties = FALSE) |>
@@ -441,13 +723,11 @@ for (ds in TARGET_DATASETS) {
             ggplot2::theme_minimal(base_size = 10) +
             ggplot2::theme(axis.text.y = ggplot2::element_text(size = 8))
 
-        # Salva PNGs para o relatório
         png_labels    <- file.path(OUTPUT_PATH, sprintf("%s_p2_label_freq.png", combo))
         png_labelsets <- file.path(OUTPUT_PATH, sprintf("%s_p2_labelset_freq.png", combo))
         ggplot2::ggsave(png_labels,    p_labels,    width = 12, height = 6,  dpi = 150)
         ggplot2::ggsave(png_labelsets, p_labelsets, width = 14, height = 8,  dpi = 150)
 
-        # PDF de análise comparativa da partição 2
         pdf_analysis <- file.path(OUTPUT_PATH, sprintf("%s_p2_analysis.pdf", combo))
         pdf(pdf_analysis, width = 14, height = 9)
         print(p_labels)
@@ -460,24 +740,36 @@ for (ds in TARGET_DATASETS) {
 ```
 
 ## Sumário Final dos Outputs
-```{r final_summary}
+
+```{r}
 cat("=== OUTPUTS GERADOS ===\n\n")
 
-cat("CSVs:\n")
-cat("  evaluation_results.csv            — QE por fold, dataset e vizinhanca\n")
-cat("  {ds}_{nbhd}_p2_label_freq.csv     — frequencia de rotulos na particao 2\n")
-cat("  {ds}_{nbhd}_p2_labelset_freq.csv  — frequencia de labelsets na particao 2\n\n")
+cat("CSVs — Avaliacao do modelo:\n")
+cat("  evaluation_results.csv              — QE por fold, dataset e vizinhanca\n\n")
+
+cat("CSVs — Metricas de qualidade do clustering:\n")
+cat("  quality_hierarchy.csv               — CCC e AC por fold (pre-corte)\n")
+cat("  quality_partitions.csv              — Silhouette, Entropia e Hellinger por (fold, k)\n")
+cat("  quality_fold_consistency.csv        — SD das proporcoes de rotulos entre folds\n\n")
+
+cat("CSVs — Particao 2:\n")
+cat("  {ds}_{nbhd}_p2_label_freq.csv       — frequencia de rotulos na particao 2\n")
+cat("  {ds}_{nbhd}_p2_labelset_freq.csv    — frequencia de labelsets na particao 2\n\n")
 
 cat("PDFs:\n")
-cat("  {ds}_{nbhd}_fold{n}_partitions.pdf — visualizacoes de todas as particoes por fold\n")
-cat("  {ds}_{nbhd}_p2_analysis.pdf        — analise comparativa da particao 2\n\n")
+cat("  {ds}_{nbhd}_fold{n}_partitions.pdf  — visualizacoes e metricas de todas as particoes\n")
+cat("  {ds}_{nbhd}_p2_analysis.pdf         — analise comparativa da particao 2\n")
+cat("  quality_summary.pdf                 — sumario visual de todas as metricas de qualidade\n\n")
 
 cat("PNGs (para o relatorio):\n")
-cat("  {ds}_{nbhd}_p2_label_freq.png     — grafico de frequencia de rotulos\n")
-cat("  {ds}_{nbhd}_p2_labelset_freq.png  — grafico de top labelsets\n\n")
+cat("  quality_hierarchy.png               — CCC e AC\n")
+cat("  quality_partitions.png              — Silhouette e Entropia por k\n")
+cat("  quality_hellinger.png               — Hellinger (k=2)\n")
+cat("  quality_consistency.png             — Consistencia entre folds\n")
+cat("  {ds}_{nbhd}_p2_label_freq.png       — frequencia de rotulos na particao 2\n")
+cat("  {ds}_{nbhd}_p2_labelset_freq.png    — top labelsets na particao 2\n\n")
 
 cat(sprintf("Diretorio de saida: %s\n", OUTPUT_PATH))
-```
-```{r session}
+
 sessionInfo()
 ```

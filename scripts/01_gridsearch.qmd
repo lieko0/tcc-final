@@ -81,7 +81,7 @@ for (ds in TARGET_DATASETS) {
 
 ## Definição das Grades SOM (2×2 apenas)
 ```{r define_grids}
-# Conforme o PDF: apenas grade 2x2, 2 vizinhancas x 2 topologias = 4 grids
+# apenas grade 2x2, 2 vizinhancas x 2 topologias = 4 grids
 grids <- list(
     gaussian_rectangular = kohonen::somgrid(2, 2, "rectangular", neighbourhood.fct = "gaussian"),
     gaussian_hexagonal   = kohonen::somgrid(2, 2, "hexagonal", neighbourhood.fct = "gaussian"),
@@ -103,7 +103,7 @@ for (name in names(grids)) {
 ```{r param_grid}
 param_grid <- expand.grid(
     rlen = c(100L, 500L, 1000L), # default: 100L
-    radius = c(0.5, 1.0, 1.5, 2.0), # default: 1.0?
+    radius = c(1.0, 2.0), # default: 1.0?
     alpha_start = c(0.05), # default: 0.05
     alpha_end = c(0.01), # default: 0.01
     grid_name = names(grids),
@@ -231,9 +231,9 @@ print(qe_distribution)
 # 2. Exige que a configuração tenha rodado nos 3 folds (estabilidade)
 # 3. Calcula QE médio entre os folds
 # 4. Seleciona o melhor por (dataset, vizinhança) — topologia também é fixada aqui
-#    pois todos os 3 folds devem usar a mesma configuração (conforme o PDF)
+#    pois todos os 3 folds devem usar a mesma configuração
 best_params_mean <- results_df |>
-    dplyr::filter(empty_neurons == 0, !is.na(qe_val)) |>
+    dplyr::filter(!is.na(qe_val)) |>
     dplyr::group_by(dataset, neighborhood, topology, rlen, radius, alpha_start, alpha_end) |>
     dplyr::reframe(
         mean_qe = mean(qe_val),
@@ -246,7 +246,7 @@ best_params_mean <- results_df |>
     dplyr::ungroup()
 
 best_params_min <- results_df |>
-    dplyr::filter(empty_neurons == 0, !is.na(qe_val)) |>
+    dplyr::filter(!is.na(qe_val)) |>
     dplyr::group_by(dataset, neighborhood, topology, rlen, radius, alpha_start, alpha_end) |>
     dplyr::reframe(
         min_qe  = min(qe_val),
@@ -260,14 +260,33 @@ best_params_min <- results_df |>
     dplyr::ungroup()
 
 best_params_search <- results_df |>
-    dplyr::filter(empty_neurons == 0, !is.na(qe_val)) |>
+    dplyr::filter(!is.na(qe_val)) |>
+    dplyr::group_by(dataset, neighborhood, topology, rlen, radius, alpha_start, alpha_end) |>
+    dplyr::reframe(
+        qe_val  = qe_val,
+        n_folds = dplyr::n(),
+        min_qe  = min(qe_val),
+        mean_qe = mean(qe_val),
+        sd_qe   = sd(qe_val),
+        fold_num = fold,
+        empty_count = sum(empty_neurons > 0)
+    ) |>
+    dplyr::filter(n_folds == 3) |>
+    dplyr::group_by(dataset, neighborhood) |>
+    dplyr::slice_min(min_qe, n = 9, with_ties = FALSE) |>
+    dplyr::ungroup()
+
+best_params_search2 <- results_df |>
+    dplyr::filter(!is.na(qe_val)) |>
     dplyr::group_by(dataset, neighborhood, topology, rlen, radius, alpha_start, alpha_end) |>
     dplyr::reframe(
         qe_val  = qe_val,
         min_qe  = min(qe_val),
         mean_qe = mean(qe_val),
         sd_qe   = sd(qe_val),
-        n_folds = dplyr::n()
+        fold_num = fold,
+        n_folds = dplyr::n(),
+        empty_count = sum(empty_neurons > 0)
     ) |>
     dplyr::filter(n_folds == 3) |>
     dplyr::group_by(dataset, neighborhood) |>
@@ -290,6 +309,10 @@ cat(sprintf("Melhores parametros (mínimo absoluto) salvos em: %s\n", best_param
 best_params_csv_search <- file.path(OUTPUT_PATH, "best_params_search.csv")
 write.csv(best_params_search, best_params_csv_search, row.names = FALSE)
 cat(sprintf("Melhores parametros (busca) salvos em: %s\n", best_params_csv_search))
+
+best_params_csv_search2 <- file.path(OUTPUT_PATH, "best_params_search2.csv")
+write.csv(best_params_search2, best_params_csv_search2, row.names = FALSE)
+cat(sprintf("Melhores parametros (busca 2) salvos em: %s\n", best_params_csv_search2))
 ```
 
 ```{r session}
