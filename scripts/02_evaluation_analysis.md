@@ -42,13 +42,27 @@ library(gridExtra)
 
 ``` r
 library(grid)
-library(cluster)      # silhouette, agnes
+library(cluster) # silhouette, agnes
+library(scales)
+```
 
-GRIDSEARCH_PATH      <- "E:/git-tcc/tcc-final/outputs/gridsearch"
-BASE_PATH            <- "E:/git-tcc/tcc-final/data"
-OUTPUT_PATH          <- "E:/git-tcc/tcc-final/outputs/evaluation"
-SEED                 <- 1234L
-TARGET_DATASETS      <- c("emotions", "scene")
+
+    Attaching package: 'scales'
+
+    The following object is masked from 'package:purrr':
+
+        discard
+
+    The following object is masked from 'package:readr':
+
+        col_factor
+
+``` r
+GRIDSEARCH_PATH <- "E:/git-tcc/tcc-final/outputs/gridsearch"
+BASE_PATH <- "E:/git-tcc/tcc-final/data"
+OUTPUT_PATH <- "E:/git-tcc/tcc-final/outputs/evaluation"
+SEED <- 1234L
+TARGET_DATASETS <- c("emotions", "scene")
 TARGET_NEIGHBORHOODS <- c("gaussian", "bubble")
 
 dir.create(OUTPUT_PATH, recursive = TRUE, showWarnings = FALSE)
@@ -60,10 +74,12 @@ set.seed(SEED)
 ``` r
 datasets_config <- list(
     emotions = list(
-        attr_cols   = 1:72,
-        label_cols  = 73:78,
-        label_names = c("amazed.suprised", "happy.pleased", "relaxing.calm",
-                        "quiet.still", "sad.lonely", "angry.aggresive")
+        attr_cols = 1:72,
+        label_cols = 73:78,
+        label_names = c(
+            "amazed.suprised", "happy.pleased", "relaxing.calm",
+            "quiet.still", "sad.lonely", "angry.aggresive"
+        )
     ),
     scene = list(
         attr_cols   = 1:294,
@@ -122,15 +138,15 @@ print(best_params)
 ```
 
        dataset neighborhood    topology rlen radius alpha_start alpha_end    min_qe
-    1 emotions       bubble rectangular  100      2        0.05      0.01 0.4586958
-    2 emotions     gaussian   hexagonal  100      2        0.05      0.01 0.5421067
-    3    scene       bubble rectangular 1000      1        0.05      0.01 0.3586678
-    4    scene     gaussian   hexagonal  500      1        0.05      0.01 0.4261595
-        mean_qe       sd_qe n_folds
-    1 0.4683699 0.012988941       3
-    2 0.5485781 0.007372719       3
-    3 0.3653513 0.006523930       3
-    4 0.4355491 0.009735314       3
+    1 emotions       bubble   hexagonal 1000    1.5        0.05     0.005 0.4563603
+    2 emotions     gaussian   hexagonal  500    1.5        0.10     0.005 0.5328641
+    3    scene       bubble rectangular  500    1.5        0.05     0.005 0.3578038
+    4    scene     gaussian   hexagonal 1000    1.5        0.10     0.010 0.4224653
+        mean_qe       sd_qe n_obs n_folds
+    1 0.4712995 0.024025419     3       3
+    2 0.5423207 0.008984716     3       3
+    3 0.3640207 0.005393028     3       3
+    4 0.4286762 0.006159042     3       3
 
 ## Funções Auxiliares
 
@@ -152,7 +168,7 @@ train_som <- function(Y_train, topology, neighborhood, rlen, radius, alpha_start
 # Retorna o dendrograma e o vetor de clusters (posição i = cluster do neurônio i)
 cluster_codebook <- function(model, k, method = "complete") {
     codebook <- model$codes[[1]]
-    dend     <- hclust(dist(codebook), method = method)
+    dend <- hclust(dist(codebook), method = method)
     clusters <- as.integer(cutree(dend, k = k))
     list(dend = dend, clusters = clusters)
 }
@@ -160,11 +176,13 @@ cluster_codebook <- function(model, k, method = "complete") {
 # Constrói dataframe: instância → neurônio, cluster e rótulos
 build_instance_df <- function(model, Y_train, label_names, clusters) {
     df <- data.frame(
-        neuron  = model$unit.classif,
+        neuron = model$unit.classif,
         cluster = clusters[model$unit.classif],
+        distance = model$distances,
+        labelset = apply(Y_train, 1, paste, collapse = ""),
         Y_train
     )
-    colnames(df) <- c("neuron", "cluster", label_names)
+    colnames(df) <- c("neuron", "cluster", "distance", "labelset", label_names)
     df
 }
 
@@ -233,7 +251,9 @@ compute_ac <- function(codebook, method = "complete") {
 # Valores próximos de +1 indicam boa alocação; negativos indicam alocação errada.
 # Métrica mais consolidada na literatura para avaliar qualidade de partições.
 compute_silhouette <- function(clusters, codebook) {
-    if (length(unique(clusters)) < 2) return(NA_real_)
+    if (length(unique(clusters)) < 2) {
+        return(NA_real_)
+    }
     sil <- cluster::silhouette(clusters, dist(codebook))
     mean(sil[, "sil_width"])
 }
@@ -261,7 +281,9 @@ compute_labelset_entropy <- function(lset_freq) {
 # Varia de 0 (distribuições idênticas) a 1 (distribuições completamente distintas).
 # Aplicável apenas para k=2; retorna NA para k>2.
 compute_hellinger <- function(label_freq, label_names) {
-    if (nrow(label_freq) != 2) return(NA_real_)
+    if (nrow(label_freq) != 2) {
+        return(NA_real_)
+    }
     p <- as.numeric(label_freq[1, label_names])
     q <- as.numeric(label_freq[2, label_names])
     p <- p / sum(p)
@@ -282,8 +304,9 @@ compute_fold_consistency <- function(label_freq_consolidated, datasets_config) {
             group_df |>
                 dplyr::mutate(
                     dplyr::across(dplyr::all_of(ds_labels),
-                                  ~ .x / n_instancias,
-                                  .names = "prop_{.col}")
+                        ~ .x / n_instancias,
+                        .names = "prop_{.col}"
+                    )
                 ) |>
                 dplyr::summarise(
                     n_folds = dplyr::n(),
@@ -309,7 +332,7 @@ compute_fold_consistency <- function(label_freq_consolidated, datasets_config) {
 
 ``` r
 trained_models <- list()
-eval_results   <- list()
+eval_results <- list()
 
 for (ds in TARGET_DATASETS) {
     trained_models[[ds]] <- list()
@@ -338,21 +361,46 @@ for (ds in TARGET_DATASETS) {
             Y_tr <- as.matrix(datasets[[ds]][[fold_key]][["tr"]]$labels)
             Y_ts <- as.matrix(datasets[[ds]][[fold_key]][["ts"]]$labels)
 
-            model <- tryCatch({
-                train_som(Y_tr, bp$topology, nbhd, bp$rlen, bp$radius, bp$alpha_start, bp$alpha_end)
-            }, error = function(e) {
-                message("Erro no fold ", fold, ": ", e$message)
-                NULL
-            })
+            model <- tryCatch(
+                {
+                    train_som(Y_tr, bp$topology, nbhd, bp$rlen, bp$radius, bp$alpha_start, bp$alpha_end)
+                },
+                error = function(e) {
+                    message("Erro no fold ", fold, ": ", e$message)
+                    NULL
+                }
+            )
 
             if (is.null(model)) next
 
-            grid_size     <- model$grid$xdim * model$grid$ydim
+            grid_size <- model$grid$xdim * model$grid$ydim
             empty_neurons <- grid_size - length(unique(model$unit.classif))
-            qe_test       <- mean(kohonen::map(model, newdata = list(Y = Y_ts))$distances)
 
-            cat(sprintf("  Fold %d: QE_test=%.5f | neuronios_vazios=%d\n",
-                        fold, qe_test, empty_neurons))
+            distances_ts <- kohonen::map(model, newdata = list(Y = Y_ts))$distances
+            qe_test <- mean(distances_ts)
+
+            # ordered by distance, groupby labelset to see which labelsets are closer to the codebook vectors
+            output_distances <- distances_ts |>
+                data.frame(instance = seq_along(distances_ts), distance = distances_ts) |>
+                dplyr::mutate(labelset = apply(Y_ts, 1, paste, collapse = "")) |>
+                dplyr::group_by(labelset) |>
+                dplyr::summarise(
+                    mean_distance = mean(distance),
+                    n_instances = dplyr::n(),
+                    .groups = "drop"
+                ) |>
+                dplyr::arrange(mean_distance)
+
+            write.csv(
+                output_distances,
+                file.path(OUTPUT_PATH, sprintf("%s_%s_fold%d_distances.csv", ds, nbhd, fold)),
+                row.names = FALSE
+            )
+
+            cat(sprintf(
+                "  Fold %d: QE_test=%.5f | neuronios_vazios=%d\n",
+                fold, qe_test, empty_neurons
+            ))
 
             trained_models[[ds]][[nbhd]][[fold_key]] <- list(
                 model         = model,
@@ -380,66 +428,81 @@ for (ds in TARGET_DATASETS) {
 ```
 
 
-    === EMOTIONS | GAUSSIAN | topology=hexagonal rlen=100 radius=2.000000 alpha=(0.05, 0.010) ===
-      Fold 1: QE_test=0.63653 | neuronios_vazios=0
-      Fold 2: QE_test=0.57476 | neuronios_vazios=0
-      Fold 3: QE_test=0.58248 | neuronios_vazios=0
+    === EMOTIONS | GAUSSIAN | topology=hexagonal rlen=500 radius=1.500000 alpha=(0.10, 0.005) ===
+      Fold 1: QE_test=0.54287 | neuronios_vazios=0
+      Fold 2: QE_test=0.55978 | neuronios_vazios=0
+      Fold 3: QE_test=0.53535 | neuronios_vazios=0
 
-    === EMOTIONS | BUBBLE | topology=rectangular rlen=100 radius=2.000000 alpha=(0.05, 0.010) ===
-      Fold 1: QE_test=0.48051 | neuronios_vazios=0
-      Fold 2: QE_test=0.51445 | neuronios_vazios=0
-      Fold 3: QE_test=0.48217 | neuronios_vazios=0
+    === EMOTIONS | BUBBLE | topology=hexagonal rlen=1000 radius=1.500000 alpha=(0.05, 0.005) ===
+      Fold 1: QE_test=0.45807 | neuronios_vazios=0
+      Fold 2: QE_test=0.50956 | neuronios_vazios=0
+      Fold 3: QE_test=0.47883 | neuronios_vazios=0
 
-    === SCENE | GAUSSIAN | topology=hexagonal rlen=500 radius=1.000000 alpha=(0.05, 0.010) ===
-      Fold 1: QE_test=0.44081 | neuronios_vazios=0
-      Fold 2: QE_test=0.43232 | neuronios_vazios=0
-      Fold 3: QE_test=0.43573 | neuronios_vazios=0
+    === SCENE | GAUSSIAN | topology=hexagonal rlen=1000 radius=1.500000 alpha=(0.10, 0.010) ===
+      Fold 1: QE_test=0.43437 | neuronios_vazios=0
+      Fold 2: QE_test=0.42630 | neuronios_vazios=0
+      Fold 3: QE_test=0.42690 | neuronios_vazios=0
 
-    === SCENE | BUBBLE | topology=rectangular rlen=1000 radius=1.000000 alpha=(0.05, 0.010) ===
-      Fold 1: QE_test=0.37580 | neuronios_vazios=0
-      Fold 2: QE_test=0.37302 | neuronios_vazios=0
-      Fold 3: QE_test=0.37686 | neuronios_vazios=0
+    === SCENE | BUBBLE | topology=rectangular rlen=500 radius=1.500000 alpha=(0.05, 0.005) ===
+      Fold 1: QE_test=0.36167 | neuronios_vazios=0
+      Fold 2: QE_test=0.36923 | neuronios_vazios=0
+      Fold 3: QE_test=0.38694 | neuronios_vazios=0
 
 ``` r
 eval_df <- dplyr::bind_rows(eval_results)
 write.csv(eval_df, file.path(OUTPUT_PATH, "evaluation_results.csv"), row.names = FALSE)
 
-cat("\n=== RESULTADOS DE AVALIACAO ===\n")
+cat("\n=== RESULTADOS DE AVALIACAO - QE MÍNIMO ===\n")
 ```
 
 
-    === RESULTADOS DE AVALIACAO ===
+    === RESULTADOS DE AVALIACAO - QE MÍNIMO ===
 
 ``` r
 print(eval_df)
 ```
 
         dataset neighborhood    topology fold rlen radius alpha_start alpha_end
-    1  emotions     gaussian   hexagonal    1  100      2        0.05      0.01
-    2  emotions     gaussian   hexagonal    2  100      2        0.05      0.01
-    3  emotions     gaussian   hexagonal    3  100      2        0.05      0.01
-    4  emotions       bubble rectangular    1  100      2        0.05      0.01
-    5  emotions       bubble rectangular    2  100      2        0.05      0.01
-    6  emotions       bubble rectangular    3  100      2        0.05      0.01
-    7     scene     gaussian   hexagonal    1  500      1        0.05      0.01
-    8     scene     gaussian   hexagonal    2  500      1        0.05      0.01
-    9     scene     gaussian   hexagonal    3  500      1        0.05      0.01
-    10    scene       bubble rectangular    1 1000      1        0.05      0.01
-    11    scene       bubble rectangular    2 1000      1        0.05      0.01
-    12    scene       bubble rectangular    3 1000      1        0.05      0.01
+    1  emotions     gaussian   hexagonal    1  500    1.5        0.10     0.005
+    2  emotions     gaussian   hexagonal    2  500    1.5        0.10     0.005
+    3  emotions     gaussian   hexagonal    3  500    1.5        0.10     0.005
+    4  emotions       bubble   hexagonal    1 1000    1.5        0.05     0.005
+    5  emotions       bubble   hexagonal    2 1000    1.5        0.05     0.005
+    6  emotions       bubble   hexagonal    3 1000    1.5        0.05     0.005
+    7     scene     gaussian   hexagonal    1 1000    1.5        0.10     0.010
+    8     scene     gaussian   hexagonal    2 1000    1.5        0.10     0.010
+    9     scene     gaussian   hexagonal    3 1000    1.5        0.10     0.010
+    10    scene       bubble rectangular    1  500    1.5        0.05     0.005
+    11    scene       bubble rectangular    2  500    1.5        0.05     0.005
+    12    scene       bubble rectangular    3  500    1.5        0.05     0.005
        empty_neurons   qe_test
-    1              0 0.6365260
-    2              0 0.5747556
-    3              0 0.5824840
-    4              0 0.4805075
-    5              0 0.5144453
-    6              0 0.4821744
-    7              0 0.4408123
-    8              0 0.4323155
-    9              0 0.4357299
-    10             0 0.3758018
-    11             0 0.3730216
-    12             0 0.3768609
+    1              0 0.5428682
+    2              0 0.5597757
+    3              0 0.5353491
+    4              0 0.4580653
+    5              0 0.5095614
+    6              0 0.4788262
+    7              0 0.4343684
+    8              0 0.4262954
+    9              0 0.4269001
+    10             0 0.3616697
+    11             0 0.3692348
+    12             0 0.3869446
+
+=-= REGISTRO DE RESULTADOS DE AVALIACAO - QE MÉDIO =-= \> print(eval_df)
+dataset neighborhood topology fold rlen radius alpha_start alpha_end 1
+emotions gaussian hexagonal 1 1000 1.0 0.10 0.005 2 emotions gaussian
+hexagonal 2 1000 1.0 0.10 0.005 3 emotions gaussian hexagonal 3 1000 1.0
+0.10 0.005 4 emotions bubble rectangular 1 1000 1.5 0.10 0.005 5
+emotions bubble rectangular 2 1000 1.5 0.10 0.005 6 emotions bubble
+rectangular 3 1000 1.5 0.10 0.005 7 scene gaussian hexagonal 1 500 1.5
+0.10 0.010 8 scene gaussian hexagonal 2 500 1.5 0.10 0.010 9 scene
+gaussian hexagonal 3 500 1.5 0.10 0.010 10 scene bubble rectangular 1
+500 1.5 0.05 0.005 11 scene bubble rectangular 2 500 1.5 0.05 0.005 12
+scene bubble rectangular 3 500 1.5 0.05 0.005 empty_neurons qe_test 1 0
+0.5442348 2 0 0.5496616 3 0 0.5420881 4 0 0.4682938 5 0 0.4836945 6 0
+0.4929044 7 0 0.4417722 8 0 0.4359387 9 0 0.4341694 10 0 0.3879336 11 0
+0.3633570 12 0 0.3840308
 
 ## Geração de Partições e Métricas de Qualidade
 
@@ -449,35 +512,35 @@ print(eval_df)
 #   - Após o corte   : Silhouette, Entropia dos labelsets e Hellinger (k=2)
 #   - Entre folds    : Consistência (SD das proporções de rótulos) — calculada ao final
 
-partition2_data       <- list()
-hierarchy_results     <- list()   # CCC e AC por fold (pré-corte)
-partition_quality_res <- list()   # Silhouette, Entropia, Hellinger por (fold, k)
-label_freq_all_folds  <- list()   # acumula label_freq de todos os combos/folds/ks
+partition2_data <- list()
+hierarchy_results <- list() # CCC e AC por fold (pré-corte)
+partition_quality_res <- list() # Silhouette, Entropia, Hellinger por (fold, k)
+label_freq_all_folds <- list() # acumula label_freq de todos os combos/folds/ks
 
 for (ds in TARGET_DATASETS) {
     label_names <- datasets_config[[ds]]$label_names
 
     for (nbhd in TARGET_NEIGHBORHOODS) {
         combo <- sprintf("%s_%s", ds, nbhd)
-        label_freq_folds    <- list()
+        label_freq_folds <- list()
         labelset_freq_folds <- list()
 
         for (fold in 1:3) {
-            fold_key   <- paste0("fold", fold)
+            fold_key <- paste0("fold", fold)
             model_info <- trained_models[[ds]][[nbhd]][[fold_key]]
             if (is.null(model_info)) next
 
-            model  <- model_info$model
-            Y_tr   <- model_info$Y_tr
+            model <- model_info$model
+            Y_tr <- model_info$Y_tr
             n_neur <- model$grid$xdim * model$grid$ydim
-            max_k  <- n_neur - 1
+            max_k <- n_neur - 1
 
             codebook <- model$codes[[1]]
-            dend     <- hclust(dist(codebook), method = "complete")
+            dend <- hclust(dist(codebook), method = "complete")
 
             # --- Métricas pré-corte: CCC e AC ---
             ccc_val <- compute_ccc(codebook, dend)
-            ac_val  <- compute_ac(codebook, method = "complete")
+            ac_val <- compute_ac(codebook, method = "complete")
 
             hierarchy_results[[length(hierarchy_results) + 1]] <- data.frame(
                 dataset      = ds,
@@ -487,34 +550,57 @@ for (ds in TARGET_DATASETS) {
                 ac           = ac_val
             )
 
-            cat(sprintf("  [%s | %s | Fold %d] CCC=%.4f | AC=%.4f\n",
-                        ds, nbhd, fold, ccc_val, ac_val))
+            cat(sprintf(
+                "  [%s | %s | Fold %d] CCC=%.4f | AC=%.4f\n",
+                ds, nbhd, fold, ccc_val, ac_val
+            ))
 
             pdf_path <- file.path(OUTPUT_PATH, sprintf("%s_fold%d_partitions.pdf", combo, fold))
             pdf(pdf_path, width = 11, height = 8.5)
 
             # --- Visão geral do modelo ---
             par(mfrow = c(2, 2))
-            plot(model, type = "counts",
-                 main = sprintf("%s | %s | Fold %d - Counts", ds, nbhd, fold))
-            plot(model, type = "changes",
-                 main = "Convergencia do treinamento")
-            plot(model, type = "dist.neighbours",
-                 main = "U-Matrix (distancia entre vizinhos)")
-            plot(model, type = "codes", codeRendering = "segments",
-                 main = "Codebook - Segments")
+            plot(model,
+                type = "counts",
+                main = sprintf("%s | %s | Fold %d - Counts", ds, nbhd, fold)
+            )
+            plot(model,
+                type = "changes",
+                main = "Convergencia do treinamento"
+            )
+            plot(model,
+                type = "dist.neighbours",
+                main = "U-Matrix (distancia entre vizinhos)"
+            )
+            plot(model,
+                type = "codes", codeRendering = "segments",
+                main = "Codebook - Segments"
+            )
             par(mfrow = c(1, 1))
 
             # --- Partições k = 2 até max_k ---
             for (k in 2:max_k) {
-                clusters    <- as.integer(cutree(dend, k = k))
+                clusters <- as.integer(cutree(dend, k = k))
                 instance_df <- build_instance_df(model, Y_tr, label_names, clusters)
-                label_freq  <- label_freq_by_cluster(instance_df, label_names)
-                lset_freq   <- labelset_freq_by_cluster(instance_df, label_names)
+                write.csv(
+                    instance_df |>
+                        dplyr::group_by(labelset) |>
+                        dplyr::summarise(
+                            n = dplyr::n(),
+                            mean_distance = mean(distance),
+                            cluster_neuron = paste0("C", unique(cluster), "N", unique(neuron)),
+                            .groups = "drop"
+                        ) |>
+                        dplyr::arrange(cluster_neuron, dplyr::desc(mean_distance)),
+                    file.path(OUTPUT_PATH, sprintf("%s_fold%d_k%d_instance_df.csv", combo, fold, k)),
+                    row.names = FALSE
+                )
+                label_freq <- label_freq_by_cluster(instance_df, label_names)
+                lset_freq <- labelset_freq_by_cluster(instance_df, label_names)
 
                 # --- Métricas pós-corte ---
-                sil_val       <- compute_silhouette(clusters, codebook)
-                entropy_val   <- compute_labelset_entropy(lset_freq)
+                sil_val <- compute_silhouette(clusters, codebook)
+                entropy_val <- compute_labelset_entropy(lset_freq)
                 hellinger_val <- compute_hellinger(label_freq, label_names)
 
                 partition_quality_res[[length(partition_quality_res) + 1]] <- data.frame(
@@ -538,42 +624,56 @@ for (ds in TARGET_DATASETS) {
                     dplyr::mutate(dataset = ds, neighborhood = nbhd, fold = fold, k = k)
 
                 # --- Visualizações no PDF ---
-                plot(model, type = "codes", codeRendering = "segments",
-                     bgcol = rainbow(k)[clusters],
-                     main  = sprintf("Clusters (k=%d) | %s | %s | Fold %d", k, ds, nbhd, fold))
+                plot(model,
+                    type = "codes", codeRendering = "segments",
+                    bgcol = rainbow(k)[clusters],
+                    main = sprintf("Clusters (k=%d) | %s | %s | Fold %d", k, ds, nbhd, fold)
+                )
                 kohonen::add.cluster.boundaries(model, clusters)
                 pts <- model$grid$pts
                 text(pts[, 1], pts[, 2],
-                     labels = sprintf("N%d\nC%d", seq_len(nrow(pts)), clusters),
-                     cex = 0.75, font = 2)
+                    labels = sprintf("N%d\nC%d", seq_len(nrow(pts)), clusters),
+                    cex = 0.75, font = 2
+                )
 
                 plot(dend,
-                     main = sprintf("Dendrograma (k=%d) | %s | %s | Fold %d", k, ds, nbhd, fold),
-                     xlab = "Neuronios", ylab = "Distancia")
+                    main = sprintf("Dendrograma (k=%d) | %s | %s | Fold %d", k, ds, nbhd, fold),
+                    xlab = "Neuronios", ylab = "Distancia"
+                )
                 rect.hclust(dend, k = k, border = "red")
 
                 # Tabela: métricas de qualidade desta partição no PDF
                 quality_row <- data.frame(
-                    Metrica = c("Silhouette medio", "Entropia media dos labelsets",
-                                "Hellinger (rotulos)", "CCC (pre-corte)", "AC (pre-corte)"),
-                    Valor   = c(
+                    Metrica = c(
+                        "Silhouette medio", "Entropia media dos labelsets",
+                        "Hellinger (rotulos)", "CCC (pre-corte)", "AC (pre-corte)"
+                    ),
+                    Valor = c(
                         sprintf("%.4f", sil_val),
                         sprintf("%.4f", entropy_val),
                         ifelse(is.na(hellinger_val), "NA (k>2)", sprintf("%.4f", hellinger_val)),
                         sprintf("%.4f", ccc_val),
                         sprintf("%.4f", ac_val)
+                    ),
+                    Ideal = c(
+                        "Próximo de +1", "Próximo de 0", "Próximo de 1",
+                        "Acima de 0.75", "Acima de 0.75"
                     )
                 )
                 render_table_page(
                     quality_row,
-                    title = sprintf("Metricas de qualidade (k=%d) | %s | %s | Fold %d",
-                                    k, ds, nbhd, fold)
+                    title = sprintf(
+                        "Metricas de qualidade (k=%d) | %s | %s | Fold %d",
+                        k, ds, nbhd, fold
+                    )
                 )
 
                 render_table_page(
                     as.data.frame(label_freq),
-                    title = sprintf("Frequencia de rotulos por cluster (k=%d) | %s | %s | Fold %d",
-                                    k, ds, nbhd, fold)
+                    title = sprintf(
+                        "Frequencia de rotulos por cluster (k=%d) | %s | %s | Fold %d",
+                        k, ds, nbhd, fold
+                    )
                 )
 
                 for (cl_id in sort(unique(lset_freq$cluster))) {
@@ -582,8 +682,10 @@ for (ds in TARGET_DATASETS) {
                         head(15)
                     render_table_page(
                         as.data.frame(top_ls),
-                        title = sprintf("Top 15 labelsets — Cluster %d (k=%d) | %s | %s | Fold %d",
-                                        cl_id, k, ds, nbhd, fold)
+                        title = sprintf(
+                            "Top 15 labelsets — Cluster %d (k=%d) | %s | %s | Fold %d",
+                            cl_id, k, ds, nbhd, fold
+                        )
                     )
                 }
 
@@ -601,15 +703,17 @@ for (ds in TARGET_DATASETS) {
 
         if (length(label_freq_folds) == 0) next
 
-        lf_p2  <- dplyr::bind_rows(label_freq_folds)
+        lf_p2 <- dplyr::bind_rows(label_freq_folds)
         lsf_p2 <- dplyr::bind_rows(labelset_freq_folds)
 
         write.csv(lf_p2,
-                  file.path(OUTPUT_PATH, sprintf("%s_p2_label_freq.csv", combo)),
-                  row.names = FALSE)
+            file.path(OUTPUT_PATH, sprintf("%s_p2_label_freq.csv", combo)),
+            row.names = FALSE
+        )
         write.csv(lsf_p2,
-                  file.path(OUTPUT_PATH, sprintf("%s_p2_labelset_freq.csv", combo)),
-                  row.names = FALSE)
+            file.path(OUTPUT_PATH, sprintf("%s_p2_labelset_freq.csv", combo)),
+            row.names = FALSE
+        )
 
         partition2_data[[combo]] <- list(
             label_freq    = lf_p2,
@@ -621,106 +725,108 @@ for (ds in TARGET_DATASETS) {
 }
 ```
 
-      [emotions | gaussian | Fold 1] CCC=0.6777 | AC=0.3665
+      [emotions | gaussian | Fold 1] CCC=0.6571 | AC=0.3576
 
-        k=2: Silhouette=0.2029 | Entropia=2.6764 | Hellinger=0.7344
+        k=2: Silhouette=0.1487 | Entropia=2.6484 | Hellinger=0.7576
 
-        k=3: Silhouette=0.0885 | Entropia=2.3520 | Hellinger=NA
+        k=3: Silhouette=0.1410 | Entropia=2.2804 | Hellinger=NA
 
       PDF gerado: emotions_gaussian_fold1_partitions.pdf
-      [emotions | gaussian | Fold 2] CCC=0.5147 | AC=0.3856
+      [emotions | gaussian | Fold 2] CCC=0.5865 | AC=0.3420
 
-        k=2: Silhouette=0.1693 | Entropia=2.9333 | Hellinger=0.7167
+        k=2: Silhouette=0.1336 | Entropia=2.6658 | Hellinger=0.6986
 
-        k=3: Silhouette=0.1087 | Entropia=2.2754 | Hellinger=NA
+        k=3: Silhouette=0.1103 | Entropia=2.2625 | Hellinger=NA
 
       PDF gerado: emotions_gaussian_fold2_partitions.pdf
-      [emotions | gaussian | Fold 3] CCC=0.5400 | AC=0.3425
+      [emotions | gaussian | Fold 3] CCC=0.6474 | AC=0.3541
 
-        k=2: Silhouette=0.1416 | Entropia=2.7152 | Hellinger=0.7513
+        k=2: Silhouette=0.1423 | Entropia=2.7063 | Hellinger=0.7160
 
-        k=3: Silhouette=0.0913 | Entropia=2.2772 | Hellinger=NA
+        k=3: Silhouette=0.1374 | Entropia=2.3103 | Hellinger=NA
 
       PDF gerado: emotions_gaussian_fold3_partitions.pdf
       CSVs da particao 2 salvos para: emotions_gaussian
-      [emotions | bubble | Fold 1] CCC=0.6603 | AC=0.2622
+      [emotions | bubble | Fold 1] CCC=0.6788 | AC=0.2508
 
-        k=2: Silhouette=0.1484 | Entropia=2.8955 | Hellinger=0.7141
+        k=2: Silhouette=0.1771 | Entropia=2.8937 | Hellinger=0.7515
 
-        k=3: Silhouette=0.1068 | Entropia=2.2876 | Hellinger=NA
+        k=3: Silhouette=0.0762 | Entropia=2.2368 | Hellinger=NA
 
       PDF gerado: emotions_bubble_fold1_partitions.pdf
-      [emotions | bubble | Fold 2] CCC=0.6429 | AC=0.3012
+      [emotions | bubble | Fold 2] CCC=0.7315 | AC=0.2928
 
-        k=2: Silhouette=0.1533 | Entropia=2.9263 | Hellinger=0.7069
+        k=2: Silhouette=0.1688 | Entropia=2.9263 | Hellinger=0.7069
 
-        k=3: Silhouette=0.0974 | Entropia=2.3209 | Hellinger=NA
+        k=3: Silhouette=0.1141 | Entropia=2.3209 | Hellinger=NA
 
       PDF gerado: emotions_bubble_fold2_partitions.pdf
-      [emotions | bubble | Fold 3] CCC=0.5845 | AC=0.2459
+      [emotions | bubble | Fold 3] CCC=0.6063 | AC=0.2784
 
-        k=2: Silhouette=0.1229 | Entropia=2.9056 | Hellinger=0.7254
+        k=2: Silhouette=0.1380 | Entropia=2.9056 | Hellinger=0.7254
 
-        k=3: Silhouette=0.0943 | Entropia=2.3058 | Hellinger=NA
+        k=3: Silhouette=0.1144 | Entropia=2.3058 | Hellinger=NA
 
       PDF gerado: emotions_bubble_fold3_partitions.pdf
       CSVs da particao 2 salvos para: emotions_bubble
-      [scene | gaussian | Fold 1] CCC=0.8749 | AC=0.1690
+      [scene | gaussian | Fold 1] CCC=0.8224 | AC=0.2019
 
-        k=2: Silhouette=0.1119 | Entropia=1.8017 | Hellinger=0.8262
+        k=2: Silhouette=0.1259 | Entropia=1.8043 | Hellinger=0.8229
 
-        k=3: Silhouette=0.0188 | Entropia=1.2532 | Hellinger=NA
+        k=3: Silhouette=0.0222 | Entropia=1.3453 | Hellinger=NA
 
       PDF gerado: scene_gaussian_fold1_partitions.pdf
-      [scene | gaussian | Fold 2] CCC=0.6119 | AC=0.2318
+      [scene | gaussian | Fold 2] CCC=0.9269 | AC=0.1655
 
-        k=2: Silhouette=0.0916 | Entropia=1.7929 | Hellinger=0.8043
+        k=2: Silhouette=0.1236 | Entropia=1.8082 | Hellinger=0.8072
 
-        k=3: Silhouette=0.0735 | Entropia=1.2021 | Hellinger=NA
+        k=3: Silhouette=0.0345 | Entropia=1.1977 | Hellinger=NA
 
       PDF gerado: scene_gaussian_fold2_partitions.pdf
-      [scene | gaussian | Fold 3] CCC=0.4748 | AC=0.1395
+      [scene | gaussian | Fold 3] CCC=0.6461 | AC=0.2132
 
-        k=2: Silhouette=0.0516 | Entropia=1.9310 | Hellinger=0.9253
+        k=2: Silhouette=0.0951 | Entropia=1.7888 | Hellinger=0.8270
 
-        k=3: Silhouette=0.0219 | Entropia=1.3362 | Hellinger=NA
+        k=3: Silhouette=0.0521 | Entropia=1.1860 | Hellinger=NA
 
       PDF gerado: scene_gaussian_fold3_partitions.pdf
       CSVs da particao 2 salvos para: scene_gaussian
-      [scene | bubble | Fold 1] CCC=0.8306 | AC=0.1719
+      [scene | bubble | Fold 1] CCC=0.5381 | AC=0.1163
 
-        k=2: Silhouette=0.0845 | Entropia=1.3689 | Hellinger=1.0000
+        k=2: Silhouette=0.0605 | Entropia=1.5263 | Hellinger=0.9247
 
-        k=3: Silhouette=0.0774 | Entropia=1.0172 | Hellinger=NA
+        k=3: Silhouette=0.0606 | Entropia=1.0630 | Hellinger=NA
 
       PDF gerado: scene_bubble_fold1_partitions.pdf
-      [scene | bubble | Fold 2] CCC=0.5297 | AC=0.1056
+      [scene | bubble | Fold 2] CCC=0.5814 | AC=0.1199
 
-        k=2: Silhouette=0.0583 | Entropia=1.3699 | Hellinger=1.0000
+        k=2: Silhouette=0.0660 | Entropia=1.3699 | Hellinger=1.0000
 
-        k=3: Silhouette=0.0499 | Entropia=0.9801 | Hellinger=NA
+        k=3: Silhouette=0.0548 | Entropia=1.0070 | Hellinger=NA
 
       PDF gerado: scene_bubble_fold2_partitions.pdf
-      [scene | bubble | Fold 3] CCC=0.5632 | AC=0.1124
+      [scene | bubble | Fold 3] CCC=0.4992 | AC=0.1001
 
-        k=2: Silhouette=0.0616 | Entropia=1.3688 | Hellinger=1.0000
+        k=2: Silhouette=0.0100 | Entropia=1.8308 | Hellinger=0.9222
 
-        k=3: Silhouette=0.0542 | Entropia=1.0242 | Hellinger=NA
+        k=3: Silhouette=0.0524 | Entropia=0.9710 | Hellinger=NA
 
       PDF gerado: scene_bubble_fold3_partitions.pdf
       CSVs da particao 2 salvos para: scene_bubble
 
 ``` r
 # --- Consolida e salva métricas pré e pós corte ---
-hierarchy_df      <- dplyr::bind_rows(hierarchy_results)
+hierarchy_df <- dplyr::bind_rows(hierarchy_results)
 partition_qual_df <- dplyr::bind_rows(partition_quality_res)
 
 write.csv(hierarchy_df,
-          file.path(OUTPUT_PATH, "quality_hierarchy.csv"),
-          row.names = FALSE)
+    file.path(OUTPUT_PATH, "quality_hierarchy.csv"),
+    row.names = FALSE
+)
 write.csv(partition_qual_df,
-          file.path(OUTPUT_PATH, "quality_partitions.csv"),
-          row.names = FALSE)
+    file.path(OUTPUT_PATH, "quality_partitions.csv"),
+    row.names = FALSE
+)
 
 cat("\n=== METRICAS PRE-CORTE (CCC e AC) ===\n")
 ```
@@ -733,18 +839,18 @@ print(hierarchy_df)
 ```
 
         dataset neighborhood fold       ccc        ac
-    1  emotions     gaussian    1 0.6776890 0.3664746
-    2  emotions     gaussian    2 0.5146758 0.3856457
-    3  emotions     gaussian    3 0.5400375 0.3424901
-    4  emotions       bubble    1 0.6602701 0.2622266
-    5  emotions       bubble    2 0.6429348 0.3012106
-    6  emotions       bubble    3 0.5845408 0.2458527
-    7     scene     gaussian    1 0.8748631 0.1690285
-    8     scene     gaussian    2 0.6118725 0.2318480
-    9     scene     gaussian    3 0.4747806 0.1394791
-    10    scene       bubble    1 0.8306285 0.1718968
-    11    scene       bubble    2 0.5297298 0.1056313
-    12    scene       bubble    3 0.5631609 0.1124128
+    1  emotions     gaussian    1 0.6570833 0.3576381
+    2  emotions     gaussian    2 0.5865395 0.3420369
+    3  emotions     gaussian    3 0.6473971 0.3541233
+    4  emotions       bubble    1 0.6788091 0.2507908
+    5  emotions       bubble    2 0.7314919 0.2928135
+    6  emotions       bubble    3 0.6063253 0.2784280
+    7     scene     gaussian    1 0.8223987 0.2019287
+    8     scene     gaussian    2 0.9269230 0.1654552
+    9     scene     gaussian    3 0.6460731 0.2131562
+    10    scene       bubble    1 0.5381426 0.1162971
+    11    scene       bubble    2 0.5813876 0.1199017
+    12    scene       bubble    3 0.4991739 0.1000940
 
 ``` r
 cat("\n=== METRICAS POS-CORTE (Silhouette, Entropia, Hellinger) ===\n")
@@ -757,31 +863,31 @@ cat("\n=== METRICAS POS-CORTE (Silhouette, Entropia, Hellinger) ===\n")
 print(partition_qual_df)
 ```
 
-        dataset neighborhood fold k silhouette mean_entropy hellinger
-    1  emotions     gaussian    1 2 0.20291673    2.6764447 0.7343793
-    2  emotions     gaussian    1 3 0.08851036    2.3519673        NA
-    3  emotions     gaussian    2 2 0.16930618    2.9333153 0.7167256
-    4  emotions     gaussian    2 3 0.10871400    2.2754351        NA
-    5  emotions     gaussian    3 2 0.14160334    2.7152078 0.7512889
-    6  emotions     gaussian    3 3 0.09130938    2.2771548        NA
-    7  emotions       bubble    1 2 0.14844895    2.8954653 0.7141262
-    8  emotions       bubble    1 3 0.10680158    2.2876104        NA
-    9  emotions       bubble    2 2 0.15333362    2.9262850 0.7068771
-    10 emotions       bubble    2 3 0.09736993    2.3209222        NA
-    11 emotions       bubble    3 2 0.12290569    2.9055700 0.7253743
-    12 emotions       bubble    3 3 0.09425780    2.3057535        NA
-    13    scene     gaussian    1 2 0.11190522    1.8017299 0.8261867
-    14    scene     gaussian    1 3 0.01882860    1.2532139        NA
-    15    scene     gaussian    2 2 0.09162338    1.7928642 0.8043213
-    16    scene     gaussian    2 3 0.07347641    1.2021272        NA
-    17    scene     gaussian    3 2 0.05161049    1.9309539 0.9252715
-    18    scene     gaussian    3 3 0.02191673    1.3362067        NA
-    19    scene       bubble    1 2 0.08453167    1.3689467 1.0000000
-    20    scene       bubble    1 3 0.07735344    1.0172285        NA
-    21    scene       bubble    2 2 0.05825441    1.3698790 1.0000000
-    22    scene       bubble    2 3 0.04988482    0.9800795        NA
-    23    scene       bubble    3 2 0.06161580    1.3687949 1.0000000
-    24    scene       bubble    3 3 0.05419483    1.0241886        NA
+        dataset neighborhood fold k  silhouette mean_entropy hellinger
+    1  emotions     gaussian    1 2 0.148700254    2.6484400 0.7576187
+    2  emotions     gaussian    1 3 0.140983326    2.2803504        NA
+    3  emotions     gaussian    2 2 0.133622709    2.6658132 0.6986411
+    4  emotions     gaussian    2 3 0.110321239    2.2624797        NA
+    5  emotions     gaussian    3 2 0.142341775    2.7063103 0.7159534
+    6  emotions     gaussian    3 3 0.137400662    2.3103203        NA
+    7  emotions       bubble    1 2 0.177119391    2.8936861 0.7514638
+    8  emotions       bubble    1 3 0.076225939    2.2368188        NA
+    9  emotions       bubble    2 2 0.168813273    2.9262850 0.7068771
+    10 emotions       bubble    2 3 0.114088847    2.3209222        NA
+    11 emotions       bubble    3 2 0.137991110    2.9055700 0.7253743
+    12 emotions       bubble    3 3 0.114438699    2.3057535        NA
+    13    scene     gaussian    1 2 0.125944443    1.8043008 0.8228834
+    14    scene     gaussian    1 3 0.022166318    1.3452750        NA
+    15    scene     gaussian    2 2 0.123648309    1.8081983 0.8071939
+    16    scene     gaussian    2 3 0.034493756    1.1976509        NA
+    17    scene     gaussian    3 2 0.095087514    1.7887862 0.8270096
+    18    scene     gaussian    3 3 0.052137074    1.1860335        NA
+    19    scene       bubble    1 2 0.060461179    1.5263141 0.9247445
+    20    scene       bubble    1 3 0.060574279    1.0629650        NA
+    21    scene       bubble    2 2 0.066009052    1.3698790 1.0000000
+    22    scene       bubble    2 3 0.054846874    1.0069819        NA
+    23    scene       bubble    3 2 0.009998725    1.8307837 0.9222283
+    24    scene       bubble    3 3 0.052422482    0.9710172        NA
 
 ## Consistência Entre Folds
 
@@ -796,8 +902,9 @@ label_freq_consolidated <- dplyr::bind_rows(label_freq_all_folds)
 fold_consistency_df <- compute_fold_consistency(label_freq_consolidated, datasets_config)
 
 write.csv(fold_consistency_df,
-          file.path(OUTPUT_PATH, "quality_fold_consistency.csv"),
-          row.names = FALSE)
+    file.path(OUTPUT_PATH, "quality_fold_consistency.csv"),
+    row.names = FALSE
+)
 
 cat("=== CONSISTENCIA ENTRE FOLDS (mean_sd_props — quanto menor, mais estavel) ===\n")
 ```
@@ -813,26 +920,26 @@ fold_consistency_df |>
     # A tibble: 20 × 6
        dataset  neighborhood     k cluster n_folds mean_sd_props
        <chr>    <chr>        <int>   <int>   <int>         <dbl>
-     1 emotions bubble           2       1       3      0.277   
-     2 emotions bubble           2       2       3      0.300   
-     3 emotions bubble           3       1       3      0.228   
-     4 emotions bubble           3       2       3      0.416   
-     5 emotions bubble           3       3       3      0.269   
-     6 emotions gaussian         2       1       3      0.110   
-     7 emotions gaussian         2       2       3      0.129   
-     8 emotions gaussian         3       1       3      0.246   
-     9 emotions gaussian         3       2       3      0.337   
-    10 emotions gaussian         3       3       3      0.449   
-    11 scene    bubble           2       1       3      0.000848
-    12 scene    bubble           2       2       3      0       
-    13 scene    bubble           3       1       3      0.0520  
-    14 scene    bubble           3       2       3      0.307   
-    15 scene    bubble           3       3       3      0.206   
-    16 scene    gaussian         2       1       3      0.133   
-    17 scene    gaussian         2       2       3      0.278   
-    18 scene    gaussian         3       1       3      0.207   
-    19 scene    gaussian         3       2       3      0.278   
-    20 scene    gaussian         3       3       3      0.297   
+     1 emotions bubble           2       1       3      0.236   
+     2 emotions bubble           2       2       3      0.332   
+     3 emotions bubble           3       1       3      0.277   
+     4 emotions bubble           3       2       3      0.341   
+     5 emotions bubble           3       3       3      0.412   
+     6 emotions gaussian         2       1       3      0.140   
+     7 emotions gaussian         2       2       3      0.373   
+     8 emotions gaussian         3       1       3      0.0446  
+     9 emotions gaussian         3       2       3      0.0317  
+    10 emotions gaussian         3       3       3      0.0205  
+    11 scene    bubble           2       1       3      0.153   
+    12 scene    bubble           2       2       3      0.259   
+    13 scene    bubble           3       1       3      0.258   
+    14 scene    bubble           3       2       3      0.259   
+    15 scene    bubble           3       3       3      0.259   
+    16 scene    gaussian         2       1       3      0.000868
+    17 scene    gaussian         2       2       3      0.00214 
+    18 scene    gaussian         3       1       3      0.206   
+    19 scene    gaussian         3       2       3      0.251   
+    20 scene    gaussian         3       3       3      0.210   
 
 ## Sumário Visual das Métricas de Qualidade
 
@@ -842,8 +949,9 @@ p_hierarchy <- hierarchy_df |>
     tidyr::pivot_longer(cols = c(ccc, ac), names_to = "metrica", values_to = "valor") |>
     dplyr::mutate(
         metrica = dplyr::recode(metrica,
-                                ccc = "Correlacao Cofenotica (CCC)",
-                                ac  = "Coeficiente Aglomerativo (AC)")
+            ccc = "Correlacao Cofenotica (CCC)",
+            ac  = "Coeficiente Aglomerativo (AC)"
+        )
     ) |>
     ggplot2::ggplot(ggplot2::aes(x = factor(fold), y = valor, fill = neighborhood)) +
     ggplot2::geom_col(position = "dodge") +
@@ -859,12 +967,15 @@ p_hierarchy <- hierarchy_df |>
 
 # Gráfico 2: Silhouette e Entropia por (dataset, neighborhood, k, fold)
 p_partition <- partition_qual_df |>
-    tidyr::pivot_longer(cols = c(silhouette, mean_entropy),
-                        names_to = "metrica", values_to = "valor") |>
+    tidyr::pivot_longer(
+        cols = c(silhouette, mean_entropy),
+        names_to = "metrica", values_to = "valor"
+    ) |>
     dplyr::mutate(
         metrica = dplyr::recode(metrica,
-                                silhouette   = "Silhouette medio",
-                                mean_entropy = "Entropia media dos labelsets")
+            silhouette   = "Silhouette medio",
+            mean_entropy = "Entropia media dos labelsets"
+        )
     ) |>
     ggplot2::ggplot(ggplot2::aes(
         x     = factor(k),
@@ -887,7 +998,7 @@ p_hellinger <- partition_qual_df |>
     dplyr::filter(k == 2) |>
     ggplot2::ggplot(ggplot2::aes(x = factor(fold), y = hellinger, fill = neighborhood)) +
     ggplot2::geom_col(position = "dodge") +
-    ggplot2::facet_wrap(~ dataset) +
+    ggplot2::facet_wrap(~dataset) +
     ggplot2::scale_fill_brewer(palette = "Set2", name = "Vizinhança") +
     ggplot2::labs(
         title = "Distância de Hellinger entre Clusters (k=2) por Fold",
@@ -913,13 +1024,21 @@ p_consistency <- fold_consistency_df |>
 
 # Salva PNGs
 ggplot2::ggsave(file.path(OUTPUT_PATH, "quality_hierarchy.png"),
-                p_hierarchy,   width = 10, height = 6, dpi = 150)
+    p_hierarchy,
+    width = 10, height = 6, dpi = 150
+)
 ggplot2::ggsave(file.path(OUTPUT_PATH, "quality_partitions.png"),
-                p_partition,   width = 12, height = 7, dpi = 150)
+    p_partition,
+    width = 12, height = 7, dpi = 150
+)
 ggplot2::ggsave(file.path(OUTPUT_PATH, "quality_hellinger.png"),
-                p_hellinger,   width = 10, height = 5, dpi = 150)
+    p_hellinger,
+    width = 10, height = 5, dpi = 150
+)
 ggplot2::ggsave(file.path(OUTPUT_PATH, "quality_consistency.png"),
-                p_consistency, width = 12, height = 6, dpi = 150)
+    p_consistency,
+    width = 12, height = 6, dpi = 150
+)
 
 # PDF consolidado de métricas de qualidade
 pdf(file.path(OUTPUT_PATH, "quality_summary.pdf"), width = 12, height = 7)
@@ -942,20 +1061,28 @@ cat("Graficos de qualidade salvos.\n")
 ## Análise Comparativa da Partição 2
 
 ``` r
+library(scales)
 for (ds in TARGET_DATASETS) {
     label_names <- datasets_config[[ds]]$label_names
 
+    # Coleta dados de ambas vizinhanças para comparação cruzada
+    combos_data <- list()
     for (nbhd in TARGET_NEIGHBORHOODS) {
-        combo  <- sprintf("%s_%s", ds, nbhd)
-        p2     <- partition2_data[[combo]]
+        combo <- sprintf("%s_%s", ds, nbhd)
+        if (!is.null(partition2_data[[combo]])) {
+            combos_data[[nbhd]] <- partition2_data[[combo]]
+        }
+    }
+
+    for (nbhd in TARGET_NEIGHBORHOODS) {
+        combo <- sprintf("%s_%s", ds, nbhd)
+        p2 <- partition2_data[[combo]]
         if (is.null(p2)) next
 
-        lf  <- p2$label_freq
+        lf <- p2$label_freq
         lsf <- p2$labelset_freq
 
         cat(sprintf("\n=== PARTICAO 2: %s | %s ===\n", toupper(ds), toupper(nbhd)))
-
-        cat("\nFrequencia agregada por cluster (soma dos 3 folds):\n")
         lf |>
             dplyr::group_by(cluster) |>
             dplyr::summarise(
@@ -965,112 +1092,332 @@ for (ds in TARGET_DATASETS) {
             ) |>
             print()
 
-        p_labels <- lf |>
+        # ── Proporções por fold ──────────────────────────────────────────────────
+        lf_prop <- lf |>
+            dplyr::mutate(dplyr::across(
+                dplyr::all_of(label_names),
+                ~ .x / n_instancias,
+                .names = "prop_{.col}"
+            )) |>
             tidyr::pivot_longer(
-                cols      = dplyr::all_of(label_names),
-                names_to  = "rotulo",
-                values_to = "frequencia"
+                cols         = dplyr::starts_with("prop_"),
+                names_to     = "rotulo",
+                names_prefix = "prop_",
+                values_to    = "proporcao"
+            )
+
+        # Média e SD das proporções entre folds
+        lf_summary <- lf_prop |>
+            dplyr::group_by(cluster, rotulo) |>
+            dplyr::summarise(
+                media = mean(proporcao),
+                sd = sd(proporcao),
+                .groups = "drop"
             ) |>
-            ggplot2::ggplot(ggplot2::aes(
-                x    = rotulo,
-                y    = frequencia,
-                fill = factor(cluster)
-            )) +
-            ggplot2::geom_col(position = "dodge") +
-            ggplot2::facet_wrap(~ paste("Fold", fold)) +
+            dplyr::mutate(cluster = factor(cluster))
+
+        # ── G1: Proporções médias + barras de erro (±1 DP entre folds) ──────────
+        p1_prop <- lf_summary |>
+            ggplot2::ggplot(ggplot2::aes(x = rotulo, y = media, fill = cluster)) +
+            ggplot2::geom_col(
+                position = ggplot2::position_dodge(width = 0.8), width = 0.7
+            ) +
+            ggplot2::geom_errorbar(
+                ggplot2::aes(ymin = pmax(media - sd, 0), ymax = media + sd),
+                position = ggplot2::position_dodge(width = 0.8),
+                width = 0.25, linewidth = 0.5, color = "grey30"
+            ) +
             ggplot2::scale_fill_brewer(palette = "Set1", name = "Cluster") +
+            ggplot2::scale_y_continuous(
+                labels = scales::percent_format(accuracy = 1),
+                expand = ggplot2::expansion(mult = c(0, 0.08))
+            ) +
             ggplot2::labs(
-                title = sprintf("Frequencia de rotulos por cluster — Particao 2\n%s | %s", ds, nbhd),
-                x = "Rotulo", y = "Frequencia"
+                title = sprintf("Proporção média de rótulos por cluster — %s | %s", ds, nbhd),
+                subtitle = "Barras de erro = ±1 DP entre folds · quanto mais sobrepostas, mais instável a partição",
+                x = NULL, y = "Proporção de instâncias com o rótulo"
             ) +
             ggplot2::theme_minimal(base_size = 11) +
-            ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))
+            ggplot2::theme(
+                axis.text.x     = ggplot2::element_text(angle = 35, hjust = 1),
+                legend.position = "top"
+            )
 
-        p_labelsets <- lsf |>
+        # ── G2: Heatmap rótulo × cluster (proporção média + DP) ─────────────────
+        p2_heat <- lf_summary |>
+            ggplot2::ggplot(ggplot2::aes(x = rotulo, y = cluster, fill = media)) +
+            ggplot2::geom_tile(color = "white", linewidth = 0.6) +
+            ggplot2::geom_text(
+                ggplot2::aes(label = sprintf("%.2f\n±%.2f", media, sd)),
+                size = 3.2
+            ) +
+            ggplot2::scale_fill_distiller(
+                palette = "YlOrRd", direction = 1,
+                name = "Proporção\nmédia",
+                labels = scales::percent_format(accuracy = 1)
+            ) +
+            ggplot2::labs(
+                title = sprintf("Heatmap de rótulos por cluster — %s | %s", ds, nbhd),
+                subtitle = "Células: proporção média (linha 1) ± DP entre folds (linha 2)",
+                x = "Rótulo", y = "Cluster"
+            ) +
+            ggplot2::theme_minimal(base_size = 11) +
+            ggplot2::theme(
+                axis.text.x = ggplot2::element_text(angle = 35, hjust = 1),
+                panel.grid  = ggplot2::element_blank()
+            )
+
+        # ── G3: Estabilidade — perfil por fold sobreposto por cluster ────────────
+        p3_stability <- lf_prop |>
+            dplyr::mutate(cluster = factor(cluster)) |>
+            ggplot2::ggplot(ggplot2::aes(
+                x     = rotulo,
+                y     = proporcao,
+                color = factor(fold),
+                group = factor(fold)
+            )) +
+            ggplot2::geom_line(alpha = 0.85, linewidth = 0.8) +
+            ggplot2::geom_point(size = 2.4) +
+            ggplot2::facet_wrap(~ paste("Cluster", cluster), ncol = 2) +
+            ggplot2::scale_color_brewer(palette = "Dark2", name = "Fold") +
+            ggplot2::scale_y_continuous(
+                labels = scales::percent_format(accuracy = 1),
+                expand = ggplot2::expansion(mult = c(0, 0.08))
+            ) +
+            ggplot2::labs(
+                title = sprintf("Estabilidade entre folds — %s | %s", ds, nbhd),
+                subtitle = "Linhas sobrepostas = partição reproduzível · linhas dispersas = instabilidade",
+                x = NULL, y = "Proporção"
+            ) +
+            ggplot2::theme_minimal(base_size = 11) +
+            ggplot2::theme(
+                axis.text.x     = ggplot2::element_text(angle = 35, hjust = 1),
+                legend.position = "top"
+            )
+
+        # ── G4: Top labelsets como proporção dentro do cluster ───────────────────
+        lsf_prop <- lsf |>
             dplyr::group_by(fold, cluster) |>
+            dplyr::mutate(prop_cluster = frequencia / sum(frequencia)) |>
             dplyr::slice_max(frequencia, n = 8, with_ties = FALSE) |>
             dplyr::ungroup() |>
-            dplyr::mutate(painel = sprintf("Fold %d — Cluster %d", fold, cluster)) |>
+            dplyr::mutate(painel = sprintf("Fold %d — Cluster %d", fold, cluster))
+
+        p4_lsets <- lsf_prop |>
             ggplot2::ggplot(ggplot2::aes(
-                x    = stats::reorder(labelset, frequencia),
-                y    = frequencia,
+                x    = stats::reorder(labelset, prop_cluster),
+                y    = prop_cluster,
                 fill = factor(cluster)
             )) +
             ggplot2::geom_col() +
-            ggplot2::coord_flip() +
-            ggplot2::facet_wrap(~ painel, scales = "free_y") +
+            ggplot2::geom_text(
+                ggplot2::aes(label = sprintf("%.1f%%", prop_cluster * 100)),
+                hjust = -0.1, size = 2.7
+            ) +
+            ggplot2::coord_flip(clip = "off") +
+            ggplot2::facet_wrap(~painel, scales = "free_y", ncol = 2) +
             ggplot2::scale_fill_brewer(palette = "Set1", name = "Cluster") +
+            ggplot2::scale_y_continuous(
+                labels = scales::percent_format(accuracy = 1),
+                expand = ggplot2::expansion(mult = c(0, 0.20))
+            ) +
             ggplot2::labs(
-                title = sprintf("Top 8 labelsets por cluster — Particao 2\n%s | %s", ds, nbhd),
-                x = "Labelset (combinacao binaria dos rotulos)", y = "Frequencia"
+                title = sprintf("Top 8 labelsets por cluster — %s | %s", ds, nbhd),
+                subtitle = "Eixo x = % das instâncias do cluster com aquele labelset",
+                x = NULL, y = "Proporção no cluster"
             ) +
             ggplot2::theme_minimal(base_size = 10) +
-            ggplot2::theme(axis.text.y = ggplot2::element_text(size = 8))
+            ggplot2::theme(
+                axis.text.y     = ggplot2::element_text(size = 7.5, family = "mono"),
+                legend.position = "top"
+            )
 
-        png_labels    <- file.path(OUTPUT_PATH, sprintf("%s_p2_label_freq.png", combo))
-        png_labelsets <- file.path(OUTPUT_PATH, sprintf("%s_p2_labelset_freq.png", combo))
-        ggplot2::ggsave(png_labels,    p_labels,    width = 12, height = 6,  dpi = 150)
-        ggplot2::ggsave(png_labelsets, p_labelsets, width = 14, height = 8,  dpi = 150)
+        # ── G5: Dominância — cobertura do labelset mais frequente por cluster ────
+        dominance_df <- lsf |>
+            dplyr::group_by(fold, cluster) |>
+            dplyr::summarise(
+                top1_freq   = max(frequencia),
+                total_freq  = sum(frequencia),
+                top1_label  = labelset[which.max(frequencia)],
+                dominancia  = top1_freq / total_freq,
+                n_labelsets = dplyr::n(),
+                .groups     = "drop"
+            ) |>
+            dplyr::mutate(cluster = factor(cluster))
 
-        pdf_analysis <- file.path(OUTPUT_PATH, sprintf("%s_p2_analysis.pdf", combo))
-        pdf(pdf_analysis, width = 14, height = 9)
-        print(p_labels)
-        print(p_labelsets)
+        p5_dominance <- dominance_df |>
+            ggplot2::ggplot(ggplot2::aes(
+                x = factor(fold), y = dominancia, fill = cluster
+            )) +
+            ggplot2::geom_col(
+                position = ggplot2::position_dodge(0.8), width = 0.65
+            ) +
+            ggplot2::geom_text(
+                ggplot2::aes(label = sprintf("%.1f%%\n%s", dominancia * 100, top1_label)),
+                position = ggplot2::position_dodge(0.8),
+                vjust = -0.25, size = 2.6, lineheight = 0.85
+            ) +
+            ggplot2::scale_fill_brewer(palette = "Set1", name = "Cluster") +
+            ggplot2::scale_y_continuous(
+                labels = scales::percent_format(accuracy = 1),
+                expand = ggplot2::expansion(mult = c(0, 0.28))
+            ) +
+            ggplot2::labs(
+                title = sprintf("Dominância do labelset mais frequente — %s | %s", ds, nbhd),
+                subtitle = "% das instâncias do cluster cobertas pelo labelset modal · rótulo indicado acima de cada barra",
+                x = "Fold", y = "Dominância"
+            ) +
+            ggplot2::theme_minimal(base_size = 11) +
+            ggplot2::theme(legend.position = "top")
+
+        # ── Salva PNGs e PDF consolidado ─────────────────────────────────────────
+        plots_to_save <- list(
+            list(plot = p1_prop, file = sprintf("%s_p2_prop_errorbar.png", combo), w = 11, h = 5.5),
+            list(plot = p2_heat, file = sprintf("%s_p2_heatmap.png", combo), w = 10, h = 4.0),
+            list(plot = p3_stability, file = sprintf("%s_p2_stability.png", combo), w = 11, h = 6.0),
+            list(plot = p4_lsets, file = sprintf("%s_p2_labelsets_prop.png", combo), w = 14, h = 9.0),
+            list(plot = p5_dominance, file = sprintf("%s_p2_dominance.png", combo), w = 10, h = 5.5)
+        )
+
+        for (item in plots_to_save) {
+            ggplot2::ggsave(
+                file.path(OUTPUT_PATH, item$file), item$plot,
+                width = item$w, height = item$h, dpi = 150
+            )
+        }
+
+        pdf(file.path(OUTPUT_PATH, sprintf("%s_p2_analysis.pdf", combo)), width = 14, height = 9)
+        for (item in plots_to_save) print(item$plot)
         dev.off()
 
         cat(sprintf("  Outputs da particao 2 salvos para: %s\n", combo))
+    }
+
+    # ── G6: Comparação gaussian vs bubble (mesmo dataset) ───────────────────────
+    if (length(combos_data) == 2) {
+        lf_both <- purrr::imap_dfr(combos_data, function(p2_nbhd, nbhd) {
+            p2_nbhd$label_freq |> dplyr::mutate(neighborhood = nbhd)
+        }) |>
+            dplyr::mutate(dplyr::across(
+                dplyr::all_of(label_names),
+                ~ .x / n_instancias,
+                .names = "prop_{.col}"
+            )) |>
+            tidyr::pivot_longer(
+                cols         = dplyr::starts_with("prop_"),
+                names_to     = "rotulo",
+                names_prefix = "prop_",
+                values_to    = "proporcao"
+            ) |>
+            dplyr::group_by(neighborhood, cluster, rotulo) |>
+            dplyr::summarise(media = mean(proporcao), .groups = "drop") |>
+            dplyr::mutate(
+                cluster = factor(cluster),
+                grupo = interaction(cluster, neighborhood, sep = " · "),
+                neighborhood = factor(neighborhood, levels = TARGET_NEIGHBORHOODS)
+            )
+
+        p6_compare <- lf_both |>
+            ggplot2::ggplot(ggplot2::aes(
+                x    = rotulo,
+                y    = media,
+                fill = grupo
+            )) +
+            ggplot2::geom_col(
+                position = ggplot2::position_dodge(width = 0.85), width = 0.75
+            ) +
+            ggplot2::scale_fill_brewer(palette = "Paired", name = "Cluster · Vizinhança") +
+            ggplot2::scale_y_continuous(
+                labels = scales::percent_format(accuracy = 1),
+                expand = ggplot2::expansion(mult = c(0, 0.08))
+            ) +
+            ggplot2::labs(
+                title = sprintf("Comparação entre vizinhanças — %s", ds),
+                subtitle = "Avalia se gaussian e bubble produzem partições semanticamente equivalentes (proporções médias entre folds)",
+                x = NULL, y = "Proporção média"
+            ) +
+            ggplot2::theme_minimal(base_size = 11) +
+            ggplot2::theme(
+                axis.text.x     = ggplot2::element_text(angle = 35, hjust = 1),
+                legend.position = "top"
+            )
+
+        ggplot2::ggsave(
+            file.path(OUTPUT_PATH, sprintf("%s_p2_neighborhood_comparison.png", ds)),
+            p6_compare,
+            width = 12, height = 6, dpi = 150
+        )
+        pdf(
+            file.path(OUTPUT_PATH, sprintf("%s_p2_neighborhood_comparison.pdf", ds)),
+            width = 14, height = 8
+        )
+        print(p6_compare)
+        dev.off()
+
+        cat(sprintf("\n  Comparacao entre vizinhancas salva para: %s\n", ds))
     }
 }
 ```
 
 
     === PARTICAO 2: EMOTIONS | GAUSSIAN ===
-
-    Frequencia agregada por cluster (soma dos 3 folds):
     # A tibble: 2 × 8
       cluster total_instancias amazed.suprised happy.pleased relaxing.calm
         <int>            <int>           <int>         <int>         <int>
-    1       1              350              47           103           230
-    2       2              243             126            63            34
+    1       1              424             111           158           230
+    2       2              169              62             8            34
     # ℹ 3 more variables: quiet.still <int>, sad.lonely <int>,
     #   angry.aggresive <int>
 
       Outputs da particao 2 salvos para: emotions_gaussian
 
     === PARTICAO 2: EMOTIONS | BUBBLE ===
-
-    Frequencia agregada por cluster (soma dos 3 folds):
     # A tibble: 2 × 8
       cluster total_instancias amazed.suprised happy.pleased relaxing.calm
         <int>            <int>           <int>         <int>         <int>
-    1       1              282              57            55           161
-    2       2              311             116           111           103
+    1       1              360             118           141           164
+    2       2              233              55            25           100
     # ℹ 3 more variables: quiet.still <int>, sad.lonely <int>,
     #   angry.aggresive <int>
 
       Outputs da particao 2 salvos para: emotions_bubble
 
-    === PARTICAO 2: SCENE | GAUSSIAN ===
 
-    Frequencia agregada por cluster (soma dos 3 folds):
+      Comparacao entre vizinhancas salva para: emotions
+
+    === PARTICAO 2: SCENE | GAUSSIAN ===
     # A tibble: 2 × 8
       cluster total_instancias Beach Sunset FallFoliage Field Mountain Urban
         <int>            <int> <int>  <int>       <int> <int>    <int> <int>
-    1       1             1698   285    243         384   261      330   286
-    2       2              709   142    121          13   172      203   145
+    1       1             1874   389    364         383   357        0   430
+    2       2              533    38      0          14    76      533     1
 
       Outputs da particao 2 salvos para: scene_gaussian
 
     === PARTICAO 2: SCENE | BUBBLE ===
-
-    Frequencia agregada por cluster (soma dos 3 folds):
     # A tibble: 2 × 8
       cluster total_instancias Beach Sunset FallFoliage Field Mountain Urban
         <int>            <int> <int>  <int>       <int> <int>    <int> <int>
-    1       1             2043   427      0         397   433      533   431
-    2       2              364     0    364           0     0        0     0
+    1       1             1592   277    242         397   294      360   144
+    2       2              815   150    122           0   139      173   287
 
       Outputs da particao 2 salvos para: scene_bubble
+
+
+      Comparacao entre vizinhancas salva para: scene
+
+------------------------------------------------------------------------
+
+### O que cada gráfico agrega
+
+| \# | Gráfico | Por que é melhor |
+|----|----|----|
+| **G1** | Proporções médias + barras de erro ±1 DP | Normaliza pelo tamanho do cluster; barras de erro revelam estabilidade em uma única imagem |
+| **G2** | Heatmap rótulo × cluster | Visão matricial imediata — qual rótulo “pertence” a qual cluster, com o DP para credibilidade |
+| **G3** | Perfis dos 3 folds sobrepostos por cluster | Substitui as 3 facetas soltas; linhas sobrepostas = estável, linhas abertas = instável — julgamento imediato |
+| **G4** | Labelsets como % dentro do cluster | Comparação justa independente do tamanho dos clusters |
+| **G5** | Dominância do labelset modal | Nova análise: mostra se um cluster tem um labelset claramente dominante ou é fragmentado — útil para discutir coesão semântica |
+| **G6** | Gaussian vs bubble lado a lado | Nova análise: responde diretamente “as duas vizinhanças produzem partições equivalentes?” |
 
 ## Sumário Final dos Outputs
 
@@ -1230,19 +1577,19 @@ sessionInfo()
     [8] base     
 
     other attached packages:
-     [1] cluster_2.1.8   gridExtra_2.3   kohonen_3.0.12  lubridate_1.9.4
-     [5] forcats_1.0.1   stringr_1.6.0   dplyr_1.1.4     purrr_1.2.1    
-     [9] readr_2.1.6     tidyr_1.3.2     tibble_3.3.1    ggplot2_4.0.1  
-    [13] tidyverse_2.0.0
+     [1] scales_1.4.0    cluster_2.1.8   gridExtra_2.3   kohonen_3.0.12 
+     [5] lubridate_1.9.4 forcats_1.0.1   stringr_1.6.0   dplyr_1.1.4    
+     [9] purrr_1.2.1     readr_2.1.6     tidyr_1.3.2     tibble_3.3.1   
+    [13] ggplot2_4.0.1   tidyverse_2.0.0
 
     loaded via a namespace (and not attached):
      [1] gtable_0.3.6       jsonlite_2.0.0     compiler_4.4.3     Rcpp_1.1.1        
-     [5] tidyselect_1.2.1   textshaping_1.0.4  systemfonts_1.3.1  scales_1.4.0      
-     [9] yaml_2.3.12        fastmap_1.2.0      R6_2.6.1           labeling_0.4.3    
-    [13] generics_0.1.4     knitr_1.51         pillar_1.11.1      RColorBrewer_1.1-3
-    [17] tzdb_0.5.0         rlang_1.1.7        utf8_1.2.6         stringi_1.8.7     
-    [21] xfun_0.56          S7_0.2.1           otel_0.2.0         timechange_0.3.0  
-    [25] cli_3.6.5          withr_3.0.2        magrittr_2.0.4     digest_0.6.39     
-    [29] hms_1.1.4          lifecycle_1.0.5    vctrs_0.7.0        evaluate_1.0.5    
-    [33] glue_1.8.0         farver_2.1.2       ragg_1.5.0         rmarkdown_2.30    
-    [37] tools_4.4.3        pkgconfig_2.0.3    htmltools_0.5.9   
+     [5] tidyselect_1.2.1   textshaping_1.0.4  systemfonts_1.3.1  yaml_2.3.12       
+     [9] fastmap_1.2.0      R6_2.6.1           labeling_0.4.3     generics_0.1.4    
+    [13] knitr_1.51         pillar_1.11.1      RColorBrewer_1.1-3 tzdb_0.5.0        
+    [17] rlang_1.1.7        utf8_1.2.6         stringi_1.8.7      xfun_0.56         
+    [21] S7_0.2.1           otel_0.2.0         timechange_0.3.0   cli_3.6.5         
+    [25] withr_3.0.2        magrittr_2.0.4     digest_0.6.39      hms_1.1.4         
+    [29] lifecycle_1.0.5    vctrs_0.7.0        evaluate_1.0.5     glue_1.8.0        
+    [33] farver_2.1.2       ragg_1.5.0         rmarkdown_2.30     tools_4.4.3       
+    [37] pkgconfig_2.0.3    htmltools_0.5.9   

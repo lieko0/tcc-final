@@ -1,7 +1,7 @@
 ---
 title: "Script 2 — Avaliação do Modelo e Análise de Partições"
 subtitle: "Treino com melhores parâmetros, geração de partições e análise da partição 2"
-format: markdown_github
+format: gfm
 ---
 
 ## Configuração
@@ -116,7 +116,7 @@ cluster_codebook <- function(model, k, method = "complete") {
 # Constrói dataframe: instância → neurônio, cluster e rótulos
 build_instance_df <- function(model, Y_train, label_names, clusters) {
     df <- data.frame(
-        neuron  = model$unit.classif,
+        neuron = model$unit.classif,
         cluster = clusters[model$unit.classif],
         distance = model$distances,
         labelset = apply(Y_train, 1, paste, collapse = ""),
@@ -482,17 +482,16 @@ for (ds in TARGET_DATASETS) {
             for (k in 2:max_k) {
                 clusters <- as.integer(cutree(dend, k = k))
                 instance_df <- build_instance_df(model, Y_tr, label_names, clusters)
-                write.csv(instance_df |>
-                    dplyr::group_by(labelset) |>
-                    dplyr::summarise(
-                        n = dplyr::n(), 
-                        mean_distance = mean(distance),
-                        cluster_neuron = paste0("C", unique(cluster), "N", unique(neuron)), 
-                        .groups = "drop") |>
-                    dplyr::arrange(cluster_neuron, dplyr::desc(mean_distance))
-
-                    
-                    ,
+                write.csv(
+                    instance_df |>
+                        dplyr::group_by(labelset) |>
+                        dplyr::summarise(
+                            n = dplyr::n(),
+                            mean_distance = mean(distance),
+                            cluster_neuron = paste0("C", unique(cluster), "N", unique(neuron)),
+                            .groups = "drop"
+                        ) |>
+                        dplyr::arrange(cluster_neuron, dplyr::desc(mean_distance)),
                     file.path(OUTPUT_PATH, sprintf("%s_fold%d_k%d_instance_df.csv", combo, fold, k)),
                     row.names = FALSE
                 )
@@ -788,16 +787,17 @@ for (ds in TARGET_DATASETS) {
     combos_data <- list()
     for (nbhd in TARGET_NEIGHBORHOODS) {
         combo <- sprintf("%s_%s", ds, nbhd)
-        if (!is.null(partition2_data[[combo]]))
+        if (!is.null(partition2_data[[combo]])) {
             combos_data[[nbhd]] <- partition2_data[[combo]]
+        }
     }
 
     for (nbhd in TARGET_NEIGHBORHOODS) {
         combo <- sprintf("%s_%s", ds, nbhd)
-        p2    <- partition2_data[[combo]]
+        p2 <- partition2_data[[combo]]
         if (is.null(p2)) next
 
-        lf  <- p2$label_freq
+        lf <- p2$label_freq
         lsf <- p2$labelset_freq
 
         cat(sprintf("\n=== PARTICAO 2: %s | %s ===\n", toupper(ds), toupper(nbhd)))
@@ -814,7 +814,8 @@ for (ds in TARGET_DATASETS) {
         lf_prop <- lf |>
             dplyr::mutate(dplyr::across(
                 dplyr::all_of(label_names),
-                ~ .x / n_instancias, .names = "prop_{.col}"
+                ~ .x / n_instancias,
+                .names = "prop_{.col}"
             )) |>
             tidyr::pivot_longer(
                 cols         = dplyr::starts_with("prop_"),
@@ -828,7 +829,7 @@ for (ds in TARGET_DATASETS) {
             dplyr::group_by(cluster, rotulo) |>
             dplyr::summarise(
                 media = mean(proporcao),
-                sd    = sd(proporcao),
+                sd = sd(proporcao),
                 .groups = "drop"
             ) |>
             dplyr::mutate(cluster = factor(cluster))
@@ -841,8 +842,8 @@ for (ds in TARGET_DATASETS) {
             ) +
             ggplot2::geom_errorbar(
                 ggplot2::aes(ymin = pmax(media - sd, 0), ymax = media + sd),
-                position  = ggplot2::position_dodge(width = 0.8),
-                width     = 0.25, linewidth = 0.5, color = "grey30"
+                position = ggplot2::position_dodge(width = 0.8),
+                width = 0.25, linewidth = 0.5, color = "grey30"
             ) +
             ggplot2::scale_fill_brewer(palette = "Set1", name = "Cluster") +
             ggplot2::scale_y_continuous(
@@ -850,7 +851,7 @@ for (ds in TARGET_DATASETS) {
                 expand = ggplot2::expansion(mult = c(0, 0.08))
             ) +
             ggplot2::labs(
-                title    = sprintf("Proporção média de rótulos por cluster — %s | %s", ds, nbhd),
+                title = sprintf("Proporção média de rótulos por cluster — %s | %s", ds, nbhd),
                 subtitle = "Barras de erro = ±1 DP entre folds · quanto mais sobrepostas, mais instável a partição",
                 x = NULL, y = "Proporção de instâncias com o rótulo"
             ) +
@@ -869,12 +870,12 @@ for (ds in TARGET_DATASETS) {
                 size = 3.2
             ) +
             ggplot2::scale_fill_distiller(
-                palette  = "YlOrRd", direction = 1,
-                name     = "Proporção\nmédia",
-                labels   = scales::percent_format(accuracy = 1)
+                palette = "YlOrRd", direction = 1,
+                name = "Proporção\nmédia",
+                labels = scales::percent_format(accuracy = 1)
             ) +
             ggplot2::labs(
-                title    = sprintf("Heatmap de rótulos por cluster — %s | %s", ds, nbhd),
+                title = sprintf("Heatmap de rótulos por cluster — %s | %s", ds, nbhd),
                 subtitle = "Células: proporção média (linha 1) ± DP entre folds (linha 2)",
                 x = "Rótulo", y = "Cluster"
             ) +
@@ -902,7 +903,7 @@ for (ds in TARGET_DATASETS) {
                 expand = ggplot2::expansion(mult = c(0, 0.08))
             ) +
             ggplot2::labs(
-                title    = sprintf("Estabilidade entre folds — %s | %s", ds, nbhd),
+                title = sprintf("Estabilidade entre folds — %s | %s", ds, nbhd),
                 subtitle = "Linhas sobrepostas = partição reproduzível · linhas dispersas = instabilidade",
                 x = NULL, y = "Proporção"
             ) +
@@ -932,14 +933,14 @@ for (ds in TARGET_DATASETS) {
                 hjust = -0.1, size = 2.7
             ) +
             ggplot2::coord_flip(clip = "off") +
-            ggplot2::facet_wrap(~ painel, scales = "free_y", ncol = 2) +
+            ggplot2::facet_wrap(~painel, scales = "free_y", ncol = 2) +
             ggplot2::scale_fill_brewer(palette = "Set1", name = "Cluster") +
             ggplot2::scale_y_continuous(
                 labels = scales::percent_format(accuracy = 1),
                 expand = ggplot2::expansion(mult = c(0, 0.20))
             ) +
             ggplot2::labs(
-                title    = sprintf("Top 8 labelsets por cluster — %s | %s", ds, nbhd),
+                title = sprintf("Top 8 labelsets por cluster — %s | %s", ds, nbhd),
                 subtitle = "Eixo x = % das instâncias do cluster com aquele labelset",
                 x = NULL, y = "Proporção no cluster"
             ) +
@@ -971,8 +972,8 @@ for (ds in TARGET_DATASETS) {
             ) +
             ggplot2::geom_text(
                 ggplot2::aes(label = sprintf("%.1f%%\n%s", dominancia * 100, top1_label)),
-                position  = ggplot2::position_dodge(0.8),
-                vjust     = -0.25, size = 2.6, lineheight = 0.85
+                position = ggplot2::position_dodge(0.8),
+                vjust = -0.25, size = 2.6, lineheight = 0.85
             ) +
             ggplot2::scale_fill_brewer(palette = "Set1", name = "Cluster") +
             ggplot2::scale_y_continuous(
@@ -980,7 +981,7 @@ for (ds in TARGET_DATASETS) {
                 expand = ggplot2::expansion(mult = c(0, 0.28))
             ) +
             ggplot2::labs(
-                title    = sprintf("Dominância do labelset mais frequente — %s | %s", ds, nbhd),
+                title = sprintf("Dominância do labelset mais frequente — %s | %s", ds, nbhd),
                 subtitle = "% das instâncias do cluster cobertas pelo labelset modal · rótulo indicado acima de cada barra",
                 x = "Fold", y = "Dominância"
             ) +
@@ -989,11 +990,11 @@ for (ds in TARGET_DATASETS) {
 
         # ── Salva PNGs e PDF consolidado ─────────────────────────────────────────
         plots_to_save <- list(
-            list(plot = p1_prop,      file = sprintf("%s_p2_prop_errorbar.png",   combo), w = 11, h = 5.5),
-            list(plot = p2_heat,      file = sprintf("%s_p2_heatmap.png",         combo), w = 10, h = 4.0),
-            list(plot = p3_stability, file = sprintf("%s_p2_stability.png",       combo), w = 11, h = 6.0),
-            list(plot = p4_lsets,     file = sprintf("%s_p2_labelsets_prop.png",  combo), w = 14, h = 9.0),
-            list(plot = p5_dominance, file = sprintf("%s_p2_dominance.png",       combo), w = 10, h = 5.5)
+            list(plot = p1_prop, file = sprintf("%s_p2_prop_errorbar.png", combo), w = 11, h = 5.5),
+            list(plot = p2_heat, file = sprintf("%s_p2_heatmap.png", combo), w = 10, h = 4.0),
+            list(plot = p3_stability, file = sprintf("%s_p2_stability.png", combo), w = 11, h = 6.0),
+            list(plot = p4_lsets, file = sprintf("%s_p2_labelsets_prop.png", combo), w = 14, h = 9.0),
+            list(plot = p5_dominance, file = sprintf("%s_p2_dominance.png", combo), w = 10, h = 5.5)
         )
 
         for (item in plots_to_save) {
@@ -1017,7 +1018,8 @@ for (ds in TARGET_DATASETS) {
         }) |>
             dplyr::mutate(dplyr::across(
                 dplyr::all_of(label_names),
-                ~ .x / n_instancias, .names = "prop_{.col}"
+                ~ .x / n_instancias,
+                .names = "prop_{.col}"
             )) |>
             tidyr::pivot_longer(
                 cols         = dplyr::starts_with("prop_"),
@@ -1028,8 +1030,8 @@ for (ds in TARGET_DATASETS) {
             dplyr::group_by(neighborhood, cluster, rotulo) |>
             dplyr::summarise(media = mean(proporcao), .groups = "drop") |>
             dplyr::mutate(
-                cluster     = factor(cluster),
-                grupo       = interaction(cluster, neighborhood, sep = " · "),
+                cluster = factor(cluster),
+                grupo = interaction(cluster, neighborhood, sep = " · "),
                 neighborhood = factor(neighborhood, levels = TARGET_NEIGHBORHOODS)
             )
 
@@ -1048,7 +1050,7 @@ for (ds in TARGET_DATASETS) {
                 expand = ggplot2::expansion(mult = c(0, 0.08))
             ) +
             ggplot2::labs(
-                title    = sprintf("Comparação entre vizinhanças — %s", ds),
+                title = sprintf("Comparação entre vizinhanças — %s", ds),
                 subtitle = "Avalia se gaussian e bubble produzem partições semanticamente equivalentes (proporções médias entre folds)",
                 x = NULL, y = "Proporção média"
             ) +
@@ -1060,7 +1062,8 @@ for (ds in TARGET_DATASETS) {
 
         ggplot2::ggsave(
             file.path(OUTPUT_PATH, sprintf("%s_p2_neighborhood_comparison.png", ds)),
-            p6_compare, width = 12, height = 6, dpi = 150
+            p6_compare,
+            width = 12, height = 6, dpi = 150
         )
         pdf(
             file.path(OUTPUT_PATH, sprintf("%s_p2_neighborhood_comparison.pdf", ds)),

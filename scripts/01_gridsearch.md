@@ -234,582 +234,582 @@ for (i in seq_len(nrow(param_grid))) {
 }
 ```
 
-    [    0.2s]    1/576 | emotions  fold1 | gaussian_rectangular     | rlen= 100 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.58947
-    [    0.2s]    2/576 | emotions  fold1 | gaussian_rectangular     | rlen= 500 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.60297
-    [    0.4s]    3/576 | emotions  fold1 | gaussian_rectangular     | rlen=1000 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.58452
-    [    0.4s]    4/576 | emotions  fold1 | gaussian_rectangular     | rlen= 100 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.57278
-    [    0.4s]    5/576 | emotions  fold1 | gaussian_rectangular     | rlen= 500 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.59292
-    [    0.6s]    6/576 | emotions  fold1 | gaussian_rectangular     | rlen=1000 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.60109
-    [    0.6s]    7/576 | emotions  fold1 | gaussian_rectangular     | rlen= 100 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.58405
-    [    0.7s]    8/576 | emotions  fold1 | gaussian_rectangular     | rlen= 500 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.58106
-    [    0.7s]    9/576 | emotions  fold1 | gaussian_rectangular     | rlen=1000 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.57628
-    [    0.8s]   10/576 | emotions  fold1 | gaussian_rectangular     | rlen= 100 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.60340
-    [    0.8s]   11/576 | emotions  fold1 | gaussian_rectangular     | rlen= 500 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.58918
-    [    0.9s]   12/576 | emotions  fold1 | gaussian_rectangular     | rlen=1000 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.57492
-    [    0.9s]   13/576 | emotions  fold1 | gaussian_rectangular     | rlen= 100 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.58126
-    [    0.9s]   14/576 | emotions  fold1 | gaussian_rectangular     | rlen= 500 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.60385
-    [    1.0s]   15/576 | emotions  fold1 | gaussian_rectangular     | rlen=1000 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.57923
-    [    1.0s]   16/576 | emotions  fold1 | gaussian_rectangular     | rlen= 100 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.60119
-    [    1.1s]   17/576 | emotions  fold1 | gaussian_rectangular     | rlen= 500 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.58631
-    [    1.2s]   18/576 | emotions  fold1 | gaussian_rectangular     | rlen=1000 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.59192
-    [    1.3s]   19/576 | emotions  fold1 | gaussian_rectangular     | rlen= 100 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.58184
-    [    1.3s]   20/576 | emotions  fold1 | gaussian_rectangular     | rlen= 500 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.58565
-    [    1.4s]   21/576 | emotions  fold1 | gaussian_rectangular     | rlen=1000 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.58055
-    [    1.5s]   22/576 | emotions  fold1 | gaussian_rectangular     | rlen= 100 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.58727
-    [    1.5s]   23/576 | emotions  fold1 | gaussian_rectangular     | rlen= 500 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.58196
-    [    1.6s]   24/576 | emotions  fold1 | gaussian_rectangular     | rlen=1000 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.57241
-    [    1.6s]   25/576 | emotions  fold1 | gaussian_hexagonal       | rlen= 100 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.59885
-    [    1.7s]   26/576 | emotions  fold1 | gaussian_hexagonal       | rlen= 500 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.58747
-    [    1.8s]   27/576 | emotions  fold1 | gaussian_hexagonal       | rlen=1000 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.56442
-    [    1.8s]   28/576 | emotions  fold1 | gaussian_hexagonal       | rlen= 100 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.57297
-    [    1.9s]   29/576 | emotions  fold1 | gaussian_hexagonal       | rlen= 500 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.55395
-    [    1.9s]   30/576 | emotions  fold1 | gaussian_hexagonal       | rlen=1000 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.54516
-    [    2.0s]   31/576 | emotions  fold1 | gaussian_hexagonal       | rlen= 100 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.55897
-    [    2.0s]   32/576 | emotions  fold1 | gaussian_hexagonal       | rlen= 500 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.54414
-    [    2.1s]   33/576 | emotions  fold1 | gaussian_hexagonal       | rlen=1000 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.54744
-    [    2.1s]   34/576 | emotions  fold1 | gaussian_hexagonal       | rlen= 100 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.54472
-    [    2.2s]   35/576 | emotions  fold1 | gaussian_hexagonal       | rlen= 500 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.55074
-    [    2.3s]   36/576 | emotions  fold1 | gaussian_hexagonal       | rlen=1000 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.55720
-    [    2.3s]   37/576 | emotions  fold1 | gaussian_hexagonal       | rlen= 100 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.56643
-    [    2.4s]   38/576 | emotions  fold1 | gaussian_hexagonal       | rlen= 500 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.55016
-    [    2.5s]   39/576 | emotions  fold1 | gaussian_hexagonal       | rlen=1000 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.54718
-    [    2.5s]   40/576 | emotions  fold1 | gaussian_hexagonal       | rlen= 100 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.56261
-    [    2.5s]   41/576 | emotions  fold1 | gaussian_hexagonal       | rlen= 500 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.56228
-    [    2.6s]   42/576 | emotions  fold1 | gaussian_hexagonal       | rlen=1000 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.54419
-    [    2.6s]   43/576 | emotions  fold1 | gaussian_hexagonal       | rlen= 100 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.55823
-    [    2.6s]   44/576 | emotions  fold1 | gaussian_hexagonal       | rlen= 500 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.55115
-    [    2.7s]   45/576 | emotions  fold1 | gaussian_hexagonal       | rlen=1000 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.54507
-    [    2.7s]   46/576 | emotions  fold1 | gaussian_hexagonal       | rlen= 100 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.54615
-    [    2.8s]   47/576 | emotions  fold1 | gaussian_hexagonal       | rlen= 500 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.55914
-    [    2.8s]   48/576 | emotions  fold1 | gaussian_hexagonal       | rlen=1000 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.54736
-    [    2.8s]   49/576 | emotions  fold1 | bubble_rectangular       | rlen= 100 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.49540
-    [    2.8s]   50/576 | emotions  fold1 | bubble_rectangular       | rlen= 500 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.50326
-    [    2.9s]   51/576 | emotions  fold1 | bubble_rectangular       | rlen=1000 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.46588
-    [    2.9s]   52/576 | emotions  fold1 | bubble_rectangular       | rlen= 100 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.50817
-    [    2.9s]   53/576 | emotions  fold1 | bubble_rectangular       | rlen= 500 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.48502
-    [    2.9s]   54/576 | emotions  fold1 | bubble_rectangular       | rlen=1000 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.45848
-    [    3.0s]   55/576 | emotions  fold1 | bubble_rectangular       | rlen= 100 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.46714
-    [    3.0s]   56/576 | emotions  fold1 | bubble_rectangular       | rlen= 500 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.48117
-    [    3.0s]   57/576 | emotions  fold1 | bubble_rectangular       | rlen=1000 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.45838
-    [    3.0s]   58/576 | emotions  fold1 | bubble_rectangular       | rlen= 100 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.48262
-    [    3.1s]   59/576 | emotions  fold1 | bubble_rectangular       | rlen= 500 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.45927
-    [    3.1s]   60/576 | emotions  fold1 | bubble_rectangular       | rlen=1000 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.45895
-    [    3.1s]   61/576 | emotions  fold1 | bubble_rectangular       | rlen= 100 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.50928
-    [    3.1s]   62/576 | emotions  fold1 | bubble_rectangular       | rlen= 500 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.49606
-    [    3.2s]   63/576 | emotions  fold1 | bubble_rectangular       | rlen=1000 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.46671
-    [    3.2s]   64/576 | emotions  fold1 | bubble_rectangular       | rlen= 100 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.48128
-    [    3.2s]   65/576 | emotions  fold1 | bubble_rectangular       | rlen= 500 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.46628
-    [    3.2s]   66/576 | emotions  fold1 | bubble_rectangular       | rlen=1000 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.45904
-    [    3.2s]   67/576 | emotions  fold1 | bubble_rectangular       | rlen= 100 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.45974
-    [    3.2s]   68/576 | emotions  fold1 | bubble_rectangular       | rlen= 500 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.45997
-    [    3.3s]   69/576 | emotions  fold1 | bubble_rectangular       | rlen=1000 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.46405
-    [    3.3s]   70/576 | emotions  fold1 | bubble_rectangular       | rlen= 100 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.49608
-    [    3.3s]   71/576 | emotions  fold1 | bubble_rectangular       | rlen= 500 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.46150
-    [    3.3s]   72/576 | emotions  fold1 | bubble_rectangular       | rlen=1000 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.45905
-    [    3.4s]   73/576 | emotions  fold1 | bubble_hexagonal         | rlen= 100 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.49530
-    [    3.4s]   74/576 | emotions  fold1 | bubble_hexagonal         | rlen= 500 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.48157
-    [    3.4s]   75/576 | emotions  fold1 | bubble_hexagonal         | rlen=1000 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.50848
-    [    3.5s]   76/576 | emotions  fold1 | bubble_hexagonal         | rlen= 100 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.48383
-    [    3.5s]   77/576 | emotions  fold1 | bubble_hexagonal         | rlen= 500 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.50223
-    [    3.5s]   78/576 | emotions  fold1 | bubble_hexagonal         | rlen=1000 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.45852
-    [    3.6s]   79/576 | emotions  fold1 | bubble_hexagonal         | rlen= 100 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.45935
-    [    3.6s]   80/576 | emotions  fold1 | bubble_hexagonal         | rlen= 500 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.46619
-    [    3.6s]   81/576 | emotions  fold1 | bubble_hexagonal         | rlen=1000 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.45839
-    [    3.6s]   82/576 | emotions  fold1 | bubble_hexagonal         | rlen= 100 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.46685
-    [    3.7s]   83/576 | emotions  fold1 | bubble_hexagonal         | rlen= 500 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.46006
-    [    3.8s]   84/576 | emotions  fold1 | bubble_hexagonal         | rlen=1000 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.46048
-    [    3.8s]   85/576 | emotions  fold1 | bubble_hexagonal         | rlen= 100 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.46007
-    [    3.8s]   86/576 | emotions  fold1 | bubble_hexagonal         | rlen= 500 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.50498
-    [    3.9s]   87/576 | emotions  fold1 | bubble_hexagonal         | rlen=1000 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.46586
-    [    3.9s]   88/576 | emotions  fold1 | bubble_hexagonal         | rlen= 100 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.52202
-    [    3.9s]   89/576 | emotions  fold1 | bubble_hexagonal         | rlen= 500 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.49640
-    [    3.9s]   90/576 | emotions  fold1 | bubble_hexagonal         | rlen=1000 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.48562
-    [    3.9s]   91/576 | emotions  fold1 | bubble_hexagonal         | rlen= 100 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.46887
-    [    4.0s]   92/576 | emotions  fold1 | bubble_hexagonal         | rlen= 500 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.48211
-    [    4.0s]   93/576 | emotions  fold1 | bubble_hexagonal         | rlen=1000 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.48336
-    [    4.0s]   94/576 | emotions  fold1 | bubble_hexagonal         | rlen= 100 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.45960
-    [    4.1s]   95/576 | emotions  fold1 | bubble_hexagonal         | rlen= 500 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.48462
-    [    4.1s]   96/576 | emotions  fold1 | bubble_hexagonal         | rlen=1000 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.46684
-    [    4.2s]   97/576 | scene     fold1 | gaussian_rectangular     | rlen= 100 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.44836
-    [    4.4s]   98/576 | scene     fold1 | gaussian_rectangular     | rlen= 500 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.44930
-    [    4.7s]   99/576 | scene     fold1 | gaussian_rectangular     | rlen=1000 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.45709
-    [    4.8s]  100/576 | scene     fold1 | gaussian_rectangular     | rlen= 100 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.44819
-    [    4.9s]  101/576 | scene     fold1 | gaussian_rectangular     | rlen= 500 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.44831
-    [    5.3s]  102/576 | scene     fold1 | gaussian_rectangular     | rlen=1000 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.45070
-    [    5.3s]  103/576 | scene     fold1 | gaussian_rectangular     | rlen= 100 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.45277
-    [    5.5s]  104/576 | scene     fold1 | gaussian_rectangular     | rlen= 500 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.43875
-    [    5.8s]  105/576 | scene     fold1 | gaussian_rectangular     | rlen=1000 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.45160
-    [    5.8s]  106/576 | scene     fold1 | gaussian_rectangular     | rlen= 100 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.45195
-    [    6.0s]  107/576 | scene     fold1 | gaussian_rectangular     | rlen= 500 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.44767
-    [    6.3s]  108/576 | scene     fold1 | gaussian_rectangular     | rlen=1000 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.44869
-    [    6.3s]  109/576 | scene     fold1 | gaussian_rectangular     | rlen= 100 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.44732
-    [    6.4s]  110/576 | scene     fold1 | gaussian_rectangular     | rlen= 500 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.46105
-    [    6.8s]  111/576 | scene     fold1 | gaussian_rectangular     | rlen=1000 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.44744
-    [    6.8s]  112/576 | scene     fold1 | gaussian_rectangular     | rlen= 100 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.44964
-    [    7.0s]  113/576 | scene     fold1 | gaussian_rectangular     | rlen= 500 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.45004
-    [    7.3s]  114/576 | scene     fold1 | gaussian_rectangular     | rlen=1000 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.46817
-    [    7.3s]  115/576 | scene     fold1 | gaussian_rectangular     | rlen= 100 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.44672
-    [    7.4s]  116/576 | scene     fold1 | gaussian_rectangular     | rlen= 500 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.45492
-    [    7.7s]  117/576 | scene     fold1 | gaussian_rectangular     | rlen=1000 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.45218
-    [    7.8s]  118/576 | scene     fold1 | gaussian_rectangular     | rlen= 100 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.45225
-    [    8.0s]  119/576 | scene     fold1 | gaussian_rectangular     | rlen= 500 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.44157
-    [    8.3s]  120/576 | scene     fold1 | gaussian_rectangular     | rlen=1000 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.45487
-    [    8.3s]  121/576 | scene     fold1 | gaussian_hexagonal       | rlen= 100 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.44031
-    [    8.4s]  122/576 | scene     fold1 | gaussian_hexagonal       | rlen= 500 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.43036
-    [    8.7s]  123/576 | scene     fold1 | gaussian_hexagonal       | rlen=1000 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.43340
-    [    8.7s]  124/576 | scene     fold1 | gaussian_hexagonal       | rlen= 100 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.43715
-    [    8.9s]  125/576 | scene     fold1 | gaussian_hexagonal       | rlen= 500 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.42973
-    [    9.2s]  126/576 | scene     fold1 | gaussian_hexagonal       | rlen=1000 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.45373
-    [    9.2s]  127/576 | scene     fold1 | gaussian_hexagonal       | rlen= 100 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.43472
-    [    9.4s]  128/576 | scene     fold1 | gaussian_hexagonal       | rlen= 500 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.43822
-    [    9.6s]  129/576 | scene     fold1 | gaussian_hexagonal       | rlen=1000 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.42607
-    [    9.6s]  130/576 | scene     fold1 | gaussian_hexagonal       | rlen= 100 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.44552
-    [    9.8s]  131/576 | scene     fold1 | gaussian_hexagonal       | rlen= 500 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.43289
-    [   10.0s]  132/576 | scene     fold1 | gaussian_hexagonal       | rlen=1000 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.42751
-    [   10.1s]  133/576 | scene     fold1 | gaussian_hexagonal       | rlen= 100 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.46975
-    [   10.2s]  134/576 | scene     fold1 | gaussian_hexagonal       | rlen= 500 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.43538
-    [   10.5s]  135/576 | scene     fold1 | gaussian_hexagonal       | rlen=1000 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.43567
-    [   10.5s]  136/576 | scene     fold1 | gaussian_hexagonal       | rlen= 100 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.43598
-    [   10.6s]  137/576 | scene     fold1 | gaussian_hexagonal       | rlen= 500 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.44366
-    [   10.9s]  138/576 | scene     fold1 | gaussian_hexagonal       | rlen=1000 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.43613
-    [   10.9s]  139/576 | scene     fold1 | gaussian_hexagonal       | rlen= 100 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.44314
-    [   11.1s]  140/576 | scene     fold1 | gaussian_hexagonal       | rlen= 500 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.44137
-    [   11.3s]  141/576 | scene     fold1 | gaussian_hexagonal       | rlen=1000 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.43893
-    [   11.4s]  142/576 | scene     fold1 | gaussian_hexagonal       | rlen= 100 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.43481
-    [   11.5s]  143/576 | scene     fold1 | gaussian_hexagonal       | rlen= 500 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.42931
-    [   11.8s]  144/576 | scene     fold1 | gaussian_hexagonal       | rlen=1000 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.42878
-    [   11.8s]  145/576 | scene     fold1 | bubble_rectangular       | rlen= 100 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.37576
-    [   11.9s]  146/576 | scene     fold1 | bubble_rectangular       | rlen= 500 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.37856
-    [   12.0s]  147/576 | scene     fold1 | bubble_rectangular       | rlen=1000 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.50918
-    [   12.1s]  148/576 | scene     fold1 | bubble_rectangular       | rlen= 100 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.37207
-    [   12.1s]  149/576 | scene     fold1 | bubble_rectangular       | rlen= 500 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.36682
-    [   12.3s]  150/576 | scene     fold1 | bubble_rectangular       | rlen=1000 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.36634
-    [   12.4s]  151/576 | scene     fold1 | bubble_rectangular       | rlen= 100 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.37429
-    [   12.4s]  152/576 | scene     fold1 | bubble_rectangular       | rlen= 500 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.36056
-    [   12.6s]  153/576 | scene     fold1 | bubble_rectangular       | rlen=1000 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.37288
-    [   12.6s]  154/576 | scene     fold1 | bubble_rectangular       | rlen= 100 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.36554
-    [   12.7s]  155/576 | scene     fold1 | bubble_rectangular       | rlen= 500 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.36212
-    [   12.9s]  156/576 | scene     fold1 | bubble_rectangular       | rlen=1000 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.35801
-    [   12.9s]  157/576 | scene     fold1 | bubble_rectangular       | rlen= 100 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.36986
-    [   13.0s]  158/576 | scene     fold1 | bubble_rectangular       | rlen= 500 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.37825
-    [   13.1s]  159/576 | scene     fold1 | bubble_rectangular       | rlen=1000 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.38063
-    [   13.1s]  160/576 | scene     fold1 | bubble_rectangular       | rlen= 100 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.36400
-    [   13.3s]  161/576 | scene     fold1 | bubble_rectangular       | rlen= 500 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.36333
-    [   13.5s]  162/576 | scene     fold1 | bubble_rectangular       | rlen=1000 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.37225
-    [   13.5s]  163/576 | scene     fold1 | bubble_rectangular       | rlen= 100 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.38164
-    [   13.6s]  164/576 | scene     fold1 | bubble_rectangular       | rlen= 500 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.38065
-    [   13.7s]  165/576 | scene     fold1 | bubble_rectangular       | rlen=1000 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.52771
-    [   13.8s]  166/576 | scene     fold1 | bubble_rectangular       | rlen= 100 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.35828
-    [   13.9s]  167/576 | scene     fold1 | bubble_rectangular       | rlen= 500 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.36716
-    [   14.1s]  168/576 | scene     fold1 | bubble_rectangular       | rlen=1000 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.38400
-    [   14.1s]  169/576 | scene     fold1 | bubble_hexagonal         | rlen= 100 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.36890
-    [   14.3s]  170/576 | scene     fold1 | bubble_hexagonal         | rlen= 500 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.36918
-    [   14.4s]  171/576 | scene     fold1 | bubble_hexagonal         | rlen=1000 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.39010
-    [   14.4s]  172/576 | scene     fold1 | bubble_hexagonal         | rlen= 100 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.37345
-    [   14.5s]  173/576 | scene     fold1 | bubble_hexagonal         | rlen= 500 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.36211
-    [   14.6s]  174/576 | scene     fold1 | bubble_hexagonal         | rlen=1000 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.37152
-    [   14.7s]  175/576 | scene     fold1 | bubble_hexagonal         | rlen= 100 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.36007
-    [   14.8s]  176/576 | scene     fold1 | bubble_hexagonal         | rlen= 500 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.36906
-    [   14.9s]  177/576 | scene     fold1 | bubble_hexagonal         | rlen=1000 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.38073
-    [   14.9s]  178/576 | scene     fold1 | bubble_hexagonal         | rlen= 100 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.37845
-    [   15.0s]  179/576 | scene     fold1 | bubble_hexagonal         | rlen= 500 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.35816
-    [   15.2s]  180/576 | scene     fold1 | bubble_hexagonal         | rlen=1000 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.38037
-    [   15.2s]  181/576 | scene     fold1 | bubble_hexagonal         | rlen= 100 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.37157
-    [   15.3s]  182/576 | scene     fold1 | bubble_hexagonal         | rlen= 500 r=1.000000 a=(0.05,0.010) | empty=1 QE=0.55475
-    [   15.5s]  183/576 | scene     fold1 | bubble_hexagonal         | rlen=1000 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.37179
-    [   15.6s]  184/576 | scene     fold1 | bubble_hexagonal         | rlen= 100 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.38329
-    [   15.7s]  185/576 | scene     fold1 | bubble_hexagonal         | rlen= 500 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.35845
-    [   15.9s]  186/576 | scene     fold1 | bubble_hexagonal         | rlen=1000 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.37937
-    [   15.9s]  187/576 | scene     fold1 | bubble_hexagonal         | rlen= 100 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.38162
-    [   16.0s]  188/576 | scene     fold1 | bubble_hexagonal         | rlen= 500 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.38080
-    [   16.1s]  189/576 | scene     fold1 | bubble_hexagonal         | rlen=1000 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.37924
-    [   16.2s]  190/576 | scene     fold1 | bubble_hexagonal         | rlen= 100 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.36649
-    [   16.3s]  191/576 | scene     fold1 | bubble_hexagonal         | rlen= 500 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.37222
-    [   16.5s]  192/576 | scene     fold1 | bubble_hexagonal         | rlen=1000 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.37340
-    [   16.5s]  193/576 | emotions  fold2 | gaussian_rectangular     | rlen= 100 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.58783
-    [   16.5s]  194/576 | emotions  fold2 | gaussian_rectangular     | rlen= 500 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.58717
-    [   16.6s]  195/576 | emotions  fold2 | gaussian_rectangular     | rlen=1000 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.57961
-    [   16.6s]  196/576 | emotions  fold2 | gaussian_rectangular     | rlen= 100 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.62206
-    [   16.6s]  197/576 | emotions  fold2 | gaussian_rectangular     | rlen= 500 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.58970
-    [   16.7s]  198/576 | emotions  fold2 | gaussian_rectangular     | rlen=1000 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.58897
-    [   16.7s]  199/576 | emotions  fold2 | gaussian_rectangular     | rlen= 100 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.57741
-    [   16.7s]  200/576 | emotions  fold2 | gaussian_rectangular     | rlen= 500 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.57840
-    [   16.8s]  201/576 | emotions  fold2 | gaussian_rectangular     | rlen=1000 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.57468
-    [   16.8s]  202/576 | emotions  fold2 | gaussian_rectangular     | rlen= 100 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.58150
-    [   16.9s]  203/576 | emotions  fold2 | gaussian_rectangular     | rlen= 500 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.58605
-    [   17.0s]  204/576 | emotions  fold2 | gaussian_rectangular     | rlen=1000 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.57168
-    [   17.0s]  205/576 | emotions  fold2 | gaussian_rectangular     | rlen= 100 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.57016
-    [   17.1s]  206/576 | emotions  fold2 | gaussian_rectangular     | rlen= 500 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.57359
-    [   17.2s]  207/576 | emotions  fold2 | gaussian_rectangular     | rlen=1000 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.57853
-    [   17.2s]  208/576 | emotions  fold2 | gaussian_rectangular     | rlen= 100 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.57403
-    [   17.2s]  209/576 | emotions  fold2 | gaussian_rectangular     | rlen= 500 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.58565
-    [   17.3s]  210/576 | emotions  fold2 | gaussian_rectangular     | rlen=1000 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.57672
-    [   17.3s]  211/576 | emotions  fold2 | gaussian_rectangular     | rlen= 100 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.58284
-    [   17.3s]  212/576 | emotions  fold2 | gaussian_rectangular     | rlen= 500 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.57120
-    [   17.4s]  213/576 | emotions  fold2 | gaussian_rectangular     | rlen=1000 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.57443
-    [   17.4s]  214/576 | emotions  fold2 | gaussian_rectangular     | rlen= 100 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.58993
-    [   17.4s]  215/576 | emotions  fold2 | gaussian_rectangular     | rlen= 500 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.57546
-    [   17.5s]  216/576 | emotions  fold2 | gaussian_rectangular     | rlen=1000 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.57805
-    [   17.5s]  217/576 | emotions  fold2 | gaussian_hexagonal       | rlen= 100 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.57565
-    [   17.6s]  218/576 | emotions  fold2 | gaussian_hexagonal       | rlen= 500 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.56038
-    [   17.6s]  219/576 | emotions  fold2 | gaussian_hexagonal       | rlen=1000 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.56207
-    [   17.6s]  220/576 | emotions  fold2 | gaussian_hexagonal       | rlen= 100 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.53614
-    [   17.7s]  221/576 | emotions  fold2 | gaussian_hexagonal       | rlen= 500 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.54708
-    [   17.7s]  222/576 | emotions  fold2 | gaussian_hexagonal       | rlen=1000 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.54146
-    [   17.8s]  223/576 | emotions  fold2 | gaussian_hexagonal       | rlen= 100 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.55961
-    [   17.9s]  224/576 | emotions  fold2 | gaussian_hexagonal       | rlen= 500 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.53923
-    [   18.0s]  225/576 | emotions  fold2 | gaussian_hexagonal       | rlen=1000 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.53975
-    [   18.0s]  226/576 | emotions  fold2 | gaussian_hexagonal       | rlen= 100 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.54333
-    [   18.0s]  227/576 | emotions  fold2 | gaussian_hexagonal       | rlen= 500 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.53286
-    [   18.1s]  228/576 | emotions  fold2 | gaussian_hexagonal       | rlen=1000 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.53427
-    [   18.1s]  229/576 | emotions  fold2 | gaussian_hexagonal       | rlen= 100 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.56479
-    [   18.1s]  230/576 | emotions  fold2 | gaussian_hexagonal       | rlen= 500 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.57546
-    [   18.2s]  231/576 | emotions  fold2 | gaussian_hexagonal       | rlen=1000 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.54596
-    [   18.2s]  232/576 | emotions  fold2 | gaussian_hexagonal       | rlen= 100 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.54433
-    [   18.3s]  233/576 | emotions  fold2 | gaussian_hexagonal       | rlen= 500 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.54963
-    [   18.3s]  234/576 | emotions  fold2 | gaussian_hexagonal       | rlen=1000 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.54298
-    [   18.4s]  235/576 | emotions  fold2 | gaussian_hexagonal       | rlen= 100 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.55176
-    [   18.4s]  236/576 | emotions  fold2 | gaussian_hexagonal       | rlen= 500 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.56187
-    [   18.4s]  237/576 | emotions  fold2 | gaussian_hexagonal       | rlen=1000 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.55869
-    [   18.5s]  238/576 | emotions  fold2 | gaussian_hexagonal       | rlen= 100 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.54079
-    [   18.5s]  239/576 | emotions  fold2 | gaussian_hexagonal       | rlen= 500 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.55164
-    [   18.6s]  240/576 | emotions  fold2 | gaussian_hexagonal       | rlen=1000 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.54293
-    [   18.6s]  241/576 | emotions  fold2 | bubble_rectangular       | rlen= 100 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.46272
-    [   18.6s]  242/576 | emotions  fold2 | bubble_rectangular       | rlen= 500 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.46212
-    [   18.6s]  243/576 | emotions  fold2 | bubble_rectangular       | rlen=1000 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.47629
-    [   18.6s]  244/576 | emotions  fold2 | bubble_rectangular       | rlen= 100 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.46152
-    [   18.6s]  245/576 | emotions  fold2 | bubble_rectangular       | rlen= 500 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.47955
-    [   18.7s]  246/576 | emotions  fold2 | bubble_rectangular       | rlen=1000 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.48169
-    [   18.7s]  247/576 | emotions  fold2 | bubble_rectangular       | rlen= 100 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.47626
-    [   18.7s]  248/576 | emotions  fold2 | bubble_rectangular       | rlen= 500 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.46145
-    [   18.7s]  249/576 | emotions  fold2 | bubble_rectangular       | rlen=1000 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.47541
-    [   18.7s]  250/576 | emotions  fold2 | bubble_rectangular       | rlen= 100 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.49445
-    [   18.8s]  251/576 | emotions  fold2 | bubble_rectangular       | rlen= 500 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.46161
-    [   18.8s]  252/576 | emotions  fold2 | bubble_rectangular       | rlen=1000 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.46100
-    [   18.8s]  253/576 | emotions  fold2 | bubble_rectangular       | rlen= 100 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.47767
-    [   18.8s]  254/576 | emotions  fold2 | bubble_rectangular       | rlen= 500 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.46417
-    [   18.9s]  255/576 | emotions  fold2 | bubble_rectangular       | rlen=1000 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.46186
-    [   18.9s]  256/576 | emotions  fold2 | bubble_rectangular       | rlen= 100 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.47999
-    [   18.9s]  257/576 | emotions  fold2 | bubble_rectangular       | rlen= 500 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.46101
-    [   19.0s]  258/576 | emotions  fold2 | bubble_rectangular       | rlen=1000 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.48118
-    [   19.0s]  259/576 | emotions  fold2 | bubble_rectangular       | rlen= 100 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.46407
-    [   19.0s]  260/576 | emotions  fold2 | bubble_rectangular       | rlen= 500 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.46152
-    [   19.0s]  261/576 | emotions  fold2 | bubble_rectangular       | rlen=1000 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.48137
-    [   19.0s]  262/576 | emotions  fold2 | bubble_rectangular       | rlen= 100 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.46241
-    [   19.0s]  263/576 | emotions  fold2 | bubble_rectangular       | rlen= 500 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.45889
-    [   19.0s]  264/576 | emotions  fold2 | bubble_rectangular       | rlen=1000 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.46334
-    [   19.1s]  265/576 | emotions  fold2 | bubble_hexagonal         | rlen= 100 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.46173
-    [   19.1s]  266/576 | emotions  fold2 | bubble_hexagonal         | rlen= 500 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.45783
-    [   19.1s]  267/576 | emotions  fold2 | bubble_hexagonal         | rlen=1000 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.46065
-    [   19.1s]  268/576 | emotions  fold2 | bubble_hexagonal         | rlen= 100 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.49261
-    [   19.1s]  269/576 | emotions  fold2 | bubble_hexagonal         | rlen= 500 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.47930
-    [   19.2s]  270/576 | emotions  fold2 | bubble_hexagonal         | rlen=1000 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.45636
-    [   19.2s]  271/576 | emotions  fold2 | bubble_hexagonal         | rlen= 100 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.47884
-    [   19.2s]  272/576 | emotions  fold2 | bubble_hexagonal         | rlen= 500 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.47697
-    [   19.2s]  273/576 | emotions  fold2 | bubble_hexagonal         | rlen=1000 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.45838
-    [   19.2s]  274/576 | emotions  fold2 | bubble_hexagonal         | rlen= 100 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.49371
-    [   19.2s]  275/576 | emotions  fold2 | bubble_hexagonal         | rlen= 500 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.47951
-    [   19.3s]  276/576 | emotions  fold2 | bubble_hexagonal         | rlen=1000 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.49274
-    [   19.3s]  277/576 | emotions  fold2 | bubble_hexagonal         | rlen= 100 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.46209
-    [   19.3s]  278/576 | emotions  fold2 | bubble_hexagonal         | rlen= 500 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.46237
-    [   19.3s]  279/576 | emotions  fold2 | bubble_hexagonal         | rlen=1000 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.45729
-    [   19.4s]  280/576 | emotions  fold2 | bubble_hexagonal         | rlen= 100 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.46061
-    [   19.4s]  281/576 | emotions  fold2 | bubble_hexagonal         | rlen= 500 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.45816
-    [   19.4s]  282/576 | emotions  fold2 | bubble_hexagonal         | rlen=1000 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.48127
-    [   19.4s]  283/576 | emotions  fold2 | bubble_hexagonal         | rlen= 100 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.46162
-    [   19.4s]  284/576 | emotions  fold2 | bubble_hexagonal         | rlen= 500 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.46470
-    [   19.5s]  285/576 | emotions  fold2 | bubble_hexagonal         | rlen=1000 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.46003
-    [   19.5s]  286/576 | emotions  fold2 | bubble_hexagonal         | rlen= 100 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.49498
-    [   19.5s]  287/576 | emotions  fold2 | bubble_hexagonal         | rlen= 500 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.49267
-    [   19.5s]  288/576 | emotions  fold2 | bubble_hexagonal         | rlen=1000 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.45930
-    [   19.6s]  289/576 | scene     fold2 | gaussian_rectangular     | rlen= 100 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.44901
-    [   19.7s]  290/576 | scene     fold2 | gaussian_rectangular     | rlen= 500 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.45708
-    [   20.0s]  291/576 | scene     fold2 | gaussian_rectangular     | rlen=1000 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.45426
-    [   20.1s]  292/576 | scene     fold2 | gaussian_rectangular     | rlen= 100 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.44182
-    [   20.3s]  293/576 | scene     fold2 | gaussian_rectangular     | rlen= 500 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.44797
-    [   20.6s]  294/576 | scene     fold2 | gaussian_rectangular     | rlen=1000 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.47004
-    [   20.6s]  295/576 | scene     fold2 | gaussian_rectangular     | rlen= 100 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.45850
-    [   20.8s]  296/576 | scene     fold2 | gaussian_rectangular     | rlen= 500 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.45733
-    [   21.0s]  297/576 | scene     fold2 | gaussian_rectangular     | rlen=1000 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.46159
-    [   21.0s]  298/576 | scene     fold2 | gaussian_rectangular     | rlen= 100 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.45439
-    [   21.2s]  299/576 | scene     fold2 | gaussian_rectangular     | rlen= 500 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.45444
-    [   21.4s]  300/576 | scene     fold2 | gaussian_rectangular     | rlen=1000 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.45169
-    [   21.5s]  301/576 | scene     fold2 | gaussian_rectangular     | rlen= 100 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.44691
-    [   21.6s]  302/576 | scene     fold2 | gaussian_rectangular     | rlen= 500 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.47204
-    [   21.8s]  303/576 | scene     fold2 | gaussian_rectangular     | rlen=1000 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.45264
-    [   21.9s]  304/576 | scene     fold2 | gaussian_rectangular     | rlen= 100 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.45962
-    [   22.0s]  305/576 | scene     fold2 | gaussian_rectangular     | rlen= 500 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.46174
-    [   22.3s]  306/576 | scene     fold2 | gaussian_rectangular     | rlen=1000 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.45483
-    [   22.3s]  307/576 | scene     fold2 | gaussian_rectangular     | rlen= 100 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.46385
-    [   22.4s]  308/576 | scene     fold2 | gaussian_rectangular     | rlen= 500 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.45431
-    [   22.7s]  309/576 | scene     fold2 | gaussian_rectangular     | rlen=1000 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.44117
-    [   22.8s]  310/576 | scene     fold2 | gaussian_rectangular     | rlen= 100 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.45062
-    [   22.9s]  311/576 | scene     fold2 | gaussian_rectangular     | rlen= 500 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.44256
-    [   23.1s]  312/576 | scene     fold2 | gaussian_rectangular     | rlen=1000 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.44022
-    [   23.2s]  313/576 | scene     fold2 | gaussian_hexagonal       | rlen= 100 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.43844
-    [   23.3s]  314/576 | scene     fold2 | gaussian_hexagonal       | rlen= 500 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.45166
-    [   23.6s]  315/576 | scene     fold2 | gaussian_hexagonal       | rlen=1000 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.44162
-    [   23.6s]  316/576 | scene     fold2 | gaussian_hexagonal       | rlen= 100 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.44574
-    [   23.8s]  317/576 | scene     fold2 | gaussian_hexagonal       | rlen= 500 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.43046
-    [   24.0s]  318/576 | scene     fold2 | gaussian_hexagonal       | rlen=1000 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.43983
-    [   24.1s]  319/576 | scene     fold2 | gaussian_hexagonal       | rlen= 100 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.43707
-    [   24.2s]  320/576 | scene     fold2 | gaussian_hexagonal       | rlen= 500 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.44407
-    [   24.5s]  321/576 | scene     fold2 | gaussian_hexagonal       | rlen=1000 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.43412
-    [   24.5s]  322/576 | scene     fold2 | gaussian_hexagonal       | rlen= 100 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.42502
-    [   24.7s]  323/576 | scene     fold2 | gaussian_hexagonal       | rlen= 500 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.43545
-    [   25.0s]  324/576 | scene     fold2 | gaussian_hexagonal       | rlen=1000 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.43412
-    [   25.0s]  325/576 | scene     fold2 | gaussian_hexagonal       | rlen= 100 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.46532
-    [   25.2s]  326/576 | scene     fold2 | gaussian_hexagonal       | rlen= 500 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.43957
-    [   25.4s]  327/576 | scene     fold2 | gaussian_hexagonal       | rlen=1000 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.42339
-    [   25.4s]  328/576 | scene     fold2 | gaussian_hexagonal       | rlen= 100 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.44580
-    [   25.6s]  329/576 | scene     fold2 | gaussian_hexagonal       | rlen= 500 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.43825
-    [   25.8s]  330/576 | scene     fold2 | gaussian_hexagonal       | rlen=1000 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.43318
-    [   25.9s]  331/576 | scene     fold2 | gaussian_hexagonal       | rlen= 100 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.42505
-    [   26.0s]  332/576 | scene     fold2 | gaussian_hexagonal       | rlen= 500 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.43066
-    [   26.2s]  333/576 | scene     fold2 | gaussian_hexagonal       | rlen=1000 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.44182
-    [   26.3s]  334/576 | scene     fold2 | gaussian_hexagonal       | rlen= 100 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.45688
-    [   26.4s]  335/576 | scene     fold2 | gaussian_hexagonal       | rlen= 500 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.42820
-    [   26.7s]  336/576 | scene     fold2 | gaussian_hexagonal       | rlen=1000 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.43478
-    [   26.8s]  337/576 | scene     fold2 | bubble_rectangular       | rlen= 100 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.38200
-    [   26.8s]  338/576 | scene     fold2 | bubble_rectangular       | rlen= 500 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.39360
-    [   27.0s]  339/576 | scene     fold2 | bubble_rectangular       | rlen=1000 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.37173
-    [   27.0s]  340/576 | scene     fold2 | bubble_rectangular       | rlen= 100 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.37052
-    [   27.1s]  341/576 | scene     fold2 | bubble_rectangular       | rlen= 500 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.36744
-    [   27.3s]  342/576 | scene     fold2 | bubble_rectangular       | rlen=1000 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.35893
-    [   27.3s]  343/576 | scene     fold2 | bubble_rectangular       | rlen= 100 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.52640
-    [   27.4s]  344/576 | scene     fold2 | bubble_rectangular       | rlen= 500 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.38324
-    [   27.6s]  345/576 | scene     fold2 | bubble_rectangular       | rlen=1000 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.36996
-    [   27.6s]  346/576 | scene     fold2 | bubble_rectangular       | rlen= 100 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.38796
-    [   27.7s]  347/576 | scene     fold2 | bubble_rectangular       | rlen= 500 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.35841
-    [   27.9s]  348/576 | scene     fold2 | bubble_rectangular       | rlen=1000 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.39125
-    [   27.9s]  349/576 | scene     fold2 | bubble_rectangular       | rlen= 100 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.53844
-    [   28.0s]  350/576 | scene     fold2 | bubble_rectangular       | rlen= 500 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.38912
-    [   28.2s]  351/576 | scene     fold2 | bubble_rectangular       | rlen=1000 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.38772
-    [   28.2s]  352/576 | scene     fold2 | bubble_rectangular       | rlen= 100 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.39514
-    [   28.3s]  353/576 | scene     fold2 | bubble_rectangular       | rlen= 500 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.36616
-    [   28.5s]  354/576 | scene     fold2 | bubble_rectangular       | rlen=1000 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.37358
-    [   28.5s]  355/576 | scene     fold2 | bubble_rectangular       | rlen= 100 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.38203
-    [   28.6s]  356/576 | scene     fold2 | bubble_rectangular       | rlen= 500 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.36087
-    [   28.8s]  357/576 | scene     fold2 | bubble_rectangular       | rlen=1000 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.37407
-    [   28.8s]  358/576 | scene     fold2 | bubble_rectangular       | rlen= 100 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.36036
-    [   28.9s]  359/576 | scene     fold2 | bubble_rectangular       | rlen= 500 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.36317
-    [   29.1s]  360/576 | scene     fold2 | bubble_rectangular       | rlen=1000 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.36093
-    [   29.1s]  361/576 | scene     fold2 | bubble_hexagonal         | rlen= 100 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.36110
-    [   29.2s]  362/576 | scene     fold2 | bubble_hexagonal         | rlen= 500 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.38253
-    [   29.3s]  363/576 | scene     fold2 | bubble_hexagonal         | rlen=1000 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.37072
-    [   29.4s]  364/576 | scene     fold2 | bubble_hexagonal         | rlen= 100 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.38373
-    [   29.4s]  365/576 | scene     fold2 | bubble_hexagonal         | rlen= 500 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.37044
-    [   29.6s]  366/576 | scene     fold2 | bubble_hexagonal         | rlen=1000 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.38390
-    [   29.6s]  367/576 | scene     fold2 | bubble_hexagonal         | rlen= 100 r=1.000000 a=(0.10,0.005) | empty=1 QE=0.53100
-    [   29.8s]  368/576 | scene     fold2 | bubble_hexagonal         | rlen= 500 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.38152
-    [   29.9s]  369/576 | scene     fold2 | bubble_hexagonal         | rlen=1000 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.37187
-    [   29.9s]  370/576 | scene     fold2 | bubble_hexagonal         | rlen= 100 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.38234
-    [   30.0s]  371/576 | scene     fold2 | bubble_hexagonal         | rlen= 500 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.36611
-    [   30.2s]  372/576 | scene     fold2 | bubble_hexagonal         | rlen=1000 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.38102
-    [   30.2s]  373/576 | scene     fold2 | bubble_hexagonal         | rlen= 100 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.36133
-    [   30.3s]  374/576 | scene     fold2 | bubble_hexagonal         | rlen= 500 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.39194
-    [   30.5s]  375/576 | scene     fold2 | bubble_hexagonal         | rlen=1000 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.39147
-    [   30.5s]  376/576 | scene     fold2 | bubble_hexagonal         | rlen= 100 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.38359
-    [   30.6s]  377/576 | scene     fold2 | bubble_hexagonal         | rlen= 500 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.38200
-    [   30.8s]  378/576 | scene     fold2 | bubble_hexagonal         | rlen=1000 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.38399
-    [   30.9s]  379/576 | scene     fold2 | bubble_hexagonal         | rlen= 100 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.37402
-    [   31.0s]  380/576 | scene     fold2 | bubble_hexagonal         | rlen= 500 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.37209
-    [   31.1s]  381/576 | scene     fold2 | bubble_hexagonal         | rlen=1000 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.36244
-    [   31.1s]  382/576 | scene     fold2 | bubble_hexagonal         | rlen= 100 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.37951
-    [   31.2s]  383/576 | scene     fold2 | bubble_hexagonal         | rlen= 500 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.38070
-    [   31.4s]  384/576 | scene     fold2 | bubble_hexagonal         | rlen=1000 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.37020
-    [   31.4s]  385/576 | emotions  fold3 | gaussian_rectangular     | rlen= 100 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.57692
-    [   31.4s]  386/576 | emotions  fold3 | gaussian_rectangular     | rlen= 500 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.57682
-    [   31.5s]  387/576 | emotions  fold3 | gaussian_rectangular     | rlen=1000 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.57684
-    [   31.5s]  388/576 | emotions  fold3 | gaussian_rectangular     | rlen= 100 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.59517
-    [   31.6s]  389/576 | emotions  fold3 | gaussian_rectangular     | rlen= 500 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.58286
-    [   31.6s]  390/576 | emotions  fold3 | gaussian_rectangular     | rlen=1000 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.59943
-    [   31.7s]  391/576 | emotions  fold3 | gaussian_rectangular     | rlen= 100 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.57228
-    [   31.7s]  392/576 | emotions  fold3 | gaussian_rectangular     | rlen= 500 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.57371
-    [   31.8s]  393/576 | emotions  fold3 | gaussian_rectangular     | rlen=1000 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.57371
-    [   31.8s]  394/576 | emotions  fold3 | gaussian_rectangular     | rlen= 100 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.58683
-    [   31.8s]  395/576 | emotions  fold3 | gaussian_rectangular     | rlen= 500 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.61164
-    [   31.9s]  396/576 | emotions  fold3 | gaussian_rectangular     | rlen=1000 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.57337
-    [   31.9s]  397/576 | emotions  fold3 | gaussian_rectangular     | rlen= 100 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.58162
-    [   31.9s]  398/576 | emotions  fold3 | gaussian_rectangular     | rlen= 500 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.60969
-    [   32.0s]  399/576 | emotions  fold3 | gaussian_rectangular     | rlen=1000 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.57353
-    [   32.0s]  400/576 | emotions  fold3 | gaussian_rectangular     | rlen= 100 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.60252
-    [   32.1s]  401/576 | emotions  fold3 | gaussian_rectangular     | rlen= 500 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.60017
-    [   32.1s]  402/576 | emotions  fold3 | gaussian_rectangular     | rlen=1000 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.57500
-    [   32.1s]  403/576 | emotions  fold3 | gaussian_rectangular     | rlen= 100 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.56516
-    [   32.2s]  404/576 | emotions  fold3 | gaussian_rectangular     | rlen= 500 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.57374
-    [   32.3s]  405/576 | emotions  fold3 | gaussian_rectangular     | rlen=1000 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.57305
-    [   32.3s]  406/576 | emotions  fold3 | gaussian_rectangular     | rlen= 100 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.60688
-    [   32.3s]  407/576 | emotions  fold3 | gaussian_rectangular     | rlen= 500 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.59848
-    [   32.4s]  408/576 | emotions  fold3 | gaussian_rectangular     | rlen=1000 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.58503
-    [   32.4s]  409/576 | emotions  fold3 | gaussian_hexagonal       | rlen= 100 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.54509
-    [   32.5s]  410/576 | emotions  fold3 | gaussian_hexagonal       | rlen= 500 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.54065
-    [   32.5s]  411/576 | emotions  fold3 | gaussian_hexagonal       | rlen=1000 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.54448
-    [   32.6s]  412/576 | emotions  fold3 | gaussian_hexagonal       | rlen= 100 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.54074
-    [   32.6s]  413/576 | emotions  fold3 | gaussian_hexagonal       | rlen= 500 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.55618
-    [   32.7s]  414/576 | emotions  fold3 | gaussian_hexagonal       | rlen=1000 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.55621
-    [   32.7s]  415/576 | emotions  fold3 | gaussian_hexagonal       | rlen= 100 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.54214
-    [   32.8s]  416/576 | emotions  fold3 | gaussian_hexagonal       | rlen= 500 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.54400
-    [   32.8s]  417/576 | emotions  fold3 | gaussian_hexagonal       | rlen=1000 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.53601
-    [   32.8s]  418/576 | emotions  fold3 | gaussian_hexagonal       | rlen= 100 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.55079
-    [   32.9s]  419/576 | emotions  fold3 | gaussian_hexagonal       | rlen= 500 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.54335
-    [   33.0s]  420/576 | emotions  fold3 | gaussian_hexagonal       | rlen=1000 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.53385
-    [   33.0s]  421/576 | emotions  fold3 | gaussian_hexagonal       | rlen= 100 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.58595
-    [   33.0s]  422/576 | emotions  fold3 | gaussian_hexagonal       | rlen= 500 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.56973
-    [   33.1s]  423/576 | emotions  fold3 | gaussian_hexagonal       | rlen=1000 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.55346
-    [   33.1s]  424/576 | emotions  fold3 | gaussian_hexagonal       | rlen= 100 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.55379
-    [   33.1s]  425/576 | emotions  fold3 | gaussian_hexagonal       | rlen= 500 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.54043
-    [   33.2s]  426/576 | emotions  fold3 | gaussian_hexagonal       | rlen=1000 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.55569
-    [   33.3s]  427/576 | emotions  fold3 | gaussian_hexagonal       | rlen= 100 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.54339
-    [   33.3s]  428/576 | emotions  fold3 | gaussian_hexagonal       | rlen= 500 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.54222
-    [   33.4s]  429/576 | emotions  fold3 | gaussian_hexagonal       | rlen=1000 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.54582
-    [   33.4s]  430/576 | emotions  fold3 | gaussian_hexagonal       | rlen= 100 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.54012
-    [   33.5s]  431/576 | emotions  fold3 | gaussian_hexagonal       | rlen= 500 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.54227
-    [   33.5s]  432/576 | emotions  fold3 | gaussian_hexagonal       | rlen=1000 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.53438
-    [   33.5s]  433/576 | emotions  fold3 | bubble_rectangular       | rlen= 100 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.46484
-    [   33.6s]  434/576 | emotions  fold3 | bubble_rectangular       | rlen= 500 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.46004
-    [   33.6s]  435/576 | emotions  fold3 | bubble_rectangular       | rlen=1000 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.49798
-    [   33.6s]  436/576 | emotions  fold3 | bubble_rectangular       | rlen= 100 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.48018
-    [   33.6s]  437/576 | emotions  fold3 | bubble_rectangular       | rlen= 500 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.46503
-    [   33.7s]  438/576 | emotions  fold3 | bubble_rectangular       | rlen=1000 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.45904
-    [   33.7s]  439/576 | emotions  fold3 | bubble_rectangular       | rlen= 100 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.46196
-    [   33.7s]  440/576 | emotions  fold3 | bubble_rectangular       | rlen= 500 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.45907
-    [   33.8s]  441/576 | emotions  fold3 | bubble_rectangular       | rlen=1000 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.46710
-    [   33.8s]  442/576 | emotions  fold3 | bubble_rectangular       | rlen= 100 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.48435
-    [   33.8s]  443/576 | emotions  fold3 | bubble_rectangular       | rlen= 500 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.48304
-    [   33.8s]  444/576 | emotions  fold3 | bubble_rectangular       | rlen=1000 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.45817
-    [   33.8s]  445/576 | emotions  fold3 | bubble_rectangular       | rlen= 100 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.45849
-    [   33.8s]  446/576 | emotions  fold3 | bubble_rectangular       | rlen= 500 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.49895
-    [   33.9s]  447/576 | emotions  fold3 | bubble_rectangular       | rlen=1000 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.46038
-    [   33.9s]  448/576 | emotions  fold3 | bubble_rectangular       | rlen= 100 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.48237
-    [   33.9s]  449/576 | emotions  fold3 | bubble_rectangular       | rlen= 500 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.48482
-    [   34.0s]  450/576 | emotions  fold3 | bubble_rectangular       | rlen=1000 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.46012
-    [   34.0s]  451/576 | emotions  fold3 | bubble_rectangular       | rlen= 100 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.48517
-    [   34.0s]  452/576 | emotions  fold3 | bubble_rectangular       | rlen= 500 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.46190
-    [   34.1s]  453/576 | emotions  fold3 | bubble_rectangular       | rlen=1000 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.46033
-    [   34.1s]  454/576 | emotions  fold3 | bubble_rectangular       | rlen= 100 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.45857
-    [   34.1s]  455/576 | emotions  fold3 | bubble_rectangular       | rlen= 500 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.48100
-    [   34.1s]  456/576 | emotions  fold3 | bubble_rectangular       | rlen=1000 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.48534
-    [   34.1s]  457/576 | emotions  fold3 | bubble_hexagonal         | rlen= 100 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.48216
-    [   34.2s]  458/576 | emotions  fold3 | bubble_hexagonal         | rlen= 500 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.45845
-    [   34.2s]  459/576 | emotions  fold3 | bubble_hexagonal         | rlen=1000 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.45932
-    [   34.2s]  460/576 | emotions  fold3 | bubble_hexagonal         | rlen= 100 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.46066
-    [   34.2s]  461/576 | emotions  fold3 | bubble_hexagonal         | rlen= 500 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.49750
-    [   34.3s]  462/576 | emotions  fold3 | bubble_hexagonal         | rlen=1000 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.49901
-    [   34.3s]  463/576 | emotions  fold3 | bubble_hexagonal         | rlen= 100 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.49918
-    [   34.3s]  464/576 | emotions  fold3 | bubble_hexagonal         | rlen= 500 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.45983
-    [   34.4s]  465/576 | emotions  fold3 | bubble_hexagonal         | rlen=1000 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.46639
-    [   34.4s]  466/576 | emotions  fold3 | bubble_hexagonal         | rlen= 100 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.49713
-    [   34.4s]  467/576 | emotions  fold3 | bubble_hexagonal         | rlen= 500 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.46532
-    [   34.4s]  468/576 | emotions  fold3 | bubble_hexagonal         | rlen=1000 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.49795
-    [   34.4s]  469/576 | emotions  fold3 | bubble_hexagonal         | rlen= 100 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.48124
-    [   34.5s]  470/576 | emotions  fold3 | bubble_hexagonal         | rlen= 500 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.48211
-    [   34.5s]  471/576 | emotions  fold3 | bubble_hexagonal         | rlen=1000 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.46110
-    [   34.5s]  472/576 | emotions  fold3 | bubble_hexagonal         | rlen= 100 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.46012
-    [   34.5s]  473/576 | emotions  fold3 | bubble_hexagonal         | rlen= 500 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.49701
-    [   34.6s]  474/576 | emotions  fold3 | bubble_hexagonal         | rlen=1000 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.52483
-    [   34.6s]  475/576 | emotions  fold3 | bubble_hexagonal         | rlen= 100 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.48083
-    [   34.6s]  476/576 | emotions  fold3 | bubble_hexagonal         | rlen= 500 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.46260
-    [   34.6s]  477/576 | emotions  fold3 | bubble_hexagonal         | rlen=1000 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.46856
-    [   34.6s]  478/576 | emotions  fold3 | bubble_hexagonal         | rlen= 100 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.49802
-    [   34.6s]  479/576 | emotions  fold3 | bubble_hexagonal         | rlen= 500 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.49879
-    [   34.7s]  480/576 | emotions  fold3 | bubble_hexagonal         | rlen=1000 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.46199
-    [   34.7s]  481/576 | scene     fold3 | gaussian_rectangular     | rlen= 100 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.45639
-    [   34.9s]  482/576 | scene     fold3 | gaussian_rectangular     | rlen= 500 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.45193
-    [   35.1s]  483/576 | scene     fold3 | gaussian_rectangular     | rlen=1000 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.45391
-    [   35.1s]  484/576 | scene     fold3 | gaussian_rectangular     | rlen= 100 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.44992
-    [   35.3s]  485/576 | scene     fold3 | gaussian_rectangular     | rlen= 500 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.45710
-    [   35.6s]  486/576 | scene     fold3 | gaussian_rectangular     | rlen=1000 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.45357
-    [   35.6s]  487/576 | scene     fold3 | gaussian_rectangular     | rlen= 100 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.44768
-    [   35.7s]  488/576 | scene     fold3 | gaussian_rectangular     | rlen= 500 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.44959
-    [   36.0s]  489/576 | scene     fold3 | gaussian_rectangular     | rlen=1000 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.45727
-    [   36.0s]  490/576 | scene     fold3 | gaussian_rectangular     | rlen= 100 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.45201
-    [   36.1s]  491/576 | scene     fold3 | gaussian_rectangular     | rlen= 500 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.45216
-    [   36.5s]  492/576 | scene     fold3 | gaussian_rectangular     | rlen=1000 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.44040
-    [   36.5s]  493/576 | scene     fold3 | gaussian_rectangular     | rlen= 100 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.47718
-    [   36.6s]  494/576 | scene     fold3 | gaussian_rectangular     | rlen= 500 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.45860
-    [   36.9s]  495/576 | scene     fold3 | gaussian_rectangular     | rlen=1000 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.45649
-    [   36.9s]  496/576 | scene     fold3 | gaussian_rectangular     | rlen= 100 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.46383
-    [   37.1s]  497/576 | scene     fold3 | gaussian_rectangular     | rlen= 500 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.45315
-    [   37.4s]  498/576 | scene     fold3 | gaussian_rectangular     | rlen=1000 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.45257
-    [   37.4s]  499/576 | scene     fold3 | gaussian_rectangular     | rlen= 100 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.44740
-    [   37.6s]  500/576 | scene     fold3 | gaussian_rectangular     | rlen= 500 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.45786
-    [   37.8s]  501/576 | scene     fold3 | gaussian_rectangular     | rlen=1000 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.44049
-    [   37.9s]  502/576 | scene     fold3 | gaussian_rectangular     | rlen= 100 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.45616
-    [   38.1s]  503/576 | scene     fold3 | gaussian_rectangular     | rlen= 500 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.46670
-    [   38.4s]  504/576 | scene     fold3 | gaussian_rectangular     | rlen=1000 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.44359
-    [   38.4s]  505/576 | scene     fold3 | gaussian_hexagonal       | rlen= 100 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.42722
-    [   38.6s]  506/576 | scene     fold3 | gaussian_hexagonal       | rlen= 500 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.44406
-    [   38.9s]  507/576 | scene     fold3 | gaussian_hexagonal       | rlen=1000 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.43043
-    [   38.9s]  508/576 | scene     fold3 | gaussian_hexagonal       | rlen= 100 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.43985
-    [   39.1s]  509/576 | scene     fold3 | gaussian_hexagonal       | rlen= 500 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.43463
-    [   39.3s]  510/576 | scene     fold3 | gaussian_hexagonal       | rlen=1000 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.43389
-    [   39.4s]  511/576 | scene     fold3 | gaussian_hexagonal       | rlen= 100 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.42844
-    [   39.5s]  512/576 | scene     fold3 | gaussian_hexagonal       | rlen= 500 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.44337
-    [   39.8s]  513/576 | scene     fold3 | gaussian_hexagonal       | rlen=1000 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.43196
-    [   39.8s]  514/576 | scene     fold3 | gaussian_hexagonal       | rlen= 100 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.42947
-    [   40.0s]  515/576 | scene     fold3 | gaussian_hexagonal       | rlen= 500 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.42681
-    [   40.2s]  516/576 | scene     fold3 | gaussian_hexagonal       | rlen=1000 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.44031
-    [   40.3s]  517/576 | scene     fold3 | gaussian_hexagonal       | rlen= 100 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.44275
-    [   40.4s]  518/576 | scene     fold3 | gaussian_hexagonal       | rlen= 500 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.45918
-    [   40.6s]  519/576 | scene     fold3 | gaussian_hexagonal       | rlen=1000 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.44045
-    [   40.7s]  520/576 | scene     fold3 | gaussian_hexagonal       | rlen= 100 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.45676
-    [   40.8s]  521/576 | scene     fold3 | gaussian_hexagonal       | rlen= 500 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.43897
-    [   41.1s]  522/576 | scene     fold3 | gaussian_hexagonal       | rlen=1000 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.43213
-    [   41.1s]  523/576 | scene     fold3 | gaussian_hexagonal       | rlen= 100 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.43341
-    [   41.3s]  524/576 | scene     fold3 | gaussian_hexagonal       | rlen= 500 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.44555
-    [   41.5s]  525/576 | scene     fold3 | gaussian_hexagonal       | rlen=1000 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.44417
-    [   41.5s]  526/576 | scene     fold3 | gaussian_hexagonal       | rlen= 100 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.43478
-    [   41.6s]  527/576 | scene     fold3 | gaussian_hexagonal       | rlen= 500 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.42592
-    [   41.9s]  528/576 | scene     fold3 | gaussian_hexagonal       | rlen=1000 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.42247
-    [   41.9s]  529/576 | scene     fold3 | bubble_rectangular       | rlen= 100 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.37898
-    [   42.0s]  530/576 | scene     fold3 | bubble_rectangular       | rlen= 500 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.35849
-    [   42.1s]  531/576 | scene     fold3 | bubble_rectangular       | rlen=1000 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.38192
-    [   42.2s]  532/576 | scene     fold3 | bubble_rectangular       | rlen= 100 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.37458
-    [   42.3s]  533/576 | scene     fold3 | bubble_rectangular       | rlen= 500 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.35780
-    [   42.5s]  534/576 | scene     fold3 | bubble_rectangular       | rlen=1000 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.36762
-    [   42.5s]  535/576 | scene     fold3 | bubble_rectangular       | rlen= 100 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.35846
-    [   42.5s]  536/576 | scene     fold3 | bubble_rectangular       | rlen= 500 r=1.000000 a=(0.10,0.005) | empty=1 QE=0.52915
-    [   42.6s]  537/576 | scene     fold3 | bubble_rectangular       | rlen=1000 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.38084
-    [   42.7s]  538/576 | scene     fold3 | bubble_rectangular       | rlen= 100 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.37259
-    [   42.8s]  539/576 | scene     fold3 | bubble_rectangular       | rlen= 500 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.37216
-    [   43.0s]  540/576 | scene     fold3 | bubble_rectangular       | rlen=1000 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.35842
-    [   43.0s]  541/576 | scene     fold3 | bubble_rectangular       | rlen= 100 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.36938
-    [   43.1s]  542/576 | scene     fold3 | bubble_rectangular       | rlen= 500 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.39398
-    [   43.2s]  543/576 | scene     fold3 | bubble_rectangular       | rlen=1000 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.37276
-    [   43.3s]  544/576 | scene     fold3 | bubble_rectangular       | rlen= 100 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.36413
-    [   43.4s]  545/576 | scene     fold3 | bubble_rectangular       | rlen= 500 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.36332
-    [   43.5s]  546/576 | scene     fold3 | bubble_rectangular       | rlen=1000 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.38365
-    [   43.6s]  547/576 | scene     fold3 | bubble_rectangular       | rlen= 100 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.37338
-    [   43.6s]  548/576 | scene     fold3 | bubble_rectangular       | rlen= 500 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.38068
-    [   43.8s]  549/576 | scene     fold3 | bubble_rectangular       | rlen=1000 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.50981
-    [   43.8s]  550/576 | scene     fold3 | bubble_rectangular       | rlen= 100 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.37852
-    [   43.9s]  551/576 | scene     fold3 | bubble_rectangular       | rlen= 500 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.36786
-    [   44.1s]  552/576 | scene     fold3 | bubble_rectangular       | rlen=1000 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.37016
-    [   44.1s]  553/576 | scene     fold3 | bubble_hexagonal         | rlen= 100 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.37101
-    [   44.2s]  554/576 | scene     fold3 | bubble_hexagonal         | rlen= 500 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.37042
-    [   44.3s]  555/576 | scene     fold3 | bubble_hexagonal         | rlen=1000 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.37141
-    [   44.3s]  556/576 | scene     fold3 | bubble_hexagonal         | rlen= 100 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.36362
-    [   44.4s]  557/576 | scene     fold3 | bubble_hexagonal         | rlen= 500 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.37316
-    [   44.5s]  558/576 | scene     fold3 | bubble_hexagonal         | rlen=1000 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.37020
-    [   44.6s]  559/576 | scene     fold3 | bubble_hexagonal         | rlen= 100 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.37162
-    [   44.7s]  560/576 | scene     fold3 | bubble_hexagonal         | rlen= 500 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.38410
-    [   44.8s]  561/576 | scene     fold3 | bubble_hexagonal         | rlen=1000 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.37369
-    [   44.8s]  562/576 | scene     fold3 | bubble_hexagonal         | rlen= 100 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.36318
-    [   45.0s]  563/576 | scene     fold3 | bubble_hexagonal         | rlen= 500 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.36868
-    [   45.1s]  564/576 | scene     fold3 | bubble_hexagonal         | rlen=1000 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.38222
-    [   45.1s]  565/576 | scene     fold3 | bubble_hexagonal         | rlen= 100 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.38185
-    [   45.2s]  566/576 | scene     fold3 | bubble_hexagonal         | rlen= 500 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.37301
-    [   45.3s]  567/576 | scene     fold3 | bubble_hexagonal         | rlen=1000 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.36130
-    [   45.3s]  568/576 | scene     fold3 | bubble_hexagonal         | rlen= 100 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.38050
-    [   45.4s]  569/576 | scene     fold3 | bubble_hexagonal         | rlen= 500 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.38350
-    [   45.6s]  570/576 | scene     fold3 | bubble_hexagonal         | rlen=1000 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.36617
-    [   45.6s]  571/576 | scene     fold3 | bubble_hexagonal         | rlen= 100 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.38273
-    [   45.7s]  572/576 | scene     fold3 | bubble_hexagonal         | rlen= 500 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.38540
-    [   45.8s]  573/576 | scene     fold3 | bubble_hexagonal         | rlen=1000 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.37364
-    [   45.9s]  574/576 | scene     fold3 | bubble_hexagonal         | rlen= 100 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.36279
-    [   46.0s]  575/576 | scene     fold3 | bubble_hexagonal         | rlen= 500 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.37096
-    [   46.1s]  576/576 | scene     fold3 | bubble_hexagonal         | rlen=1000 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.39440
+    [    0.1s]    1/576 | emotions  fold1 | gaussian_rectangular     | rlen= 100 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.58947
+    [    0.1s]    2/576 | emotions  fold1 | gaussian_rectangular     | rlen= 500 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.60297
+    [    0.2s]    3/576 | emotions  fold1 | gaussian_rectangular     | rlen=1000 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.58452
+    [    0.2s]    4/576 | emotions  fold1 | gaussian_rectangular     | rlen= 100 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.57278
+    [    0.2s]    5/576 | emotions  fold1 | gaussian_rectangular     | rlen= 500 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.59292
+    [    0.3s]    6/576 | emotions  fold1 | gaussian_rectangular     | rlen=1000 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.60109
+    [    0.3s]    7/576 | emotions  fold1 | gaussian_rectangular     | rlen= 100 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.58405
+    [    0.3s]    8/576 | emotions  fold1 | gaussian_rectangular     | rlen= 500 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.58106
+    [    0.3s]    9/576 | emotions  fold1 | gaussian_rectangular     | rlen=1000 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.57628
+    [    0.4s]   10/576 | emotions  fold1 | gaussian_rectangular     | rlen= 100 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.60340
+    [    0.4s]   11/576 | emotions  fold1 | gaussian_rectangular     | rlen= 500 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.58918
+    [    0.4s]   12/576 | emotions  fold1 | gaussian_rectangular     | rlen=1000 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.57492
+    [    0.5s]   13/576 | emotions  fold1 | gaussian_rectangular     | rlen= 100 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.58126
+    [    0.5s]   14/576 | emotions  fold1 | gaussian_rectangular     | rlen= 500 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.60385
+    [    0.5s]   15/576 | emotions  fold1 | gaussian_rectangular     | rlen=1000 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.57923
+    [    0.5s]   16/576 | emotions  fold1 | gaussian_rectangular     | rlen= 100 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.60119
+    [    0.6s]   17/576 | emotions  fold1 | gaussian_rectangular     | rlen= 500 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.58631
+    [    0.6s]   18/576 | emotions  fold1 | gaussian_rectangular     | rlen=1000 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.59192
+    [    0.7s]   19/576 | emotions  fold1 | gaussian_rectangular     | rlen= 100 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.58184
+    [    0.7s]   20/576 | emotions  fold1 | gaussian_rectangular     | rlen= 500 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.58565
+    [    0.7s]   21/576 | emotions  fold1 | gaussian_rectangular     | rlen=1000 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.58055
+    [    0.7s]   22/576 | emotions  fold1 | gaussian_rectangular     | rlen= 100 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.58727
+    [    0.8s]   23/576 | emotions  fold1 | gaussian_rectangular     | rlen= 500 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.58196
+    [    0.8s]   24/576 | emotions  fold1 | gaussian_rectangular     | rlen=1000 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.57241
+    [    0.8s]   25/576 | emotions  fold1 | gaussian_hexagonal       | rlen= 100 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.59885
+    [    0.9s]   26/576 | emotions  fold1 | gaussian_hexagonal       | rlen= 500 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.58747
+    [    0.9s]   27/576 | emotions  fold1 | gaussian_hexagonal       | rlen=1000 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.56442
+    [    0.9s]   28/576 | emotions  fold1 | gaussian_hexagonal       | rlen= 100 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.57297
+    [    1.0s]   29/576 | emotions  fold1 | gaussian_hexagonal       | rlen= 500 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.55395
+    [    1.0s]   30/576 | emotions  fold1 | gaussian_hexagonal       | rlen=1000 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.54516
+    [    1.0s]   31/576 | emotions  fold1 | gaussian_hexagonal       | rlen= 100 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.55897
+    [    1.0s]   32/576 | emotions  fold1 | gaussian_hexagonal       | rlen= 500 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.54414
+    [    1.1s]   33/576 | emotions  fold1 | gaussian_hexagonal       | rlen=1000 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.54744
+    [    1.1s]   34/576 | emotions  fold1 | gaussian_hexagonal       | rlen= 100 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.54472
+    [    1.1s]   35/576 | emotions  fold1 | gaussian_hexagonal       | rlen= 500 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.55074
+    [    1.2s]   36/576 | emotions  fold1 | gaussian_hexagonal       | rlen=1000 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.55720
+    [    1.2s]   37/576 | emotions  fold1 | gaussian_hexagonal       | rlen= 100 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.56643
+    [    1.2s]   38/576 | emotions  fold1 | gaussian_hexagonal       | rlen= 500 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.55016
+    [    1.3s]   39/576 | emotions  fold1 | gaussian_hexagonal       | rlen=1000 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.54718
+    [    1.3s]   40/576 | emotions  fold1 | gaussian_hexagonal       | rlen= 100 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.56261
+    [    1.3s]   41/576 | emotions  fold1 | gaussian_hexagonal       | rlen= 500 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.56228
+    [    1.4s]   42/576 | emotions  fold1 | gaussian_hexagonal       | rlen=1000 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.54419
+    [    1.4s]   43/576 | emotions  fold1 | gaussian_hexagonal       | rlen= 100 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.55823
+    [    1.4s]   44/576 | emotions  fold1 | gaussian_hexagonal       | rlen= 500 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.55115
+    [    1.5s]   45/576 | emotions  fold1 | gaussian_hexagonal       | rlen=1000 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.54507
+    [    1.5s]   46/576 | emotions  fold1 | gaussian_hexagonal       | rlen= 100 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.54615
+    [    1.5s]   47/576 | emotions  fold1 | gaussian_hexagonal       | rlen= 500 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.55914
+    [    1.6s]   48/576 | emotions  fold1 | gaussian_hexagonal       | rlen=1000 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.54736
+    [    1.6s]   49/576 | emotions  fold1 | bubble_rectangular       | rlen= 100 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.49540
+    [    1.6s]   50/576 | emotions  fold1 | bubble_rectangular       | rlen= 500 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.50326
+    [    1.6s]   51/576 | emotions  fold1 | bubble_rectangular       | rlen=1000 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.46588
+    [    1.6s]   52/576 | emotions  fold1 | bubble_rectangular       | rlen= 100 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.50817
+    [    1.6s]   53/576 | emotions  fold1 | bubble_rectangular       | rlen= 500 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.48502
+    [    1.7s]   54/576 | emotions  fold1 | bubble_rectangular       | rlen=1000 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.45848
+    [    1.7s]   55/576 | emotions  fold1 | bubble_rectangular       | rlen= 100 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.46714
+    [    1.7s]   56/576 | emotions  fold1 | bubble_rectangular       | rlen= 500 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.48117
+    [    1.7s]   57/576 | emotions  fold1 | bubble_rectangular       | rlen=1000 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.45838
+    [    1.7s]   58/576 | emotions  fold1 | bubble_rectangular       | rlen= 100 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.48262
+    [    1.7s]   59/576 | emotions  fold1 | bubble_rectangular       | rlen= 500 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.45927
+    [    1.8s]   60/576 | emotions  fold1 | bubble_rectangular       | rlen=1000 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.45895
+    [    1.8s]   61/576 | emotions  fold1 | bubble_rectangular       | rlen= 100 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.50928
+    [    1.8s]   62/576 | emotions  fold1 | bubble_rectangular       | rlen= 500 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.49606
+    [    1.8s]   63/576 | emotions  fold1 | bubble_rectangular       | rlen=1000 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.46671
+    [    1.8s]   64/576 | emotions  fold1 | bubble_rectangular       | rlen= 100 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.48128
+    [    1.8s]   65/576 | emotions  fold1 | bubble_rectangular       | rlen= 500 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.46628
+    [    1.9s]   66/576 | emotions  fold1 | bubble_rectangular       | rlen=1000 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.45904
+    [    1.9s]   67/576 | emotions  fold1 | bubble_rectangular       | rlen= 100 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.45974
+    [    1.9s]   68/576 | emotions  fold1 | bubble_rectangular       | rlen= 500 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.45997
+    [    1.9s]   69/576 | emotions  fold1 | bubble_rectangular       | rlen=1000 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.46405
+    [    1.9s]   70/576 | emotions  fold1 | bubble_rectangular       | rlen= 100 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.49608
+    [    1.9s]   71/576 | emotions  fold1 | bubble_rectangular       | rlen= 500 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.46150
+    [    2.0s]   72/576 | emotions  fold1 | bubble_rectangular       | rlen=1000 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.45905
+    [    2.0s]   73/576 | emotions  fold1 | bubble_hexagonal         | rlen= 100 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.49530
+    [    2.0s]   74/576 | emotions  fold1 | bubble_hexagonal         | rlen= 500 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.48157
+    [    2.0s]   75/576 | emotions  fold1 | bubble_hexagonal         | rlen=1000 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.50848
+    [    2.0s]   76/576 | emotions  fold1 | bubble_hexagonal         | rlen= 100 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.48383
+    [    2.0s]   77/576 | emotions  fold1 | bubble_hexagonal         | rlen= 500 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.50223
+    [    2.1s]   78/576 | emotions  fold1 | bubble_hexagonal         | rlen=1000 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.45852
+    [    2.1s]   79/576 | emotions  fold1 | bubble_hexagonal         | rlen= 100 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.45935
+    [    2.1s]   80/576 | emotions  fold1 | bubble_hexagonal         | rlen= 500 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.46619
+    [    2.1s]   81/576 | emotions  fold1 | bubble_hexagonal         | rlen=1000 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.45839
+    [    2.1s]   82/576 | emotions  fold1 | bubble_hexagonal         | rlen= 100 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.46685
+    [    2.1s]   83/576 | emotions  fold1 | bubble_hexagonal         | rlen= 500 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.46006
+    [    2.2s]   84/576 | emotions  fold1 | bubble_hexagonal         | rlen=1000 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.46048
+    [    2.2s]   85/576 | emotions  fold1 | bubble_hexagonal         | rlen= 100 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.46007
+    [    2.2s]   86/576 | emotions  fold1 | bubble_hexagonal         | rlen= 500 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.50498
+    [    2.2s]   87/576 | emotions  fold1 | bubble_hexagonal         | rlen=1000 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.46586
+    [    2.2s]   88/576 | emotions  fold1 | bubble_hexagonal         | rlen= 100 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.52202
+    [    2.2s]   89/576 | emotions  fold1 | bubble_hexagonal         | rlen= 500 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.49640
+    [    2.2s]   90/576 | emotions  fold1 | bubble_hexagonal         | rlen=1000 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.48562
+    [    2.2s]   91/576 | emotions  fold1 | bubble_hexagonal         | rlen= 100 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.46887
+    [    2.3s]   92/576 | emotions  fold1 | bubble_hexagonal         | rlen= 500 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.48211
+    [    2.3s]   93/576 | emotions  fold1 | bubble_hexagonal         | rlen=1000 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.48336
+    [    2.3s]   94/576 | emotions  fold1 | bubble_hexagonal         | rlen= 100 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.45960
+    [    2.3s]   95/576 | emotions  fold1 | bubble_hexagonal         | rlen= 500 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.48462
+    [    2.3s]   96/576 | emotions  fold1 | bubble_hexagonal         | rlen=1000 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.46684
+    [    2.4s]   97/576 | scene     fold1 | gaussian_rectangular     | rlen= 100 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.44836
+    [    2.5s]   98/576 | scene     fold1 | gaussian_rectangular     | rlen= 500 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.44930
+    [    2.7s]   99/576 | scene     fold1 | gaussian_rectangular     | rlen=1000 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.45709
+    [    2.7s]  100/576 | scene     fold1 | gaussian_rectangular     | rlen= 100 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.44819
+    [    2.8s]  101/576 | scene     fold1 | gaussian_rectangular     | rlen= 500 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.44831
+    [    3.0s]  102/576 | scene     fold1 | gaussian_rectangular     | rlen=1000 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.45070
+    [    3.1s]  103/576 | scene     fold1 | gaussian_rectangular     | rlen= 100 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.45277
+    [    3.2s]  104/576 | scene     fold1 | gaussian_rectangular     | rlen= 500 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.43875
+    [    3.4s]  105/576 | scene     fold1 | gaussian_rectangular     | rlen=1000 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.45160
+    [    3.4s]  106/576 | scene     fold1 | gaussian_rectangular     | rlen= 100 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.45195
+    [    3.5s]  107/576 | scene     fold1 | gaussian_rectangular     | rlen= 500 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.44767
+    [    3.7s]  108/576 | scene     fold1 | gaussian_rectangular     | rlen=1000 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.44869
+    [    3.8s]  109/576 | scene     fold1 | gaussian_rectangular     | rlen= 100 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.44732
+    [    3.9s]  110/576 | scene     fold1 | gaussian_rectangular     | rlen= 500 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.46105
+    [    4.1s]  111/576 | scene     fold1 | gaussian_rectangular     | rlen=1000 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.44744
+    [    4.1s]  112/576 | scene     fold1 | gaussian_rectangular     | rlen= 100 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.44964
+    [    4.2s]  113/576 | scene     fold1 | gaussian_rectangular     | rlen= 500 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.45004
+    [    4.4s]  114/576 | scene     fold1 | gaussian_rectangular     | rlen=1000 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.46817
+    [    4.5s]  115/576 | scene     fold1 | gaussian_rectangular     | rlen= 100 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.44672
+    [    4.6s]  116/576 | scene     fold1 | gaussian_rectangular     | rlen= 500 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.45492
+    [    4.8s]  117/576 | scene     fold1 | gaussian_rectangular     | rlen=1000 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.45218
+    [    4.8s]  118/576 | scene     fold1 | gaussian_rectangular     | rlen= 100 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.45225
+    [    4.9s]  119/576 | scene     fold1 | gaussian_rectangular     | rlen= 500 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.44157
+    [    5.1s]  120/576 | scene     fold1 | gaussian_rectangular     | rlen=1000 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.45487
+    [    5.2s]  121/576 | scene     fold1 | gaussian_hexagonal       | rlen= 100 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.44031
+    [    5.3s]  122/576 | scene     fold1 | gaussian_hexagonal       | rlen= 500 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.43036
+    [    5.4s]  123/576 | scene     fold1 | gaussian_hexagonal       | rlen=1000 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.43340
+    [    5.5s]  124/576 | scene     fold1 | gaussian_hexagonal       | rlen= 100 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.43715
+    [    5.6s]  125/576 | scene     fold1 | gaussian_hexagonal       | rlen= 500 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.42973
+    [    5.8s]  126/576 | scene     fold1 | gaussian_hexagonal       | rlen=1000 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.45373
+    [    5.8s]  127/576 | scene     fold1 | gaussian_hexagonal       | rlen= 100 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.43472
+    [    5.9s]  128/576 | scene     fold1 | gaussian_hexagonal       | rlen= 500 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.43822
+    [    6.1s]  129/576 | scene     fold1 | gaussian_hexagonal       | rlen=1000 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.42607
+    [    6.2s]  130/576 | scene     fold1 | gaussian_hexagonal       | rlen= 100 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.44552
+    [    6.3s]  131/576 | scene     fold1 | gaussian_hexagonal       | rlen= 500 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.43289
+    [    6.5s]  132/576 | scene     fold1 | gaussian_hexagonal       | rlen=1000 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.42751
+    [    6.5s]  133/576 | scene     fold1 | gaussian_hexagonal       | rlen= 100 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.46975
+    [    6.6s]  134/576 | scene     fold1 | gaussian_hexagonal       | rlen= 500 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.43538
+    [    6.8s]  135/576 | scene     fold1 | gaussian_hexagonal       | rlen=1000 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.43567
+    [    6.8s]  136/576 | scene     fold1 | gaussian_hexagonal       | rlen= 100 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.43598
+    [    7.0s]  137/576 | scene     fold1 | gaussian_hexagonal       | rlen= 500 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.44366
+    [    7.2s]  138/576 | scene     fold1 | gaussian_hexagonal       | rlen=1000 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.43613
+    [    7.2s]  139/576 | scene     fold1 | gaussian_hexagonal       | rlen= 100 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.44314
+    [    7.3s]  140/576 | scene     fold1 | gaussian_hexagonal       | rlen= 500 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.44137
+    [    7.5s]  141/576 | scene     fold1 | gaussian_hexagonal       | rlen=1000 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.43893
+    [    7.5s]  142/576 | scene     fold1 | gaussian_hexagonal       | rlen= 100 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.43481
+    [    7.6s]  143/576 | scene     fold1 | gaussian_hexagonal       | rlen= 500 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.42931
+    [    7.8s]  144/576 | scene     fold1 | gaussian_hexagonal       | rlen=1000 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.42878
+    [    7.9s]  145/576 | scene     fold1 | bubble_rectangular       | rlen= 100 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.37576
+    [    7.9s]  146/576 | scene     fold1 | bubble_rectangular       | rlen= 500 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.37856
+    [    8.1s]  147/576 | scene     fold1 | bubble_rectangular       | rlen=1000 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.50918
+    [    8.1s]  148/576 | scene     fold1 | bubble_rectangular       | rlen= 100 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.37207
+    [    8.1s]  149/576 | scene     fold1 | bubble_rectangular       | rlen= 500 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.36682
+    [    8.3s]  150/576 | scene     fold1 | bubble_rectangular       | rlen=1000 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.36634
+    [    8.3s]  151/576 | scene     fold1 | bubble_rectangular       | rlen= 100 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.37429
+    [    8.3s]  152/576 | scene     fold1 | bubble_rectangular       | rlen= 500 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.36056
+    [    8.4s]  153/576 | scene     fold1 | bubble_rectangular       | rlen=1000 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.37288
+    [    8.5s]  154/576 | scene     fold1 | bubble_rectangular       | rlen= 100 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.36554
+    [    8.6s]  155/576 | scene     fold1 | bubble_rectangular       | rlen= 500 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.36212
+    [    8.7s]  156/576 | scene     fold1 | bubble_rectangular       | rlen=1000 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.35801
+    [    8.7s]  157/576 | scene     fold1 | bubble_rectangular       | rlen= 100 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.36986
+    [    8.8s]  158/576 | scene     fold1 | bubble_rectangular       | rlen= 500 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.37825
+    [    8.9s]  159/576 | scene     fold1 | bubble_rectangular       | rlen=1000 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.38063
+    [    8.9s]  160/576 | scene     fold1 | bubble_rectangular       | rlen= 100 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.36400
+    [    9.0s]  161/576 | scene     fold1 | bubble_rectangular       | rlen= 500 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.36333
+    [    9.1s]  162/576 | scene     fold1 | bubble_rectangular       | rlen=1000 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.37225
+    [    9.2s]  163/576 | scene     fold1 | bubble_rectangular       | rlen= 100 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.38164
+    [    9.2s]  164/576 | scene     fold1 | bubble_rectangular       | rlen= 500 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.38065
+    [    9.4s]  165/576 | scene     fold1 | bubble_rectangular       | rlen=1000 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.52771
+    [    9.4s]  166/576 | scene     fold1 | bubble_rectangular       | rlen= 100 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.35828
+    [    9.4s]  167/576 | scene     fold1 | bubble_rectangular       | rlen= 500 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.36716
+    [    9.6s]  168/576 | scene     fold1 | bubble_rectangular       | rlen=1000 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.38400
+    [    9.6s]  169/576 | scene     fold1 | bubble_hexagonal         | rlen= 100 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.36890
+    [    9.7s]  170/576 | scene     fold1 | bubble_hexagonal         | rlen= 500 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.36918
+    [    9.8s]  171/576 | scene     fold1 | bubble_hexagonal         | rlen=1000 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.39010
+    [    9.8s]  172/576 | scene     fold1 | bubble_hexagonal         | rlen= 100 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.37345
+    [    9.9s]  173/576 | scene     fold1 | bubble_hexagonal         | rlen= 500 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.36211
+    [   10.0s]  174/576 | scene     fold1 | bubble_hexagonal         | rlen=1000 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.37152
+    [   10.1s]  175/576 | scene     fold1 | bubble_hexagonal         | rlen= 100 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.36007
+    [   10.1s]  176/576 | scene     fold1 | bubble_hexagonal         | rlen= 500 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.36906
+    [   10.2s]  177/576 | scene     fold1 | bubble_hexagonal         | rlen=1000 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.38073
+    [   10.2s]  178/576 | scene     fold1 | bubble_hexagonal         | rlen= 100 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.37845
+    [   10.3s]  179/576 | scene     fold1 | bubble_hexagonal         | rlen= 500 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.35816
+    [   10.4s]  180/576 | scene     fold1 | bubble_hexagonal         | rlen=1000 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.38037
+    [   10.5s]  181/576 | scene     fold1 | bubble_hexagonal         | rlen= 100 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.37157
+    [   10.5s]  182/576 | scene     fold1 | bubble_hexagonal         | rlen= 500 r=1.000000 a=(0.05,0.010) | empty=1 QE=0.55475
+    [   10.6s]  183/576 | scene     fold1 | bubble_hexagonal         | rlen=1000 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.37179
+    [   10.7s]  184/576 | scene     fold1 | bubble_hexagonal         | rlen= 100 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.38329
+    [   10.7s]  185/576 | scene     fold1 | bubble_hexagonal         | rlen= 500 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.35845
+    [   10.9s]  186/576 | scene     fold1 | bubble_hexagonal         | rlen=1000 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.37937
+    [   10.9s]  187/576 | scene     fold1 | bubble_hexagonal         | rlen= 100 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.38162
+    [   10.9s]  188/576 | scene     fold1 | bubble_hexagonal         | rlen= 500 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.38080
+    [   11.1s]  189/576 | scene     fold1 | bubble_hexagonal         | rlen=1000 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.37924
+    [   11.1s]  190/576 | scene     fold1 | bubble_hexagonal         | rlen= 100 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.36649
+    [   11.2s]  191/576 | scene     fold1 | bubble_hexagonal         | rlen= 500 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.37222
+    [   11.3s]  192/576 | scene     fold1 | bubble_hexagonal         | rlen=1000 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.37340
+    [   11.3s]  193/576 | emotions  fold2 | gaussian_rectangular     | rlen= 100 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.58783
+    [   11.3s]  194/576 | emotions  fold2 | gaussian_rectangular     | rlen= 500 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.58717
+    [   11.4s]  195/576 | emotions  fold2 | gaussian_rectangular     | rlen=1000 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.57961
+    [   11.4s]  196/576 | emotions  fold2 | gaussian_rectangular     | rlen= 100 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.62206
+    [   11.4s]  197/576 | emotions  fold2 | gaussian_rectangular     | rlen= 500 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.58970
+    [   11.5s]  198/576 | emotions  fold2 | gaussian_rectangular     | rlen=1000 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.58897
+    [   11.5s]  199/576 | emotions  fold2 | gaussian_rectangular     | rlen= 100 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.57741
+    [   11.5s]  200/576 | emotions  fold2 | gaussian_rectangular     | rlen= 500 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.57840
+    [   11.6s]  201/576 | emotions  fold2 | gaussian_rectangular     | rlen=1000 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.57468
+    [   11.6s]  202/576 | emotions  fold2 | gaussian_rectangular     | rlen= 100 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.58150
+    [   11.6s]  203/576 | emotions  fold2 | gaussian_rectangular     | rlen= 500 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.58605
+    [   11.7s]  204/576 | emotions  fold2 | gaussian_rectangular     | rlen=1000 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.57168
+    [   11.7s]  205/576 | emotions  fold2 | gaussian_rectangular     | rlen= 100 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.57016
+    [   11.7s]  206/576 | emotions  fold2 | gaussian_rectangular     | rlen= 500 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.57359
+    [   11.8s]  207/576 | emotions  fold2 | gaussian_rectangular     | rlen=1000 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.57853
+    [   11.8s]  208/576 | emotions  fold2 | gaussian_rectangular     | rlen= 100 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.57403
+    [   11.8s]  209/576 | emotions  fold2 | gaussian_rectangular     | rlen= 500 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.58565
+    [   11.9s]  210/576 | emotions  fold2 | gaussian_rectangular     | rlen=1000 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.57672
+    [   11.9s]  211/576 | emotions  fold2 | gaussian_rectangular     | rlen= 100 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.58284
+    [   11.9s]  212/576 | emotions  fold2 | gaussian_rectangular     | rlen= 500 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.57120
+    [   11.9s]  213/576 | emotions  fold2 | gaussian_rectangular     | rlen=1000 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.57443
+    [   11.9s]  214/576 | emotions  fold2 | gaussian_rectangular     | rlen= 100 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.58993
+    [   12.0s]  215/576 | emotions  fold2 | gaussian_rectangular     | rlen= 500 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.57546
+    [   12.0s]  216/576 | emotions  fold2 | gaussian_rectangular     | rlen=1000 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.57805
+    [   12.1s]  217/576 | emotions  fold2 | gaussian_hexagonal       | rlen= 100 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.57565
+    [   12.1s]  218/576 | emotions  fold2 | gaussian_hexagonal       | rlen= 500 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.56038
+    [   12.1s]  219/576 | emotions  fold2 | gaussian_hexagonal       | rlen=1000 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.56207
+    [   12.1s]  220/576 | emotions  fold2 | gaussian_hexagonal       | rlen= 100 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.53614
+    [   12.2s]  221/576 | emotions  fold2 | gaussian_hexagonal       | rlen= 500 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.54708
+    [   12.2s]  222/576 | emotions  fold2 | gaussian_hexagonal       | rlen=1000 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.54146
+    [   12.2s]  223/576 | emotions  fold2 | gaussian_hexagonal       | rlen= 100 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.55961
+    [   12.3s]  224/576 | emotions  fold2 | gaussian_hexagonal       | rlen= 500 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.53923
+    [   12.4s]  225/576 | emotions  fold2 | gaussian_hexagonal       | rlen=1000 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.53975
+    [   12.4s]  226/576 | emotions  fold2 | gaussian_hexagonal       | rlen= 100 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.54333
+    [   12.4s]  227/576 | emotions  fold2 | gaussian_hexagonal       | rlen= 500 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.53286
+    [   12.5s]  228/576 | emotions  fold2 | gaussian_hexagonal       | rlen=1000 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.53427
+    [   12.5s]  229/576 | emotions  fold2 | gaussian_hexagonal       | rlen= 100 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.56479
+    [   12.5s]  230/576 | emotions  fold2 | gaussian_hexagonal       | rlen= 500 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.57546
+    [   12.6s]  231/576 | emotions  fold2 | gaussian_hexagonal       | rlen=1000 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.54596
+    [   12.6s]  232/576 | emotions  fold2 | gaussian_hexagonal       | rlen= 100 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.54433
+    [   12.6s]  233/576 | emotions  fold2 | gaussian_hexagonal       | rlen= 500 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.54963
+    [   12.6s]  234/576 | emotions  fold2 | gaussian_hexagonal       | rlen=1000 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.54298
+    [   12.7s]  235/576 | emotions  fold2 | gaussian_hexagonal       | rlen= 100 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.55176
+    [   12.7s]  236/576 | emotions  fold2 | gaussian_hexagonal       | rlen= 500 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.56187
+    [   12.7s]  237/576 | emotions  fold2 | gaussian_hexagonal       | rlen=1000 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.55869
+    [   12.7s]  238/576 | emotions  fold2 | gaussian_hexagonal       | rlen= 100 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.54079
+    [   12.8s]  239/576 | emotions  fold2 | gaussian_hexagonal       | rlen= 500 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.55164
+    [   12.8s]  240/576 | emotions  fold2 | gaussian_hexagonal       | rlen=1000 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.54293
+    [   12.8s]  241/576 | emotions  fold2 | bubble_rectangular       | rlen= 100 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.46272
+    [   12.8s]  242/576 | emotions  fold2 | bubble_rectangular       | rlen= 500 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.46212
+    [   12.9s]  243/576 | emotions  fold2 | bubble_rectangular       | rlen=1000 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.47629
+    [   12.9s]  244/576 | emotions  fold2 | bubble_rectangular       | rlen= 100 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.46152
+    [   12.9s]  245/576 | emotions  fold2 | bubble_rectangular       | rlen= 500 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.47955
+    [   12.9s]  246/576 | emotions  fold2 | bubble_rectangular       | rlen=1000 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.48169
+    [   12.9s]  247/576 | emotions  fold2 | bubble_rectangular       | rlen= 100 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.47626
+    [   12.9s]  248/576 | emotions  fold2 | bubble_rectangular       | rlen= 500 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.46145
+    [   12.9s]  249/576 | emotions  fold2 | bubble_rectangular       | rlen=1000 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.47541
+    [   13.0s]  250/576 | emotions  fold2 | bubble_rectangular       | rlen= 100 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.49445
+    [   13.0s]  251/576 | emotions  fold2 | bubble_rectangular       | rlen= 500 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.46161
+    [   13.0s]  252/576 | emotions  fold2 | bubble_rectangular       | rlen=1000 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.46100
+    [   13.0s]  253/576 | emotions  fold2 | bubble_rectangular       | rlen= 100 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.47767
+    [   13.1s]  254/576 | emotions  fold2 | bubble_rectangular       | rlen= 500 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.46417
+    [   13.1s]  255/576 | emotions  fold2 | bubble_rectangular       | rlen=1000 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.46186
+    [   13.1s]  256/576 | emotions  fold2 | bubble_rectangular       | rlen= 100 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.47999
+    [   13.1s]  257/576 | emotions  fold2 | bubble_rectangular       | rlen= 500 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.46101
+    [   13.1s]  258/576 | emotions  fold2 | bubble_rectangular       | rlen=1000 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.48118
+    [   13.1s]  259/576 | emotions  fold2 | bubble_rectangular       | rlen= 100 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.46407
+    [   13.1s]  260/576 | emotions  fold2 | bubble_rectangular       | rlen= 500 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.46152
+    [   13.2s]  261/576 | emotions  fold2 | bubble_rectangular       | rlen=1000 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.48137
+    [   13.2s]  262/576 | emotions  fold2 | bubble_rectangular       | rlen= 100 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.46241
+    [   13.2s]  263/576 | emotions  fold2 | bubble_rectangular       | rlen= 500 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.45889
+    [   13.2s]  264/576 | emotions  fold2 | bubble_rectangular       | rlen=1000 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.46334
+    [   13.2s]  265/576 | emotions  fold2 | bubble_hexagonal         | rlen= 100 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.46173
+    [   13.2s]  266/576 | emotions  fold2 | bubble_hexagonal         | rlen= 500 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.45783
+    [   13.2s]  267/576 | emotions  fold2 | bubble_hexagonal         | rlen=1000 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.46065
+    [   13.3s]  268/576 | emotions  fold2 | bubble_hexagonal         | rlen= 100 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.49261
+    [   13.3s]  269/576 | emotions  fold2 | bubble_hexagonal         | rlen= 500 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.47930
+    [   13.3s]  270/576 | emotions  fold2 | bubble_hexagonal         | rlen=1000 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.45636
+    [   13.3s]  271/576 | emotions  fold2 | bubble_hexagonal         | rlen= 100 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.47884
+    [   13.3s]  272/576 | emotions  fold2 | bubble_hexagonal         | rlen= 500 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.47697
+    [   13.3s]  273/576 | emotions  fold2 | bubble_hexagonal         | rlen=1000 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.45838
+    [   13.4s]  274/576 | emotions  fold2 | bubble_hexagonal         | rlen= 100 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.49371
+    [   13.4s]  275/576 | emotions  fold2 | bubble_hexagonal         | rlen= 500 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.47951
+    [   13.4s]  276/576 | emotions  fold2 | bubble_hexagonal         | rlen=1000 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.49274
+    [   13.4s]  277/576 | emotions  fold2 | bubble_hexagonal         | rlen= 100 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.46209
+    [   13.4s]  278/576 | emotions  fold2 | bubble_hexagonal         | rlen= 500 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.46237
+    [   13.4s]  279/576 | emotions  fold2 | bubble_hexagonal         | rlen=1000 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.45729
+    [   13.4s]  280/576 | emotions  fold2 | bubble_hexagonal         | rlen= 100 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.46061
+    [   13.5s]  281/576 | emotions  fold2 | bubble_hexagonal         | rlen= 500 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.45816
+    [   13.5s]  282/576 | emotions  fold2 | bubble_hexagonal         | rlen=1000 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.48127
+    [   13.5s]  283/576 | emotions  fold2 | bubble_hexagonal         | rlen= 100 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.46162
+    [   13.5s]  284/576 | emotions  fold2 | bubble_hexagonal         | rlen= 500 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.46470
+    [   13.6s]  285/576 | emotions  fold2 | bubble_hexagonal         | rlen=1000 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.46003
+    [   13.6s]  286/576 | emotions  fold2 | bubble_hexagonal         | rlen= 100 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.49498
+    [   13.6s]  287/576 | emotions  fold2 | bubble_hexagonal         | rlen= 500 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.49267
+    [   13.6s]  288/576 | emotions  fold2 | bubble_hexagonal         | rlen=1000 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.45930
+    [   13.6s]  289/576 | scene     fold2 | gaussian_rectangular     | rlen= 100 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.44901
+    [   13.7s]  290/576 | scene     fold2 | gaussian_rectangular     | rlen= 500 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.45708
+    [   13.9s]  291/576 | scene     fold2 | gaussian_rectangular     | rlen=1000 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.45426
+    [   13.9s]  292/576 | scene     fold2 | gaussian_rectangular     | rlen= 100 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.44182
+    [   14.1s]  293/576 | scene     fold2 | gaussian_rectangular     | rlen= 500 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.44797
+    [   14.3s]  294/576 | scene     fold2 | gaussian_rectangular     | rlen=1000 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.47004
+    [   14.3s]  295/576 | scene     fold2 | gaussian_rectangular     | rlen= 100 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.45850
+    [   14.4s]  296/576 | scene     fold2 | gaussian_rectangular     | rlen= 500 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.45733
+    [   14.6s]  297/576 | scene     fold2 | gaussian_rectangular     | rlen=1000 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.46159
+    [   14.6s]  298/576 | scene     fold2 | gaussian_rectangular     | rlen= 100 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.45439
+    [   14.8s]  299/576 | scene     fold2 | gaussian_rectangular     | rlen= 500 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.45444
+    [   14.9s]  300/576 | scene     fold2 | gaussian_rectangular     | rlen=1000 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.45169
+    [   15.0s]  301/576 | scene     fold2 | gaussian_rectangular     | rlen= 100 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.44691
+    [   15.1s]  302/576 | scene     fold2 | gaussian_rectangular     | rlen= 500 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.47204
+    [   15.3s]  303/576 | scene     fold2 | gaussian_rectangular     | rlen=1000 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.45264
+    [   15.3s]  304/576 | scene     fold2 | gaussian_rectangular     | rlen= 100 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.45962
+    [   15.4s]  305/576 | scene     fold2 | gaussian_rectangular     | rlen= 500 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.46174
+    [   15.6s]  306/576 | scene     fold2 | gaussian_rectangular     | rlen=1000 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.45483
+    [   15.7s]  307/576 | scene     fold2 | gaussian_rectangular     | rlen= 100 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.46385
+    [   15.8s]  308/576 | scene     fold2 | gaussian_rectangular     | rlen= 500 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.45431
+    [   16.0s]  309/576 | scene     fold2 | gaussian_rectangular     | rlen=1000 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.44117
+    [   16.0s]  310/576 | scene     fold2 | gaussian_rectangular     | rlen= 100 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.45062
+    [   16.1s]  311/576 | scene     fold2 | gaussian_rectangular     | rlen= 500 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.44256
+    [   16.3s]  312/576 | scene     fold2 | gaussian_rectangular     | rlen=1000 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.44022
+    [   16.4s]  313/576 | scene     fold2 | gaussian_hexagonal       | rlen= 100 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.43844
+    [   16.5s]  314/576 | scene     fold2 | gaussian_hexagonal       | rlen= 500 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.45166
+    [   16.7s]  315/576 | scene     fold2 | gaussian_hexagonal       | rlen=1000 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.44162
+    [   16.7s]  316/576 | scene     fold2 | gaussian_hexagonal       | rlen= 100 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.44574
+    [   16.8s]  317/576 | scene     fold2 | gaussian_hexagonal       | rlen= 500 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.43046
+    [   17.0s]  318/576 | scene     fold2 | gaussian_hexagonal       | rlen=1000 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.43983
+    [   17.0s]  319/576 | scene     fold2 | gaussian_hexagonal       | rlen= 100 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.43707
+    [   17.1s]  320/576 | scene     fold2 | gaussian_hexagonal       | rlen= 500 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.44407
+    [   17.3s]  321/576 | scene     fold2 | gaussian_hexagonal       | rlen=1000 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.43412
+    [   17.4s]  322/576 | scene     fold2 | gaussian_hexagonal       | rlen= 100 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.42502
+    [   17.5s]  323/576 | scene     fold2 | gaussian_hexagonal       | rlen= 500 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.43545
+    [   17.7s]  324/576 | scene     fold2 | gaussian_hexagonal       | rlen=1000 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.43412
+    [   17.7s]  325/576 | scene     fold2 | gaussian_hexagonal       | rlen= 100 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.46532
+    [   17.8s]  326/576 | scene     fold2 | gaussian_hexagonal       | rlen= 500 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.43957
+    [   18.0s]  327/576 | scene     fold2 | gaussian_hexagonal       | rlen=1000 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.42339
+    [   18.0s]  328/576 | scene     fold2 | gaussian_hexagonal       | rlen= 100 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.44580
+    [   18.2s]  329/576 | scene     fold2 | gaussian_hexagonal       | rlen= 500 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.43825
+    [   18.4s]  330/576 | scene     fold2 | gaussian_hexagonal       | rlen=1000 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.43318
+    [   18.4s]  331/576 | scene     fold2 | gaussian_hexagonal       | rlen= 100 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.42505
+    [   18.5s]  332/576 | scene     fold2 | gaussian_hexagonal       | rlen= 500 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.43066
+    [   18.7s]  333/576 | scene     fold2 | gaussian_hexagonal       | rlen=1000 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.44182
+    [   18.7s]  334/576 | scene     fold2 | gaussian_hexagonal       | rlen= 100 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.45688
+    [   18.8s]  335/576 | scene     fold2 | gaussian_hexagonal       | rlen= 500 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.42820
+    [   19.0s]  336/576 | scene     fold2 | gaussian_hexagonal       | rlen=1000 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.43478
+    [   19.0s]  337/576 | scene     fold2 | bubble_rectangular       | rlen= 100 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.38200
+    [   19.1s]  338/576 | scene     fold2 | bubble_rectangular       | rlen= 500 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.39360
+    [   19.2s]  339/576 | scene     fold2 | bubble_rectangular       | rlen=1000 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.37173
+    [   19.2s]  340/576 | scene     fold2 | bubble_rectangular       | rlen= 100 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.37052
+    [   19.3s]  341/576 | scene     fold2 | bubble_rectangular       | rlen= 500 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.36744
+    [   19.4s]  342/576 | scene     fold2 | bubble_rectangular       | rlen=1000 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.35893
+    [   19.5s]  343/576 | scene     fold2 | bubble_rectangular       | rlen= 100 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.52640
+    [   19.6s]  344/576 | scene     fold2 | bubble_rectangular       | rlen= 500 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.38324
+    [   19.6s]  345/576 | scene     fold2 | bubble_rectangular       | rlen=1000 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.36996
+    [   19.7s]  346/576 | scene     fold2 | bubble_rectangular       | rlen= 100 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.38796
+    [   19.8s]  347/576 | scene     fold2 | bubble_rectangular       | rlen= 500 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.35841
+    [   19.9s]  348/576 | scene     fold2 | bubble_rectangular       | rlen=1000 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.39125
+    [   19.9s]  349/576 | scene     fold2 | bubble_rectangular       | rlen= 100 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.53844
+    [   20.0s]  350/576 | scene     fold2 | bubble_rectangular       | rlen= 500 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.38912
+    [   20.1s]  351/576 | scene     fold2 | bubble_rectangular       | rlen=1000 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.38772
+    [   20.1s]  352/576 | scene     fold2 | bubble_rectangular       | rlen= 100 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.39514
+    [   20.2s]  353/576 | scene     fold2 | bubble_rectangular       | rlen= 500 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.36616
+    [   20.3s]  354/576 | scene     fold2 | bubble_rectangular       | rlen=1000 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.37358
+    [   20.3s]  355/576 | scene     fold2 | bubble_rectangular       | rlen= 100 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.38203
+    [   20.4s]  356/576 | scene     fold2 | bubble_rectangular       | rlen= 500 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.36087
+    [   20.5s]  357/576 | scene     fold2 | bubble_rectangular       | rlen=1000 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.37407
+    [   20.6s]  358/576 | scene     fold2 | bubble_rectangular       | rlen= 100 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.36036
+    [   20.6s]  359/576 | scene     fold2 | bubble_rectangular       | rlen= 500 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.36317
+    [   20.8s]  360/576 | scene     fold2 | bubble_rectangular       | rlen=1000 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.36093
+    [   20.8s]  361/576 | scene     fold2 | bubble_hexagonal         | rlen= 100 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.36110
+    [   20.8s]  362/576 | scene     fold2 | bubble_hexagonal         | rlen= 500 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.38253
+    [   21.0s]  363/576 | scene     fold2 | bubble_hexagonal         | rlen=1000 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.37072
+    [   21.0s]  364/576 | scene     fold2 | bubble_hexagonal         | rlen= 100 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.38373
+    [   21.0s]  365/576 | scene     fold2 | bubble_hexagonal         | rlen= 500 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.37044
+    [   21.2s]  366/576 | scene     fold2 | bubble_hexagonal         | rlen=1000 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.38390
+    [   21.2s]  367/576 | scene     fold2 | bubble_hexagonal         | rlen= 100 r=1.000000 a=(0.10,0.005) | empty=1 QE=0.53100
+    [   21.2s]  368/576 | scene     fold2 | bubble_hexagonal         | rlen= 500 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.38152
+    [   21.4s]  369/576 | scene     fold2 | bubble_hexagonal         | rlen=1000 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.37187
+    [   21.4s]  370/576 | scene     fold2 | bubble_hexagonal         | rlen= 100 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.38234
+    [   21.4s]  371/576 | scene     fold2 | bubble_hexagonal         | rlen= 500 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.36611
+    [   21.6s]  372/576 | scene     fold2 | bubble_hexagonal         | rlen=1000 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.38102
+    [   21.6s]  373/576 | scene     fold2 | bubble_hexagonal         | rlen= 100 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.36133
+    [   21.7s]  374/576 | scene     fold2 | bubble_hexagonal         | rlen= 500 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.39194
+    [   21.8s]  375/576 | scene     fold2 | bubble_hexagonal         | rlen=1000 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.39147
+    [   21.8s]  376/576 | scene     fold2 | bubble_hexagonal         | rlen= 100 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.38359
+    [   21.9s]  377/576 | scene     fold2 | bubble_hexagonal         | rlen= 500 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.38200
+    [   22.0s]  378/576 | scene     fold2 | bubble_hexagonal         | rlen=1000 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.38399
+    [   22.0s]  379/576 | scene     fold2 | bubble_hexagonal         | rlen= 100 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.37402
+    [   22.1s]  380/576 | scene     fold2 | bubble_hexagonal         | rlen= 500 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.37209
+    [   22.2s]  381/576 | scene     fold2 | bubble_hexagonal         | rlen=1000 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.36244
+    [   22.2s]  382/576 | scene     fold2 | bubble_hexagonal         | rlen= 100 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.37951
+    [   22.3s]  383/576 | scene     fold2 | bubble_hexagonal         | rlen= 500 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.38070
+    [   22.4s]  384/576 | scene     fold2 | bubble_hexagonal         | rlen=1000 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.37020
+    [   22.4s]  385/576 | emotions  fold3 | gaussian_rectangular     | rlen= 100 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.57692
+    [   22.5s]  386/576 | emotions  fold3 | gaussian_rectangular     | rlen= 500 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.57682
+    [   22.5s]  387/576 | emotions  fold3 | gaussian_rectangular     | rlen=1000 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.57684
+    [   22.6s]  388/576 | emotions  fold3 | gaussian_rectangular     | rlen= 100 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.59517
+    [   22.6s]  389/576 | emotions  fold3 | gaussian_rectangular     | rlen= 500 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.58286
+    [   22.6s]  390/576 | emotions  fold3 | gaussian_rectangular     | rlen=1000 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.59943
+    [   22.6s]  391/576 | emotions  fold3 | gaussian_rectangular     | rlen= 100 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.57228
+    [   22.7s]  392/576 | emotions  fold3 | gaussian_rectangular     | rlen= 500 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.57371
+    [   22.7s]  393/576 | emotions  fold3 | gaussian_rectangular     | rlen=1000 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.57371
+    [   22.7s]  394/576 | emotions  fold3 | gaussian_rectangular     | rlen= 100 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.58683
+    [   22.8s]  395/576 | emotions  fold3 | gaussian_rectangular     | rlen= 500 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.61164
+    [   22.8s]  396/576 | emotions  fold3 | gaussian_rectangular     | rlen=1000 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.57337
+    [   22.8s]  397/576 | emotions  fold3 | gaussian_rectangular     | rlen= 100 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.58162
+    [   22.8s]  398/576 | emotions  fold3 | gaussian_rectangular     | rlen= 500 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.60969
+    [   22.9s]  399/576 | emotions  fold3 | gaussian_rectangular     | rlen=1000 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.57353
+    [   22.9s]  400/576 | emotions  fold3 | gaussian_rectangular     | rlen= 100 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.60252
+    [   22.9s]  401/576 | emotions  fold3 | gaussian_rectangular     | rlen= 500 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.60017
+    [   23.0s]  402/576 | emotions  fold3 | gaussian_rectangular     | rlen=1000 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.57500
+    [   23.0s]  403/576 | emotions  fold3 | gaussian_rectangular     | rlen= 100 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.56516
+    [   23.0s]  404/576 | emotions  fold3 | gaussian_rectangular     | rlen= 500 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.57374
+    [   23.1s]  405/576 | emotions  fold3 | gaussian_rectangular     | rlen=1000 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.57305
+    [   23.1s]  406/576 | emotions  fold3 | gaussian_rectangular     | rlen= 100 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.60688
+    [   23.1s]  407/576 | emotions  fold3 | gaussian_rectangular     | rlen= 500 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.59848
+    [   23.2s]  408/576 | emotions  fold3 | gaussian_rectangular     | rlen=1000 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.58503
+    [   23.2s]  409/576 | emotions  fold3 | gaussian_hexagonal       | rlen= 100 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.54509
+    [   23.2s]  410/576 | emotions  fold3 | gaussian_hexagonal       | rlen= 500 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.54065
+    [   23.3s]  411/576 | emotions  fold3 | gaussian_hexagonal       | rlen=1000 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.54448
+    [   23.3s]  412/576 | emotions  fold3 | gaussian_hexagonal       | rlen= 100 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.54074
+    [   23.3s]  413/576 | emotions  fold3 | gaussian_hexagonal       | rlen= 500 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.55618
+    [   23.4s]  414/576 | emotions  fold3 | gaussian_hexagonal       | rlen=1000 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.55621
+    [   23.4s]  415/576 | emotions  fold3 | gaussian_hexagonal       | rlen= 100 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.54214
+    [   23.4s]  416/576 | emotions  fold3 | gaussian_hexagonal       | rlen= 500 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.54400
+    [   23.4s]  417/576 | emotions  fold3 | gaussian_hexagonal       | rlen=1000 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.53601
+    [   23.4s]  418/576 | emotions  fold3 | gaussian_hexagonal       | rlen= 100 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.55079
+    [   23.5s]  419/576 | emotions  fold3 | gaussian_hexagonal       | rlen= 500 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.54335
+    [   23.5s]  420/576 | emotions  fold3 | gaussian_hexagonal       | rlen=1000 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.53385
+    [   23.6s]  421/576 | emotions  fold3 | gaussian_hexagonal       | rlen= 100 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.58595
+    [   23.6s]  422/576 | emotions  fold3 | gaussian_hexagonal       | rlen= 500 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.56973
+    [   23.6s]  423/576 | emotions  fold3 | gaussian_hexagonal       | rlen=1000 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.55346
+    [   23.6s]  424/576 | emotions  fold3 | gaussian_hexagonal       | rlen= 100 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.55379
+    [   23.7s]  425/576 | emotions  fold3 | gaussian_hexagonal       | rlen= 500 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.54043
+    [   23.7s]  426/576 | emotions  fold3 | gaussian_hexagonal       | rlen=1000 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.55569
+    [   23.7s]  427/576 | emotions  fold3 | gaussian_hexagonal       | rlen= 100 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.54339
+    [   23.8s]  428/576 | emotions  fold3 | gaussian_hexagonal       | rlen= 500 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.54222
+    [   23.8s]  429/576 | emotions  fold3 | gaussian_hexagonal       | rlen=1000 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.54582
+    [   23.8s]  430/576 | emotions  fold3 | gaussian_hexagonal       | rlen= 100 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.54012
+    [   23.8s]  431/576 | emotions  fold3 | gaussian_hexagonal       | rlen= 500 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.54227
+    [   23.9s]  432/576 | emotions  fold3 | gaussian_hexagonal       | rlen=1000 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.53438
+    [   23.9s]  433/576 | emotions  fold3 | bubble_rectangular       | rlen= 100 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.46484
+    [   23.9s]  434/576 | emotions  fold3 | bubble_rectangular       | rlen= 500 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.46004
+    [   23.9s]  435/576 | emotions  fold3 | bubble_rectangular       | rlen=1000 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.49798
+    [   24.0s]  436/576 | emotions  fold3 | bubble_rectangular       | rlen= 100 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.48018
+    [   24.0s]  437/576 | emotions  fold3 | bubble_rectangular       | rlen= 500 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.46503
+    [   24.0s]  438/576 | emotions  fold3 | bubble_rectangular       | rlen=1000 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.45904
+    [   24.0s]  439/576 | emotions  fold3 | bubble_rectangular       | rlen= 100 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.46196
+    [   24.0s]  440/576 | emotions  fold3 | bubble_rectangular       | rlen= 500 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.45907
+    [   24.0s]  441/576 | emotions  fold3 | bubble_rectangular       | rlen=1000 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.46710
+    [   24.0s]  442/576 | emotions  fold3 | bubble_rectangular       | rlen= 100 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.48435
+    [   24.1s]  443/576 | emotions  fold3 | bubble_rectangular       | rlen= 500 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.48304
+    [   24.1s]  444/576 | emotions  fold3 | bubble_rectangular       | rlen=1000 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.45817
+    [   24.1s]  445/576 | emotions  fold3 | bubble_rectangular       | rlen= 100 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.45849
+    [   24.1s]  446/576 | emotions  fold3 | bubble_rectangular       | rlen= 500 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.49895
+    [   24.1s]  447/576 | emotions  fold3 | bubble_rectangular       | rlen=1000 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.46038
+    [   24.1s]  448/576 | emotions  fold3 | bubble_rectangular       | rlen= 100 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.48237
+    [   24.2s]  449/576 | emotions  fold3 | bubble_rectangular       | rlen= 500 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.48482
+    [   24.2s]  450/576 | emotions  fold3 | bubble_rectangular       | rlen=1000 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.46012
+    [   24.2s]  451/576 | emotions  fold3 | bubble_rectangular       | rlen= 100 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.48517
+    [   24.2s]  452/576 | emotions  fold3 | bubble_rectangular       | rlen= 500 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.46190
+    [   24.2s]  453/576 | emotions  fold3 | bubble_rectangular       | rlen=1000 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.46033
+    [   24.2s]  454/576 | emotions  fold3 | bubble_rectangular       | rlen= 100 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.45857
+    [   24.2s]  455/576 | emotions  fold3 | bubble_rectangular       | rlen= 500 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.48100
+    [   24.3s]  456/576 | emotions  fold3 | bubble_rectangular       | rlen=1000 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.48534
+    [   24.3s]  457/576 | emotions  fold3 | bubble_hexagonal         | rlen= 100 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.48216
+    [   24.3s]  458/576 | emotions  fold3 | bubble_hexagonal         | rlen= 500 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.45845
+    [   24.3s]  459/576 | emotions  fold3 | bubble_hexagonal         | rlen=1000 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.45932
+    [   24.3s]  460/576 | emotions  fold3 | bubble_hexagonal         | rlen= 100 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.46066
+    [   24.4s]  461/576 | emotions  fold3 | bubble_hexagonal         | rlen= 500 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.49750
+    [   24.4s]  462/576 | emotions  fold3 | bubble_hexagonal         | rlen=1000 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.49901
+    [   24.4s]  463/576 | emotions  fold3 | bubble_hexagonal         | rlen= 100 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.49918
+    [   24.4s]  464/576 | emotions  fold3 | bubble_hexagonal         | rlen= 500 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.45983
+    [   24.4s]  465/576 | emotions  fold3 | bubble_hexagonal         | rlen=1000 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.46639
+    [   24.4s]  466/576 | emotions  fold3 | bubble_hexagonal         | rlen= 100 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.49713
+    [   24.4s]  467/576 | emotions  fold3 | bubble_hexagonal         | rlen= 500 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.46532
+    [   24.5s]  468/576 | emotions  fold3 | bubble_hexagonal         | rlen=1000 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.49795
+    [   24.5s]  469/576 | emotions  fold3 | bubble_hexagonal         | rlen= 100 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.48124
+    [   24.5s]  470/576 | emotions  fold3 | bubble_hexagonal         | rlen= 500 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.48211
+    [   24.5s]  471/576 | emotions  fold3 | bubble_hexagonal         | rlen=1000 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.46110
+    [   24.5s]  472/576 | emotions  fold3 | bubble_hexagonal         | rlen= 100 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.46012
+    [   24.5s]  473/576 | emotions  fold3 | bubble_hexagonal         | rlen= 500 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.49701
+    [   24.6s]  474/576 | emotions  fold3 | bubble_hexagonal         | rlen=1000 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.52483
+    [   24.6s]  475/576 | emotions  fold3 | bubble_hexagonal         | rlen= 100 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.48083
+    [   24.6s]  476/576 | emotions  fold3 | bubble_hexagonal         | rlen= 500 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.46260
+    [   24.6s]  477/576 | emotions  fold3 | bubble_hexagonal         | rlen=1000 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.46856
+    [   24.6s]  478/576 | emotions  fold3 | bubble_hexagonal         | rlen= 100 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.49802
+    [   24.6s]  479/576 | emotions  fold3 | bubble_hexagonal         | rlen= 500 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.49879
+    [   24.7s]  480/576 | emotions  fold3 | bubble_hexagonal         | rlen=1000 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.46199
+    [   24.7s]  481/576 | scene     fold3 | gaussian_rectangular     | rlen= 100 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.45639
+    [   24.8s]  482/576 | scene     fold3 | gaussian_rectangular     | rlen= 500 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.45193
+    [   25.0s]  483/576 | scene     fold3 | gaussian_rectangular     | rlen=1000 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.45391
+    [   25.0s]  484/576 | scene     fold3 | gaussian_rectangular     | rlen= 100 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.44992
+    [   25.1s]  485/576 | scene     fold3 | gaussian_rectangular     | rlen= 500 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.45710
+    [   25.3s]  486/576 | scene     fold3 | gaussian_rectangular     | rlen=1000 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.45357
+    [   25.4s]  487/576 | scene     fold3 | gaussian_rectangular     | rlen= 100 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.44768
+    [   25.5s]  488/576 | scene     fold3 | gaussian_rectangular     | rlen= 500 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.44959
+    [   25.7s]  489/576 | scene     fold3 | gaussian_rectangular     | rlen=1000 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.45727
+    [   25.7s]  490/576 | scene     fold3 | gaussian_rectangular     | rlen= 100 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.45201
+    [   25.8s]  491/576 | scene     fold3 | gaussian_rectangular     | rlen= 500 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.45216
+    [   26.0s]  492/576 | scene     fold3 | gaussian_rectangular     | rlen=1000 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.44040
+    [   26.1s]  493/576 | scene     fold3 | gaussian_rectangular     | rlen= 100 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.47718
+    [   26.2s]  494/576 | scene     fold3 | gaussian_rectangular     | rlen= 500 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.45860
+    [   26.4s]  495/576 | scene     fold3 | gaussian_rectangular     | rlen=1000 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.45649
+    [   26.4s]  496/576 | scene     fold3 | gaussian_rectangular     | rlen= 100 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.46383
+    [   26.5s]  497/576 | scene     fold3 | gaussian_rectangular     | rlen= 500 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.45315
+    [   26.7s]  498/576 | scene     fold3 | gaussian_rectangular     | rlen=1000 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.45257
+    [   26.8s]  499/576 | scene     fold3 | gaussian_rectangular     | rlen= 100 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.44740
+    [   26.8s]  500/576 | scene     fold3 | gaussian_rectangular     | rlen= 500 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.45786
+    [   27.0s]  501/576 | scene     fold3 | gaussian_rectangular     | rlen=1000 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.44049
+    [   27.1s]  502/576 | scene     fold3 | gaussian_rectangular     | rlen= 100 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.45616
+    [   27.2s]  503/576 | scene     fold3 | gaussian_rectangular     | rlen= 500 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.46670
+    [   27.4s]  504/576 | scene     fold3 | gaussian_rectangular     | rlen=1000 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.44359
+    [   27.4s]  505/576 | scene     fold3 | gaussian_hexagonal       | rlen= 100 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.42722
+    [   27.5s]  506/576 | scene     fold3 | gaussian_hexagonal       | rlen= 500 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.44406
+    [   27.7s]  507/576 | scene     fold3 | gaussian_hexagonal       | rlen=1000 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.43043
+    [   27.8s]  508/576 | scene     fold3 | gaussian_hexagonal       | rlen= 100 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.43985
+    [   27.9s]  509/576 | scene     fold3 | gaussian_hexagonal       | rlen= 500 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.43463
+    [   28.1s]  510/576 | scene     fold3 | gaussian_hexagonal       | rlen=1000 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.43389
+    [   28.1s]  511/576 | scene     fold3 | gaussian_hexagonal       | rlen= 100 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.42844
+    [   28.2s]  512/576 | scene     fold3 | gaussian_hexagonal       | rlen= 500 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.44337
+    [   28.4s]  513/576 | scene     fold3 | gaussian_hexagonal       | rlen=1000 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.43196
+    [   28.4s]  514/576 | scene     fold3 | gaussian_hexagonal       | rlen= 100 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.42947
+    [   28.6s]  515/576 | scene     fold3 | gaussian_hexagonal       | rlen= 500 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.42681
+    [   28.8s]  516/576 | scene     fold3 | gaussian_hexagonal       | rlen=1000 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.44031
+    [   28.8s]  517/576 | scene     fold3 | gaussian_hexagonal       | rlen= 100 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.44275
+    [   28.9s]  518/576 | scene     fold3 | gaussian_hexagonal       | rlen= 500 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.45918
+    [   29.1s]  519/576 | scene     fold3 | gaussian_hexagonal       | rlen=1000 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.44045
+    [   29.1s]  520/576 | scene     fold3 | gaussian_hexagonal       | rlen= 100 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.45676
+    [   29.2s]  521/576 | scene     fold3 | gaussian_hexagonal       | rlen= 500 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.43897
+    [   29.4s]  522/576 | scene     fold3 | gaussian_hexagonal       | rlen=1000 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.43213
+    [   29.5s]  523/576 | scene     fold3 | gaussian_hexagonal       | rlen= 100 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.43341
+    [   29.6s]  524/576 | scene     fold3 | gaussian_hexagonal       | rlen= 500 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.44555
+    [   29.8s]  525/576 | scene     fold3 | gaussian_hexagonal       | rlen=1000 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.44417
+    [   29.8s]  526/576 | scene     fold3 | gaussian_hexagonal       | rlen= 100 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.43478
+    [   29.9s]  527/576 | scene     fold3 | gaussian_hexagonal       | rlen= 500 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.42592
+    [   30.1s]  528/576 | scene     fold3 | gaussian_hexagonal       | rlen=1000 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.42247
+    [   30.1s]  529/576 | scene     fold3 | bubble_rectangular       | rlen= 100 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.37898
+    [   30.2s]  530/576 | scene     fold3 | bubble_rectangular       | rlen= 500 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.35849
+    [   30.3s]  531/576 | scene     fold3 | bubble_rectangular       | rlen=1000 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.38192
+    [   30.3s]  532/576 | scene     fold3 | bubble_rectangular       | rlen= 100 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.37458
+    [   30.4s]  533/576 | scene     fold3 | bubble_rectangular       | rlen= 500 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.35780
+    [   30.5s]  534/576 | scene     fold3 | bubble_rectangular       | rlen=1000 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.36762
+    [   30.5s]  535/576 | scene     fold3 | bubble_rectangular       | rlen= 100 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.35846
+    [   30.6s]  536/576 | scene     fold3 | bubble_rectangular       | rlen= 500 r=1.000000 a=(0.10,0.005) | empty=1 QE=0.52915
+    [   30.7s]  537/576 | scene     fold3 | bubble_rectangular       | rlen=1000 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.38084
+    [   30.7s]  538/576 | scene     fold3 | bubble_rectangular       | rlen= 100 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.37259
+    [   30.8s]  539/576 | scene     fold3 | bubble_rectangular       | rlen= 500 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.37216
+    [   30.9s]  540/576 | scene     fold3 | bubble_rectangular       | rlen=1000 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.35842
+    [   31.0s]  541/576 | scene     fold3 | bubble_rectangular       | rlen= 100 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.36938
+    [   31.0s]  542/576 | scene     fold3 | bubble_rectangular       | rlen= 500 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.39398
+    [   31.1s]  543/576 | scene     fold3 | bubble_rectangular       | rlen=1000 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.37276
+    [   31.1s]  544/576 | scene     fold3 | bubble_rectangular       | rlen= 100 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.36413
+    [   31.2s]  545/576 | scene     fold3 | bubble_rectangular       | rlen= 500 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.36332
+    [   31.4s]  546/576 | scene     fold3 | bubble_rectangular       | rlen=1000 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.38365
+    [   31.4s]  547/576 | scene     fold3 | bubble_rectangular       | rlen= 100 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.37338
+    [   31.4s]  548/576 | scene     fold3 | bubble_rectangular       | rlen= 500 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.38068
+    [   31.6s]  549/576 | scene     fold3 | bubble_rectangular       | rlen=1000 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.50981
+    [   31.6s]  550/576 | scene     fold3 | bubble_rectangular       | rlen= 100 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.37852
+    [   31.7s]  551/576 | scene     fold3 | bubble_rectangular       | rlen= 500 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.36786
+    [   31.8s]  552/576 | scene     fold3 | bubble_rectangular       | rlen=1000 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.37016
+    [   31.8s]  553/576 | scene     fold3 | bubble_hexagonal         | rlen= 100 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.37101
+    [   31.9s]  554/576 | scene     fold3 | bubble_hexagonal         | rlen= 500 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.37042
+    [   32.0s]  555/576 | scene     fold3 | bubble_hexagonal         | rlen=1000 r=1.000000 a=(0.05,0.005) | empty=0 QE=0.37141
+    [   32.0s]  556/576 | scene     fold3 | bubble_hexagonal         | rlen= 100 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.36362
+    [   32.0s]  557/576 | scene     fold3 | bubble_hexagonal         | rlen= 500 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.37316
+    [   32.2s]  558/576 | scene     fold3 | bubble_hexagonal         | rlen=1000 r=1.500000 a=(0.05,0.005) | empty=0 QE=0.37020
+    [   32.2s]  559/576 | scene     fold3 | bubble_hexagonal         | rlen= 100 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.37162
+    [   32.3s]  560/576 | scene     fold3 | bubble_hexagonal         | rlen= 500 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.38410
+    [   32.4s]  561/576 | scene     fold3 | bubble_hexagonal         | rlen=1000 r=1.000000 a=(0.10,0.005) | empty=0 QE=0.37369
+    [   32.4s]  562/576 | scene     fold3 | bubble_hexagonal         | rlen= 100 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.36318
+    [   32.4s]  563/576 | scene     fold3 | bubble_hexagonal         | rlen= 500 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.36868
+    [   32.6s]  564/576 | scene     fold3 | bubble_hexagonal         | rlen=1000 r=1.500000 a=(0.10,0.005) | empty=0 QE=0.38222
+    [   32.6s]  565/576 | scene     fold3 | bubble_hexagonal         | rlen= 100 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.38185
+    [   32.7s]  566/576 | scene     fold3 | bubble_hexagonal         | rlen= 500 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.37301
+    [   32.8s]  567/576 | scene     fold3 | bubble_hexagonal         | rlen=1000 r=1.000000 a=(0.05,0.010) | empty=0 QE=0.36130
+    [   32.8s]  568/576 | scene     fold3 | bubble_hexagonal         | rlen= 100 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.38050
+    [   32.8s]  569/576 | scene     fold3 | bubble_hexagonal         | rlen= 500 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.38350
+    [   33.0s]  570/576 | scene     fold3 | bubble_hexagonal         | rlen=1000 r=1.500000 a=(0.05,0.010) | empty=0 QE=0.36617
+    [   33.0s]  571/576 | scene     fold3 | bubble_hexagonal         | rlen= 100 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.38273
+    [   33.0s]  572/576 | scene     fold3 | bubble_hexagonal         | rlen= 500 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.38540
+    [   33.1s]  573/576 | scene     fold3 | bubble_hexagonal         | rlen=1000 r=1.000000 a=(0.10,0.010) | empty=0 QE=0.37364
+    [   33.2s]  574/576 | scene     fold3 | bubble_hexagonal         | rlen= 100 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.36279
+    [   33.2s]  575/576 | scene     fold3 | bubble_hexagonal         | rlen= 500 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.37096
+    [   33.4s]  576/576 | scene     fold3 | bubble_hexagonal         | rlen=1000 r=1.500000 a=(0.10,0.010) | empty=0 QE=0.39440
 
 ``` r
 results_df <- dplyr::bind_rows(results_list)
