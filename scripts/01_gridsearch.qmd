@@ -1,7 +1,7 @@
 ---
 title: "Script 1 — Grid Search"
 subtitle: "Busca pelos melhores hiperparâmetros do SOM por dataset e vizinhança"
-format: markdown_github
+format: gfm
 ---
 
 ## Configuração
@@ -14,8 +14,7 @@ library(kohonen)
 
 BASE_PATH <- "E:/git-tcc/tcc-final/data"
 OUTPUT_PATH <- "E:/git-tcc/tcc-final/outputs/gridsearch"
-SEED <- 1234L
-# Conforme o PDF: apenas emotions e scene
+SEED <- 1234L # a letra "L" indica que se trata de um número inteiro
 TARGET_DATASETS <- c("emotions", "scene")
 
 dir.create(OUTPUT_PATH, recursive = TRUE, showWarnings = FALSE)
@@ -77,6 +76,8 @@ for (ds in TARGET_DATASETS) {
         ds, length(cfg$attr_cols), length(cfg$label_cols)
     ))
 }
+dplyr::glimpse(datasets$emotions$fold1$tr$labels)
+dplyr::glimpse(datasets$scene$fold1$tr$labels)
 ```
 
 ## Definição das Grades SOM (2×2 apenas)
@@ -102,15 +103,16 @@ for (name in names(grids)) {
 ## Grade de Parâmetros
 ```{r param_grid}
 param_grid <- expand.grid(
-    rlen = c(100L, 500L, 1000L), # default: 100L
-    radius = c(1.0, 2.0), # default: 1.0?
-    alpha_start = c(0.05), # default: 0.05
-    alpha_end = c(0.01), # default: 0.01
+    rlen = c(100L, 500L, 1000L), # default: 100L (quanto mais iterações, melhor convergência, mas mais tempo)
+    radius = c(1.0, 1.5), # default: 1.0 (como o grid é 2x2, não faz sentido usar um raio maior que isso pois diagonal é ~1.41)
+    alpha_start = c(0.05, 0.1), # default: 0.05
+    alpha_end = c(0.005, 0.01), # default: 0.01
     grid_name = names(grids),
     dataset = TARGET_DATASETS,
     fold = 1:3,
     stringsAsFactors = FALSE
-)
+) |>
+    dplyr::filter(alpha_start > alpha_end)
 
 cat(sprintf(
     "Total de combinacoes: %d\n  (%d grids x %d datasets x %d folds x %d combinacoes de params)\n",
@@ -192,7 +194,6 @@ write.csv(results_df, results_csv, row.names = FALSE)
 cat(sprintf("\nResultados brutos salvos em: %s\n", results_csv))
 ```
 
-
 ## Sumário do Grid Search
 ```{r summary}
 # Análise rápida dos resultados para identificar padrões de falhas (neuronios vazios, erros) e distribuição de QE
@@ -205,8 +206,8 @@ error_configs <- results_df |>
     dplyr::count(dataset, neighborhood, topology)
 
 qe_distribution <- results_df |>
-    dplyr::filter(empty_neurons == 0, !is.na(qe_val)) |>
-    dplyr::group_by(dataset, neighborhood) |>
+    dplyr::filter(!is.na(qe_val)) |>
+    dplyr::group_by(dataset, neighborhood, fold) |>
     dplyr::summarise(
         n = dplyr::n(),
         qe_min = min(qe_val),
@@ -222,23 +223,44 @@ cat("=== CONFIGURACOES COM ERROS (VALORES NA) ===\n")
 print(error_configs)
 cat("\n=== DISTRIBUICAO DE QE POR DATASET E VIZINHANCA ===\n")
 print(qe_distribution)
+write.csv(qe_distribution, file.path(OUTPUT_PATH, "qe_distribution.csv"), row.names = FALSE)
+
+
+
+# Para cada dataset+vizinhança, testa se radius, rlen, alpha_start, alpha_end movem o QE
+param_effect_tests <- results_df |>
+    dplyr::filter(!is.na(qe_val), empty_neurons == 0) |>
+    dplyr::group_by(dataset, neighborhood) |>
+    dplyr::summarise(
+        p_radius     = kruskal.test(qe_val ~ factor(radius),     data = dplyr::pick(everything()))$p.value,
+        p_rlen       = kruskal.test(qe_val ~ factor(rlen),       data = dplyr::pick(everything()))$p.value,
+        p_alpha_start = kruskal.test(qe_val ~ factor(alpha_start), data = dplyr::pick(everything()))$p.value,
+        p_alpha_end   = kruskal.test(qe_val ~ factor(alpha_end),   data = dplyr::pick(everything()))$p.value,
+        .groups = "drop"
+    )
+
+cat("\n=== TESTES DE EFEITO DOS PARAMETROS ===\n")
+print(param_effect_tests)
+# p > 0.05 → parâmetro não está movendo QE de forma confiável (candidato a dredging)
+
 ```
 
 ## Seleção dos Melhores Parâmetros
 ```{r best_params}
 # Estratégia:
-# 1. Remove configurações com neurônios vazios ou falhas
+# 1. Remove configurações com falhas
 # 2. Exige que a configuração tenha rodado nos 3 folds (estabilidade)
-# 3. Calcula QE médio entre os folds
+# 3. Define o minimo e calcula QE médio entre os folds
 # 4. Seleciona o melhor por (dataset, vizinhança) — topologia também é fixada aqui
 #    pois todos os 3 folds devem usar a mesma configuração
 best_params_mean <- results_df |>
     dplyr::filter(!is.na(qe_val)) |>
     dplyr::group_by(dataset, neighborhood, topology, rlen, radius, alpha_start, alpha_end) |>
     dplyr::reframe(
-        mean_qe = mean(qe_val),
-        sd_qe   = sd(qe_val),
-        n_folds = dplyr::n()
+        mean_qe  = mean(qe_val),
+        sd_qe    = sd(qe_val),
+        n_obs    = dplyr::n(),
+        n_folds  = dplyr::n_distinct(fold)
     ) |>
     dplyr::filter(n_folds == 3) |>
     dplyr::group_by(dataset, neighborhood) |>
@@ -250,53 +272,19 @@ best_params_min <- results_df |>
     dplyr::group_by(dataset, neighborhood, topology, rlen, radius, alpha_start, alpha_end) |>
     dplyr::reframe(
         min_qe  = min(qe_val),
-        mean_qe = mean(qe_val),
-        sd_qe   = sd(qe_val),
-        n_folds = dplyr::n()
+        mean_qe  = mean(qe_val),
+        sd_qe    = sd(qe_val),
+        n_obs    = dplyr::n(),
+        n_folds  = dplyr::n_distinct(fold)
     ) |>
     dplyr::filter(n_folds == 3) |>
     dplyr::group_by(dataset, neighborhood) |>
     dplyr::slice_min(min_qe, n = 1, with_ties = FALSE) |>
     dplyr::ungroup()
 
-best_params_search <- results_df |>
-    dplyr::filter(!is.na(qe_val)) |>
-    dplyr::group_by(dataset, neighborhood, topology, rlen, radius, alpha_start, alpha_end) |>
-    dplyr::reframe(
-        qe_val  = qe_val,
-        n_folds = dplyr::n(),
-        min_qe  = min(qe_val),
-        mean_qe = mean(qe_val),
-        sd_qe   = sd(qe_val),
-        fold_num = fold,
-        empty_count = sum(empty_neurons > 0)
-    ) |>
-    dplyr::filter(n_folds == 3) |>
-    dplyr::group_by(dataset, neighborhood) |>
-    dplyr::slice_min(min_qe, n = 9, with_ties = FALSE) |>
-    dplyr::ungroup()
-
-best_params_search2 <- results_df |>
-    dplyr::filter(!is.na(qe_val)) |>
-    dplyr::group_by(dataset, neighborhood, topology, rlen, radius, alpha_start, alpha_end) |>
-    dplyr::reframe(
-        qe_val  = qe_val,
-        min_qe  = min(qe_val),
-        mean_qe = mean(qe_val),
-        sd_qe   = sd(qe_val),
-        fold_num = fold,
-        n_folds = dplyr::n(),
-        empty_count = sum(empty_neurons > 0)
-    ) |>
-    dplyr::filter(n_folds == 3) |>
-    dplyr::group_by(dataset, neighborhood) |>
-    dplyr::slice_min(min_qe, n = 9, with_ties = FALSE) |>
-    dplyr::ungroup()
-
 cat("=== MELHORES PARAMETROS POR DATASET E VIZINHANCA ===\n")
 print(best_params_mean)
 print(best_params_min)
-print(best_params_search)
 
 best_params_csv <- file.path(OUTPUT_PATH, "best_params.csv")
 write.csv(best_params_mean, best_params_csv, row.names = FALSE)
@@ -306,13 +294,15 @@ best_params_csv_min <- file.path(OUTPUT_PATH, "best_params_min.csv")
 write.csv(best_params_min, best_params_csv_min, row.names = FALSE)
 cat(sprintf("Melhores parametros (mínimo absoluto) salvos em: %s\n", best_params_csv_min))
 
-best_params_csv_search <- file.path(OUTPUT_PATH, "best_params_search.csv")
-write.csv(best_params_search, best_params_csv_search, row.names = FALSE)
-cat(sprintf("Melhores parametros (busca) salvos em: %s\n", best_params_csv_search))
-
-best_params_csv_search2 <- file.path(OUTPUT_PATH, "best_params_search2.csv")
-write.csv(best_params_search2, best_params_csv_search2, row.names = FALSE)
-cat(sprintf("Melhores parametros (busca 2) salvos em: %s\n", best_params_csv_search2))
+best_params_mean <- best_params_mean |>
+    dplyr::mutate(
+        config = sprintf("%s|%s", neighborhood, topology),
+        param = sprintf("%d %.1f (%.2f,%.3f)", rlen, radius, alpha_start, alpha_end),
+        cv = sd_qe / mean_qe, # coeficiente de variação
+        instavel = cv > 0.05 # TRUE = resultado pode ser sorte
+    )
+cat("\n=== MELHORES PARAMETROS COM CV E INSTABILIDADE ===\n")
+print(best_params_mean |> dplyr::select(config, param, mean_qe, sd_qe, cv, instavel))
 ```
 
 ```{r session}
