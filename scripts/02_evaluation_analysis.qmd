@@ -268,6 +268,19 @@ compute_fold_consistency <- function(label_freq_consolidated, datasets_config) {
 }
 ```
 
+
+neuron_label_freq
+Agrupa as instâncias de treino por neurônio vencedor e calcula, para cada neurônio, quantas instâncias foram mapeadas e qual a proporção de cada rótulo entre elas. O resultado responde: "o neurônio N tende a atrair instâncias com o rótulo X?"
+
+neuron_labelset_freq
+Para cada neurônio, conta quantas vezes cada combinação binária de rótulos (labelset) apareceu entre as instâncias mapeadas nele. Diferente da função anterior que olha rótulos individualmente, esta olha a combinação completa — responde: "dentro do neurônio N, quais combinações de rótulos co-ocorrem juntas?"
+
+label_cooccurrence
+Calcula uma matriz quadrada de rótulos × rótulos onde cada célula conta quantas instâncias do treino possuem simultaneamente os dois rótulos correspondentes. É a transposta da matriz de rótulos multiplicada por ela mesma, com a diagonal zerada para excluir a auto-contagem. Responde: "quais pares de rótulos aparecem juntos com mais frequência?"
+
+label_isolation
+Classifica cada instância em três categorias — sem_rotulo (nenhum rótulo ativo), isolado (exatamente um rótulo ativo) ou agrupado (dois ou mais rótulos ativos) — e calcula a proporção de cada categoria no conjunto de treino. Responde: "o dataset é dominado por instâncias com rótulo único ou com múltiplos rótulos simultâneos?"
+
 ```{r}
 
 neuron_label_freq <- function(model, Y_train, label_names) {
