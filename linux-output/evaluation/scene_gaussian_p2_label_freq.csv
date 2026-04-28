@@ -1,0 +1,7 @@
+"cluster","n_instancias","Beach","Sunset","FallFoliage","Field","Mountain","Urban","fold","dataset","neighborhood"
+1,625,130,121,128,119,1,144,1,"scene","gaussian"
+2,177,13,0,4,25,177,0,1,"scene","gaussian"
+1,670,141,122,0,136,173,144,2,"scene","gaussian"
+2,133,0,0,133,8,5,0,2,"scene","gaussian"
+1,625,130,121,128,120,0,143,3,"scene","gaussian"
+2,177,13,0,4,25,177,0,3,"scene","gaussian"

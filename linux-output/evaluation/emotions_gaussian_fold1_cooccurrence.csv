@@ -1,0 +1,7 @@
+"rotulo","amazed.suprised","happy.pleased","relaxing.calm","quiet.still","sad.lonely","angry.aggresive"
+"amazed.suprised",0,18,4,0,3,31
+"happy.pleased",18,0,29,2,1,4
+"relaxing.calm",4,29,0,35,32,2
+"quiet.still",0,2,35,0,36,0
+"sad.lonely",3,1,32,36,0,6
+"angry.aggresive",31,4,2,0,6,0

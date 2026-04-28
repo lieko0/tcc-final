@@ -12,8 +12,8 @@ format: gfm
 library(tidyverse)
 library(kohonen)
 
-BASE_PATH <- "E:/git-tcc/tcc-final/data"
-OUTPUT_PATH <- "E:/git-tcc/tcc-final/outputs/gridsearch"
+BASE_PATH <- "/home/zetta/Documentos/tcc-final/data"
+OUTPUT_PATH <- "/home/zetta/Documentos/tcc-final/linux-output/gridsearch"
 SEED <- 1234L # a letra "L" indica que se trata de um número inteiro
 TARGET_DATASETS <- c("emotions", "scene")
 
