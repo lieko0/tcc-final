@@ -14,9 +14,12 @@ library(grid)
 library(cluster) # silhouette, agnes
 library(scales)
 
-GRIDSEARCH_PATH <- "/home/zetta/Documentos/tcc-final/linux-output/gridsearch"
-BASE_PATH <- "/home/zetta/Documentos/tcc-final/data"
-OUTPUT_PATH <- "/home/zetta/Documentos/tcc-final/linux-output/evaluation"
+# GRIDSEARCH_PATH <- "/home/zetta/Documentos/tcc-final/linux-output/gridsearch"
+# BASE_PATH <- "/home/zetta/Documentos/tcc-final/data"
+# OUTPUT_PATH <- "/home/zetta/Documentos/tcc-final/linux-output/evaluation"
+GRIDSEARCH_PATH <- "E:/git-tcc/tcc-final/outputs/gridsearch"
+BASE_PATH <- "E:/git-tcc/tcc-final/data"
+OUTPUT_PATH <- "E:/git-tcc/tcc-final/outputs/evaluation"
 SEED <- 1234L
 TARGET_DATASETS <- c("emotions", "scene")
 TARGET_NEIGHBORHOODS <- c("gaussian", "bubble")
@@ -282,15 +285,18 @@ label_isolation
 Classifica cada instância em três categorias — sem_rotulo (nenhum rótulo ativo), isolado (exatamente um rótulo ativo) ou agrupado (dois ou mais rótulos ativos) — e calcula a proporção de cada categoria no conjunto de treino. Responde: "o dataset é dominado por instâncias com rótulo único ou com múltiplos rótulos simultâneos?"
 
 ```{r}
-
 neuron_label_freq <- function(model, Y_train, label_names) {
     data.frame(neuron = model$unit.classif, Y_train) |>
         setNames(c("neuron", label_names)) |>
         dplyr::group_by(neuron) |>
-        dplyr::summarise(n_instancias = dplyr::n(),
-            dplyr::across(dplyr::all_of(label_names), sum), .groups = "drop") |>
+        dplyr::summarise(
+            n_instancias = dplyr::n(),
+            dplyr::across(dplyr::all_of(label_names), sum), .groups = "drop"
+        ) |>
         dplyr::mutate(dplyr::across(
-            dplyr::all_of(label_names), ~ .x / n_instancias, .names = "prop_{.col}"))
+            dplyr::all_of(label_names), ~ .x / n_instancias,
+            .names = "prop_{.col}"
+        ))
 }
 
 neuron_labelset_freq <- function(model, Y_train, label_names) {
@@ -303,13 +309,16 @@ neuron_labelset_freq <- function(model, Y_train, label_names) {
 
 label_cooccurrence <- function(Y_train, label_names) {
     Y <- as.matrix(Y_train[, label_names])
-    cooc <- t(Y) %*% Y; diag(cooc) <- 0; cooc
+    cooc <- t(Y) %*% Y
+    diag(cooc) <- 0
+    cooc
 }
 
 label_isolation <- function(Y_train, label_names) {
     n_lbl <- rowSums(as.matrix(Y_train[, label_names]))
     data.frame(type = dplyr::case_when(
-        n_lbl == 0 ~ "sem_rotulo", n_lbl == 1 ~ "isolado", TRUE ~ "agrupado")) |>
+        n_lbl == 0 ~ "sem_rotulo", n_lbl == 1 ~ "isolado", TRUE ~ "agrupado"
+    )) |>
         dplyr::count(type, name = "n") |>
         dplyr::mutate(prop = n / sum(n))
 }
@@ -350,7 +359,7 @@ for (ds in TARGET_DATASETS) {
             Y_tr <- as.matrix(datasets[[ds]][[fold_key]][["tr"]]$labels)
             Y_ts <- as.matrix(datasets[[ds]][[fold_key]][["ts"]]$labels)
             label_names <- datasets_config[[ds]]$label_names
-            
+
             model <- tryCatch(
                 {
                     train_som(Y_tr, bp$topology, nbhd, bp$rlen, bp$radius, bp$alpha_start, bp$alpha_end)
@@ -387,6 +396,14 @@ for (ds in TARGET_DATASETS) {
                 row.names = FALSE
             )
 
+            # Gerar csv dos codebook vectors
+            codebook_df <- as.data.frame(model$codes[[1]])
+            write.csv(
+                codebook_df,
+                file.path(OUTPUT_PATH, sprintf("%s_%s_fold%d_codebook.csv", ds, nbhd, fold)),
+                row.names = FALSE
+            )
+
 
             cat(sprintf(
                 "  Fold %d: QE_test=%.5f | neuronios_vazios=%d\n",
@@ -402,49 +419,63 @@ for (ds in TARGET_DATASETS) {
             )
 
             # ── Extração por neurônio ────────────────────────────────────────────────
-nlf  <- neuron_label_freq(model, as.data.frame(Y_tr), label_names)
-nlsf <- neuron_labelset_freq(model, as.data.frame(Y_tr), label_names)
-cooc <- label_cooccurrence(as.data.frame(Y_tr), label_names)
-iso  <- label_isolation(as.data.frame(Y_tr), label_names)
+            nlf <- neuron_label_freq(model, as.data.frame(Y_tr), label_names)
+            nlsf <- neuron_labelset_freq(model, as.data.frame(Y_tr), label_names)
+            cooc <- label_cooccurrence(as.data.frame(Y_tr), label_names)
+            iso <- label_isolation(as.data.frame(Y_tr), label_names)
 
-pfx <- sprintf("%s_%s_fold%d", ds, nbhd, fold)
-write.csv(nlf,  file.path(OUTPUT_PATH, sprintf("%s_neuron_label_freq.csv",    pfx)), row.names = FALSE)
-write.csv(nlsf, file.path(OUTPUT_PATH, sprintf("%s_neuron_labelset_freq.csv", pfx)), row.names = FALSE)
-write.csv(iso,  file.path(OUTPUT_PATH, sprintf("%s_label_isolation.csv",      pfx)), row.names = FALSE)
-write.csv(as.data.frame(cooc) |> tibble::rownames_to_column("rotulo"),
-          file.path(OUTPUT_PATH, sprintf("%s_cooccurrence.csv", pfx)), row.names = FALSE)
+            pfx <- sprintf("%s_%s_fold%d", ds, nbhd, fold)
+            write.csv(nlf, file.path(OUTPUT_PATH, sprintf("%s_neuron_label_freq.csv", pfx)), row.names = FALSE)
+            write.csv(nlsf, file.path(OUTPUT_PATH, sprintf("%s_neuron_labelset_freq.csv", pfx)), row.names = FALSE)
+            write.csv(iso, file.path(OUTPUT_PATH, sprintf("%s_label_isolation.csv", pfx)), row.names = FALSE)
+            write.csv(as.data.frame(cooc) |> tibble::rownames_to_column("rotulo"),
+                file.path(OUTPUT_PATH, sprintf("%s_cooccurrence.csv", pfx)),
+                row.names = FALSE
+            )
 
-# PNG: proporção de rótulos por neurônio
-p_nlf <- nlf |>
-    tidyr::pivot_longer(dplyr::starts_with("prop_"),
-        names_to = "rotulo", names_prefix = "prop_", values_to = "prop") |>
-    ggplot2::ggplot(ggplot2::aes(x = rotulo, y = factor(neuron), fill = prop)) +
-    ggplot2::geom_tile(color = "white", linewidth = 0.6) +
-    ggplot2::geom_text(ggplot2::aes(label = sprintf("%.2f", prop)), size = 2.8) +
-    ggplot2::scale_fill_distiller(palette = "YlOrRd", direction = 1,
-        labels = scales::percent_format(accuracy = 1), name = "Prop.") +
-    ggplot2::labs(title = sprintf("Rótulos por neurônio — %s | %s | Fold %d", ds, nbhd, fold),
-        x = NULL, y = "Neurônio") +
-    ggplot2::theme_minimal(base_size = 11) +
-    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 35, hjust = 1))
+            # PNG: proporção de rótulos por neurônio
+            p_nlf <- nlf |>
+                tidyr::pivot_longer(dplyr::starts_with("prop_"),
+                    names_to = "rotulo", names_prefix = "prop_", values_to = "prop"
+                ) |>
+                ggplot2::ggplot(ggplot2::aes(x = rotulo, y = factor(neuron), fill = prop)) +
+                ggplot2::geom_tile(color = "white", linewidth = 0.6) +
+                ggplot2::geom_text(ggplot2::aes(label = sprintf("%.2f", prop)), size = 2.8) +
+                ggplot2::scale_fill_distiller(
+                    palette = "YlOrRd", direction = 1,
+                    labels = scales::percent_format(accuracy = 1), name = "Prop."
+                ) +
+                ggplot2::labs(
+                    title = sprintf("Rótulos por neurônio — %s | %s | Fold %d", ds, nbhd, fold),
+                    x = NULL, y = "Neurônio"
+                ) +
+                ggplot2::theme_minimal(base_size = 11) +
+                ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 35, hjust = 1))
 
-ggplot2::ggsave(file.path(OUTPUT_PATH, sprintf("%s_neuron_label_heatmap.png", pfx)),
-    p_nlf, width = 10, height = 4, dpi = 150)
+            ggplot2::ggsave(file.path(OUTPUT_PATH, sprintf("%s_neuron_label_heatmap.png", pfx)),
+                p_nlf,
+                width = 10, height = 4, dpi = 150
+            )
 
-# PNG: co-ocorrência de rótulos
-p_cooc <- as.data.frame(cooc) |> tibble::rownames_to_column("rotulo_a") |>
-    tidyr::pivot_longer(-rotulo_a, names_to = "rotulo_b", values_to = "n") |>
-    ggplot2::ggplot(ggplot2::aes(x = rotulo_a, y = rotulo_b, fill = n)) +
-    ggplot2::geom_tile(color = "white", linewidth = 0.6) +
-    ggplot2::geom_text(ggplot2::aes(label = n), size = 3) +
-    ggplot2::scale_fill_distiller(palette = "Blues", direction = 1, name = "Co-oc.") +
-    ggplot2::labs(title = sprintf("Co-ocorrência de rótulos — %s | %s | Fold %d", ds, nbhd, fold),
-        x = NULL, y = NULL) +
-    ggplot2::theme_minimal(base_size = 11) +
-    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 35, hjust = 1))
+            # PNG: co-ocorrência de rótulos
+            p_cooc <- as.data.frame(cooc) |>
+                tibble::rownames_to_column("rotulo_a") |>
+                tidyr::pivot_longer(-rotulo_a, names_to = "rotulo_b", values_to = "n") |>
+                ggplot2::ggplot(ggplot2::aes(x = rotulo_a, y = rotulo_b, fill = n)) +
+                ggplot2::geom_tile(color = "white", linewidth = 0.6) +
+                ggplot2::geom_text(ggplot2::aes(label = n), size = 3) +
+                ggplot2::scale_fill_distiller(palette = "Blues", direction = 1, name = "Co-oc.") +
+                ggplot2::labs(
+                    title = sprintf("Co-ocorrência de rótulos — %s | %s | Fold %d", ds, nbhd, fold),
+                    x = NULL, y = NULL
+                ) +
+                ggplot2::theme_minimal(base_size = 11) +
+                ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 35, hjust = 1))
 
-ggplot2::ggsave(file.path(OUTPUT_PATH, sprintf("%s_cooccurrence.png", pfx)),
-    p_cooc, width = 7, height = 6, dpi = 150)
+            ggplot2::ggsave(file.path(OUTPUT_PATH, sprintf("%s_cooccurrence.png", pfx)),
+                p_cooc,
+                width = 7, height = 6, dpi = 150
+            )
 
             eval_results[[length(eval_results) + 1]] <- data.frame(
                 dataset       = ds,
@@ -563,6 +594,17 @@ for (ds in TARGET_DATASETS) {
                 type = "changes",
                 main = "Convergencia do treinamento"
             )
+
+            # gerar png do mapa de changes
+            png(file.path(OUTPUT_PATH, sprintf("%s_%s_fold%d_changes.png", ds, nbhd, fold)),
+                width = 800, height = 600, res = 120
+            )
+            plot(model,
+                type = "changes",
+                main = sprintf("%s | %s | Fold %d - Changes", ds, nbhd, fold)
+            )
+            dev.off()
+
             plot(model,
                 type = "dist.neighbours",
                 main = "U-Matrix (distancia entre vizinhos)"
@@ -628,7 +670,7 @@ for (ds in TARGET_DATASETS) {
                 pts <- model$grid$pts
                 text(pts[, 1], pts[, 2],
                     labels = sprintf("N%d\nC%d", seq_len(nrow(pts)), clusters),
-                    cex = 0.75, font = 2
+                    cex = 0.75, font = 3
                 )
 
                 plot(dend,
@@ -636,6 +678,17 @@ for (ds in TARGET_DATASETS) {
                     xlab = "Neuronios", ylab = "Distancia"
                 )
                 rect.hclust(dend, k = k, border = "red")
+
+                # Gerar png dos dendrogramas para cada k
+                png(file.path(OUTPUT_PATH, sprintf("%s_%s_fold%d_k%d_dendrogram.png", ds, nbhd, fold, k)),
+                    width = 800, height = 700, res = 120
+                )
+                plot(dend,
+                    main = sprintf("Dendrograma (k=%d) | %s | %s | Fold %d", k, ds, nbhd, fold),
+                    xlab = "Neuronios", ylab = "Distancia"
+                )
+                rect.hclust(dend, k = k, border = "red")
+                dev.off()
 
                 # Tabela: métricas de qualidade desta partição no PDF
                 quality_row <- data.frame(
@@ -685,16 +738,23 @@ for (ds in TARGET_DATASETS) {
                 }
 
                 # PNG: partição desenhada
-png(file.path(OUTPUT_PATH, sprintf("%s_%s_fold%d_k%d_partition.png", ds, nbhd, fold, k)),
-    width = 800, height = 700, res = 120)
-plot(model, type = "codes", codeRendering = "segments",
-     bgcol = rainbow(k)[clusters],
-     main = sprintf("Partição k=%d | %s | %s | Fold %d", k, ds, nbhd, fold))
-kohonen::add.cluster.boundaries(model, clusters)
-pts <- model$grid$pts
-text(pts[, 1], pts[, 2],
-     labels = sprintf("N%d\nC%d", seq_len(nrow(pts)), clusters), cex = 0.8, font = 2)
-dev.off()
+                png(file.path(OUTPUT_PATH, sprintf("%s_%s_fold%d_k%d_partition.png", ds, nbhd, fold, k)),
+                    width = 800, height = 700, res = 120
+                )
+                plot(model,
+                    type = "codes", codeRendering = "segments",
+                    bgcol = rainbow(k)[clusters],
+                    main = sprintf("Partição k=%d | %s | %s | Fold %d", k, ds, nbhd, fold)
+                )
+                kohonen::add.cluster.boundaries(model, clusters)
+                pts <- model$grid$pts
+                # adicionar a contagem de instâncias por neurônio
+                neuron_counts <- table(model$unit.classif)
+                labels <- sprintf("N%d\nC%d\nn=%d", seq_len(nrow(pts)), clusters, neuron_counts[as.character(seq_len(nrow(pts)))])
+                text(pts[, 1], pts[, 2],
+                    labels = labels, cex = 1, font = 2
+                )
+                dev.off()
 
                 if (k == 2) {
                     label_freq_folds[[fold_key]] <- label_freq |>
@@ -1172,38 +1232,44 @@ for (ds in TARGET_DATASETS) {
             p6_compare,
             width = 12, height = 6, dpi = 150
         )
-        
+
         # Comparação bubble vs gaussian por neurônio
-nlf_both <- purrr::imap_dfr(
-    setNames(TARGET_NEIGHBORHOODS, TARGET_NEIGHBORHOODS),
-    function(nm, ...) {
-        purrr::map_dfr(1:3, function(f) {
-            path <- file.path(OUTPUT_PATH, sprintf("%s_%s_fold%d_neuron_label_freq.csv", ds, nm, f))
-            if (file.exists(path)) read.csv(path) |> dplyr::mutate(neighborhood = nm, fold = f)
-        })
-    }
-) |>
-    tidyr::pivot_longer(dplyr::starts_with("prop_"),
-        names_to = "rotulo", names_prefix = "prop_", values_to = "prop") |>
-    dplyr::group_by(neighborhood, neuron, rotulo) |>
-    dplyr::summarise(media = mean(prop), .groups = "drop")
+        nlf_both <- purrr::imap_dfr(
+            setNames(TARGET_NEIGHBORHOODS, TARGET_NEIGHBORHOODS),
+            function(nm, ...) {
+                purrr::map_dfr(1:3, function(f) {
+                    path <- file.path(OUTPUT_PATH, sprintf("%s_%s_fold%d_neuron_label_freq.csv", ds, nm, f))
+                    if (file.exists(path)) read.csv(path) |> dplyr::mutate(neighborhood = nm, fold = f)
+                })
+            }
+        ) |>
+            tidyr::pivot_longer(dplyr::starts_with("prop_"),
+                names_to = "rotulo", names_prefix = "prop_", values_to = "prop"
+            ) |>
+            dplyr::group_by(neighborhood, neuron, rotulo) |>
+            dplyr::summarise(media = mean(prop), .groups = "drop")
 
-p_topo <- nlf_both |>
-    ggplot2::ggplot(ggplot2::aes(x = rotulo, y = factor(neuron), fill = media)) +
-    ggplot2::geom_tile(color = "white", linewidth = 0.6) +
-    ggplot2::geom_text(ggplot2::aes(label = sprintf("%.2f", media)), size = 2.6) +
-    ggplot2::scale_fill_distiller(palette = "YlOrRd", direction = 1,
-        labels = scales::percent_format(accuracy = 1), name = "Prop. média") +
-    ggplot2::facet_wrap(~neighborhood) +
-    ggplot2::labs(
-        title = sprintf("Comparação de topologia — %s: rótulos por neurônio", ds),
-        subtitle = "Média entre os 3 folds · facetas = vizinhança",
-        x = NULL, y = "Neurônio") +
-    ggplot2::theme_minimal(base_size = 11) +
-    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 35, hjust = 1))
+        p_topo <- nlf_both |>
+            ggplot2::ggplot(ggplot2::aes(x = rotulo, y = factor(neuron), fill = media)) +
+            ggplot2::geom_tile(color = "white", linewidth = 0.6) +
+            ggplot2::geom_text(ggplot2::aes(label = sprintf("%.2f", media)), size = 2.6) +
+            ggplot2::scale_fill_distiller(
+                palette = "YlOrRd", direction = 1,
+                labels = scales::percent_format(accuracy = 1), name = "Prop. média"
+            ) +
+            ggplot2::facet_wrap(~neighborhood) +
+            ggplot2::labs(
+                title = sprintf("Comparação de topologia — %s: rótulos por neurônio", ds),
+                subtitle = "Média entre os 3 folds · facetas = vizinhança",
+                x = NULL, y = "Neurônio"
+            ) +
+            ggplot2::theme_minimal(base_size = 11) +
+            ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 35, hjust = 1))
 
-ggplot2::ggsave(file.path(OUTPUT_PATH, sprintf("%s_topology_neuron_comparison.png", ds)),
-    p_topo, width = 14, height = 5, dpi = 150)
+        ggplot2::ggsave(file.path(OUTPUT_PATH, sprintf("%s_topology_neuron_comparison.png", ds)),
+            p_topo,
+            width = 14, height = 5, dpi = 150
+        )
 
         pdf(
             file.path(OUTPUT_PATH, sprintf("%s_p2_neighborhood_comparison.pdf", ds)),
