@@ -163,19 +163,22 @@ for (i in seq_len(nrow(param_grid))) {
         qe_vl <- mean(kohonen::map(model, newdata = list(Y = Y_vl))$distances)
     }
 
-    results_list[[i]] <- data.frame(
-        dataset       = p$dataset,
-        fold          = p$fold,
-        neighborhood  = grid$neighbourhood.fct,
-        topology      = grid$topo,
-        grid_size     = sprintf("%dx%d", grid$xdim, grid$ydim),
-        rlen          = p$rlen,
-        radius        = p$radius,
-        alpha_start   = p$alpha_start,
-        alpha_end     = p$alpha_end,
-        empty_neurons = empty_n,
-        qe_val        = qe_vl
-    )
+    iter_time_s <- round((proc.time() - start_time)[[3]], 2)
+
+results_list[[i]] <- data.frame(
+    dataset       = p$dataset,
+    fold          = p$fold,
+    neighborhood  = grid$neighbourhood.fct,
+    topology      = grid$topo,
+    grid_size     = sprintf("%dx%d", grid$xdim, grid$ydim),
+    rlen          = p$rlen,
+    radius        = p$radius,
+    alpha_start   = p$alpha_start,
+    alpha_end     = p$alpha_end,
+    empty_neurons = empty_n,
+    qe_val        = qe_vl,
+    iter_time_s   = iter_time_s   # <-- novo
+)
 
     elapsed <- round((proc.time() - start_time)[[3]], 1)
     cat(sprintf(
@@ -191,6 +194,47 @@ for (i in seq_len(nrow(param_grid))) {
 results_df <- dplyr::bind_rows(results_list)
 results_csv <- file.path(OUTPUT_PATH, sprintf("gridsearch_seed%d.csv", SEED))
 write.csv(results_df, results_csv, row.names = FALSE)
+
+
+# --- Tempo total do grid search ---
+total_gs_time <- round((proc.time() - start_time)[[3]], 2)
+
+gs_timing_summary <- results_df |>
+    dplyr::group_by(dataset, neighborhood, topology, rlen, radius, alpha_start, alpha_end) |>
+    dplyr::summarise(
+        n_folds       = dplyr::n(),
+        mean_time_s   = mean(iter_time_s, na.rm = TRUE),
+        total_time_s  = sum(iter_time_s, na.rm = TRUE),
+        .groups = "drop"
+    )
+
+write.csv(gs_timing_summary,
+    file.path(OUTPUT_PATH, sprintf("gridsearch_timing_seed%d.csv", SEED)),
+    row.names = FALSE
+)
+cat(sprintf("Tempo total do grid search: %.1fs\n", total_gs_time))
+
+# --- Info do sistema ---
+sys_info <- data.frame(
+    r_version  = paste(R.version$major, R.version$minor, sep = "."),
+    os         = paste(Sys.info()[["sysname"]], Sys.info()[["release"]]),
+    machine    = Sys.info()[["machine"]],
+    n_cores    = parallel::detectCores(logical = FALSE),
+    n_cores_logical = parallel::detectCores(logical = TRUE),
+    ram_gb     = tryCatch({
+        mem_kb <- as.numeric(gsub("[^0-9]", "",
+            readLines("/proc/meminfo", n = 1)))
+        round(mem_kb / 1024^2, 1)
+    }, error = function(e) NA_real_),
+    kohonen_version = as.character(packageVersion("kohonen")),
+    total_gs_time_s = total_gs_time
+)
+write.csv(sys_info,
+    file.path(OUTPUT_PATH, "system_info.csv"),
+    row.names = FALSE
+)
+cat("Info do sistema salva.\n")
+
 cat(sprintf("\nResultados brutos salvos em: %s\n", results_csv))
 ```
 

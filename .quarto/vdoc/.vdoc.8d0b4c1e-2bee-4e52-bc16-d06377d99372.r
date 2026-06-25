@@ -1,0 +1,1345 @@
+#
+#
+#
+#
+#
+#
+#
+#
+#
+library(tidyverse)
+library(kohonen)
+library(gridExtra)
+library(grid)
+library(cluster) # silhouette, agnes
+library(scales)
+
+GRIDSEARCH_PATH <- "/home/zetta/Documentos/tcc-final/linux-output/gridsearch"
+BASE_PATH <- "/home/zetta/Documentos/tcc-final/data"
+OUTPUT_PATH <- "/home/zetta/Documentos/tcc-final/linux-output/evaluation"
+# GRIDSEARCH_PATH <- "E:/git-tcc/tcc-final/outputs/gridsearch"
+# BASE_PATH <- "E:/git-tcc/tcc-final/data"
+# OUTPUT_PATH <- "E:/git-tcc/tcc-final/outputs/evaluation"
+SEED <- 1234L
+TARGET_DATASETS <- c("emotions", "scene")
+TARGET_NEIGHBORHOODS <- c("gaussian", "bubble")
+
+dir.create(OUTPUT_PATH, recursive = TRUE, showWarnings = FALSE)
+set.seed(SEED)
+#
+#
+#
+#
+#
+datasets_config <- list(
+    emotions = list(
+        attr_cols = 1:72,
+        label_cols = 73:78,
+        label_names = c(
+            "amazed.suprised", "happy.pleased", "relaxing.calm",
+            "quiet.still", "sad.lonely", "angry.aggresive"
+        )
+    ),
+    scene = list(
+        attr_cols   = 1:294,
+        label_cols  = 295:300,
+        label_names = c("Beach", "Sunset", "FallFoliage", "Field", "Mountain", "Urban")
+    )
+)
+#
+#
+#
+#
+#
+load_fold <- function(base_path, dataset_name, config, fold, types = c("Tr", "Ts")) {
+    result <- list()
+    for (type in types) {
+        path <- file.path(
+            base_path, dataset_name, "Stratified", "CrossValidation", type,
+            sprintf("%s-Split-%s-%d.csv", dataset_name, type, fold)
+        )
+        raw <- read.csv(path)
+        result[[tolower(type)]] <- list(
+            attr   = raw[, config$attr_cols],
+            labels = raw[, config$label_cols]
+        )
+    }
+    result
+}
+
+datasets <- list()
+for (ds in TARGET_DATASETS) {
+    datasets[[ds]] <- list(config = datasets_config[[ds]])
+    for (fold in 1:3) {
+        datasets[[ds]][[paste0("fold", fold)]] <-
+            load_fold(BASE_PATH, ds, datasets_config[[ds]], fold)
+    }
+}
+
+# best_file <- file.path(GRIDSEARCH_PATH, "best_params.csv")
+best_file <- file.path(GRIDSEARCH_PATH, "best_params_min.csv")
+if (!file.exists(best_file)) {
+    stop(sprintf(
+        "Arquivo de melhores parametros nao encontrado: %s\nExecute o script 01_gridsearch.qmd primeiro.",
+        best_file
+    ))
+}
+
+best_params <- read.csv(best_file, stringsAsFactors = FALSE)
+
+cat("Melhores parametros carregados:\n")
+print(best_params)
+#
+#
+#
+#
+#
+# Treina um supersom com os parâmetros fornecidos
+train_som <- function(Y_train, topology, neighborhood, rlen, radius, alpha_start, alpha_end) {
+    grid <- kohonen::somgrid(2, 2, topology, neighbourhood.fct = neighborhood)
+    kohonen::supersom(
+        data      = list(Y = Y_train),
+        grid      = grid,
+        rlen      = rlen,
+        radius    = radius,
+        alpha     = c(alpha_start, alpha_end),
+        keep.data = TRUE
+    )
+}
+
+# Aplica clustering hierárquico sobre os codebook vectors
+# Retorna o dendrograma e o vetor de clusters (posição i = cluster do neurônio i)
+cluster_codebook <- function(model, k, method = "complete") {
+    codebook <- model$codes[[1]]
+    dend <- hclust(dist(codebook), method = method)
+    clusters <- as.integer(cutree(dend, k = k))
+    list(dend = dend, clusters = clusters)
+}
+
+# Constrói dataframe: instância → neurônio, cluster e rótulos
+build_instance_df <- function(model, Y_train, label_names, clusters) {
+    df <- data.frame(
+        neuron = model$unit.classif,
+        cluster = clusters[model$unit.classif],
+        distance = model$distances,
+        labelset = apply(Y_train, 1, paste, collapse = ""),
+        Y_train
+    )
+    colnames(df) <- c("neuron", "cluster", "distance", "labelset", label_names)
+    df
+}
+
+# Frequência individual dos rótulos por cluster
+label_freq_by_cluster <- function(instance_df, label_names) {
+    instance_df |>
+        dplyr::group_by(cluster) |>
+        dplyr::summarise(
+            n_instancias = dplyr::n(),
+            dplyr::across(dplyr::all_of(label_names), sum),
+            .groups = "drop"
+        )
+}
+
+# Frequência dos labelsets (combinação binária de rótulos) por cluster
+labelset_freq_by_cluster <- function(instance_df, label_names) {
+    instance_df |>
+        dplyr::mutate(
+            labelset = apply(dplyr::pick(dplyr::all_of(label_names)), 1, paste, collapse = "")
+        ) |>
+        dplyr::count(cluster, labelset, name = "frequencia") |>
+        dplyr::arrange(cluster, dplyr::desc(frequencia))
+}
+
+# Renderiza um dataframe como tabela numa nova página do PDF
+render_table_page <- function(df, title = NULL) {
+    grid::grid.newpage()
+    if (!is.null(title)) {
+        grid::pushViewport(grid::viewport(
+            layout = grid::grid.layout(2, 1, heights = grid::unit(c(2, 1), c("lines", "null")))
+        ))
+        grid::pushViewport(grid::viewport(layout.pos.row = 1))
+        grid::grid.text(title, gp = grid::gpar(fontsize = 12, fontface = "bold"))
+        grid::popViewport()
+        grid::pushViewport(grid::viewport(layout.pos.row = 2))
+        gridExtra::grid.table(df, rows = NULL)
+        grid::popViewport()
+        grid::popViewport()
+    } else {
+        gridExtra::grid.table(df, rows = NULL)
+    }
+}
+#
+#
+#
+#
+#
+# 1. Correlação Cofenética (CCC) — antes do corte
+# Mede o quão bem o dendrograma preserva as distâncias originais entre codebook vectors.
+# Valores > 0.75 indicam boa representação. Usado para comparar linkages e validar
+# que a estrutura hierárquica encontrada é fiel à geometria dos neurônios.
+compute_ccc <- function(codebook, dend) {
+    cor(dist(codebook), cophenetic(dend))
+}
+
+# 2. Coeficiente Aglomerativo (AC) — antes do corte
+# Mede o grau de estrutura hierárquica nos dados: quão "limpas" são as fusões.
+# Complementa o CCC — CCC avalia fidelidade às distâncias, AC avalia clareza da hierarquia.
+# Valores > 0.75 indicam estrutura hierárquica bem definida.
+compute_ac <- function(codebook, method = "complete") {
+    cluster::agnes(dist(codebook), method = method)$ac
+}
+
+# 3. Silhouette médio — após o corte
+# Para cada neurônio: quão similar ele é ao próprio cluster vs. o cluster vizinho.
+# Valores próximos de +1 indicam boa alocação; negativos indicam alocação errada.
+# Métrica mais consolidada na literatura para avaliar qualidade de partições.
+compute_silhouette <- function(clusters, codebook) {
+    if (length(unique(clusters)) < 2) {
+        return(NA_real_)
+    }
+    sil <- cluster::silhouette(clusters, dist(codebook))
+    mean(sil[, "sil_width"])
+}
+
+# 4. Entropia média dos labelsets por cluster — após o corte
+# Clusters com entropia baixa concentram poucos labelsets dominantes,
+# indicando boa separação semântica no espaço multilabel.
+# Retorna a média da entropia de Shannon entre todos os clusters.
+compute_labelset_entropy <- function(lset_freq) {
+    lset_freq |>
+        dplyr::group_by(cluster) |>
+        dplyr::summarise(
+            entropy = {
+                p <- frequencia / sum(frequencia)
+                -sum(p * log2(p + 1e-10))
+            },
+            .groups = "drop"
+        ) |>
+        dplyr::summarise(mean_entropy = mean(entropy)) |>
+        dplyr::pull(mean_entropy)
+}
+
+# 5. Distância de Hellinger entre distribuições de rótulos — após o corte, k=2
+# Quantifica a separação semântica entre os dois clusters no espaço de rótulos.
+# Varia de 0 (distribuições idênticas) a 1 (distribuições completamente distintas).
+# Aplicável apenas para k=2; retorna NA para k>2.
+compute_hellinger <- function(label_freq, label_names) {
+    if (nrow(label_freq) != 2) {
+        return(NA_real_)
+    }
+    p <- as.numeric(label_freq[1, label_names])
+    q <- as.numeric(label_freq[2, label_names])
+    p <- p / sum(p)
+    q <- q / sum(q)
+    sqrt(0.5 * sum((sqrt(p) - sqrt(q))^2))
+}
+
+# 6. Consistência entre folds — calculada após consolidar todos os folds
+# Para cada (dataset, vizinhança, k, cluster), computa o desvio padrão da
+# proporção de cada rótulo entre os 3 folds. SD baixo = partição estável e
+# reproduzível — essencial para validar os resultados em cross-validation.
+# Implementada como group_modify para respeitar os label_names de cada dataset.
+compute_fold_consistency <- function(label_freq_consolidated, datasets_config) {
+    label_freq_consolidated |>
+        dplyr::group_by(dataset, neighborhood, k, cluster) |>
+        dplyr::group_modify(function(group_df, keys) {
+            ds_labels <- datasets_config[[keys$dataset]]$label_names
+            group_df |>
+                dplyr::mutate(
+                    dplyr::across(dplyr::all_of(ds_labels),
+                        ~ .x / n_instancias,
+                        .names = "prop_{.col}"
+                    )
+                ) |>
+                dplyr::summarise(
+                    n_folds = dplyr::n(),
+                    dplyr::across(
+                        dplyr::starts_with("prop_"),
+                        list(sd = ~ sd(.x, na.rm = TRUE)),
+                        .names = "{.col}_{.fn}"
+                    ),
+                    mean_sd_props = mean(
+                        dplyr::c_across(
+                            dplyr::starts_with("prop_") & dplyr::ends_with("_sd")
+                        ),
+                        na.rm = TRUE
+                    ),
+                    .groups = "drop"
+                )
+        }) |>
+        dplyr::ungroup()
+}
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+neuron_label_freq <- function(model, Y_train, label_names) {
+    data.frame(neuron = model$unit.classif, Y_train) |>
+        setNames(c("neuron", label_names)) |>
+        dplyr::group_by(neuron) |>
+        dplyr::summarise(
+            n_instancias = dplyr::n(),
+            dplyr::across(dplyr::all_of(label_names), sum), .groups = "drop"
+        ) |>
+        dplyr::mutate(dplyr::across(
+            dplyr::all_of(label_names), ~ .x / n_instancias,
+            .names = "prop_{.col}"
+        ))
+}
+
+neuron_labelset_freq <- function(model, Y_train, label_names) {
+    data.frame(neuron = model$unit.classif, Y_train) |>
+        setNames(c("neuron", label_names)) |>
+        dplyr::mutate(labelset = apply(dplyr::pick(dplyr::all_of(label_names)), 1, paste, collapse = "")) |>
+        dplyr::count(neuron, labelset, name = "frequencia") |>
+        dplyr::arrange(neuron, dplyr::desc(frequencia))
+}
+
+label_cooccurrence <- function(Y_train, label_names) {
+    Y <- as.matrix(Y_train[, label_names])
+    cooc <- t(Y) %*% Y
+    diag(cooc) <- 0
+    cooc
+}
+
+label_isolation <- function(Y_train, label_names) {
+    n_lbl <- rowSums(as.matrix(Y_train[, label_names]))
+    data.frame(type = dplyr::case_when(
+        n_lbl == 0 ~ "sem_rotulo", n_lbl == 1 ~ "isolado", TRUE ~ "agrupado"
+    )) |>
+        dplyr::count(type, name = "n") |>
+        dplyr::mutate(prop = n / sum(n))
+}
+#
+#
+#
+#
+#
+#
+#
+trained_models <- list()
+eval_results <- list()
+
+for (ds in TARGET_DATASETS) {
+    trained_models[[ds]] <- list()
+
+    for (nbhd in TARGET_NEIGHBORHOODS) {
+        trained_models[[ds]][[nbhd]] <- list()
+
+        bp <- best_params |>
+            dplyr::filter(dataset == ds, neighborhood == nbhd) |>
+            head(1)
+
+        if (nrow(bp) == 0) {
+            warning(sprintf("Parametros nao encontrados para %s + %s. Pulando.", ds, nbhd))
+            next
+        }
+
+        cat(sprintf(
+            "\n=== %s | %s | topology=%s rlen=%d radius=%f alpha=(%.2f, %.3f) ===\n",
+            toupper(ds), toupper(nbhd),
+            bp$topology, bp$rlen, bp$radius, bp$alpha_start, bp$alpha_end
+        ))
+
+        for (fold in 1:3) {
+            fold_key <- paste0("fold", fold)
+
+            Y_tr <- as.matrix(datasets[[ds]][[fold_key]][["tr"]]$labels)
+            Y_ts <- as.matrix(datasets[[ds]][[fold_key]][["ts"]]$labels)
+            label_names <- datasets_config[[ds]]$label_names
+
+            t0_train <- proc.time()
+            model <- tryCatch(
+                train_som(Y_tr, bp$topology, nbhd, bp$rlen, bp$radius, bp$alpha_start, bp$alpha_end),
+                error = function(e) { message("Erro no fold ", fold, ": ", e$message); NULL }
+            )
+            train_time_s <- round((proc.time() - t0_train)[[3]], 2)
+
+            if (is.null(model)) next
+
+            grid_size <- model$grid$xdim * model$grid$ydim
+            empty_neurons <- grid_size - length(unique(model$unit.classif))
+
+            distances_ts <- kohonen::map(model, newdata = list(Y = Y_ts))$distances
+            qe_test <- mean(distances_ts)
+
+            # ordered by distance, groupby labelset to see which labelsets are closer to the codebook vectors
+            output_distances <- distances_ts |>
+                data.frame(instance = seq_along(distances_ts), distance = distances_ts) |>
+                dplyr::mutate(labelset = apply(Y_ts, 1, paste, collapse = "")) |>
+                dplyr::group_by(labelset) |>
+                dplyr::summarise(
+                    mean_distance = mean(distance),
+                    n_instances = dplyr::n(),
+                    .groups = "drop"
+                ) |>
+                dplyr::arrange(mean_distance)
+
+            write.csv(
+                output_distances,
+                file.path(OUTPUT_PATH, sprintf("%s_%s_fold%d_distances.csv", ds, nbhd, fold)),
+                row.names = FALSE
+            )
+
+            # Gerar csv dos codebook vectors
+            codebook_df <- as.data.frame(model$codes[[1]])
+            write.csv(
+                codebook_df,
+                file.path(OUTPUT_PATH, sprintf("%s_%s_fold%d_codebook.csv", ds, nbhd, fold)),
+                row.names = FALSE
+            )
+
+
+            cat(sprintf(
+                "  Fold %d: QE_test=%.5f | neuronios_vazios=%d\n",
+                fold, qe_test, empty_neurons
+            ))
+
+            trained_models[[ds]][[nbhd]][[fold_key]] <- list(
+                model         = model,
+                Y_tr          = Y_tr,
+                Y_ts          = Y_ts,
+                qe_test       = qe_test,
+                empty_neurons = empty_neurons
+            )
+
+            # ── Extração por neurônio ────────────────────────────────────────────────
+            nlf <- neuron_label_freq(model, as.data.frame(Y_tr), label_names)
+            nlsf <- neuron_labelset_freq(model, as.data.frame(Y_tr), label_names)
+            cooc <- label_cooccurrence(as.data.frame(Y_tr), label_names)
+            iso <- label_isolation(as.data.frame(Y_tr), label_names)
+
+            pfx <- sprintf("%s_%s_fold%d", ds, nbhd, fold)
+            write.csv(nlf, file.path(OUTPUT_PATH, sprintf("%s_neuron_label_freq.csv", pfx)), row.names = FALSE)
+            write.csv(nlsf, file.path(OUTPUT_PATH, sprintf("%s_neuron_labelset_freq.csv", pfx)), row.names = FALSE)
+            write.csv(iso, file.path(OUTPUT_PATH, sprintf("%s_label_isolation.csv", pfx)), row.names = FALSE)
+            write.csv(as.data.frame(cooc) |> tibble::rownames_to_column("rotulo"),
+                file.path(OUTPUT_PATH, sprintf("%s_cooccurrence.csv", pfx)),
+                row.names = FALSE
+            )
+
+            # PNG: proporção de rótulos por neurônio
+            p_nlf <- nlf |>
+                tidyr::pivot_longer(dplyr::starts_with("prop_"),
+                    names_to = "rotulo", names_prefix = "prop_", values_to = "prop"
+                ) |>
+                ggplot2::ggplot(ggplot2::aes(x = rotulo, y = factor(neuron), fill = prop)) +
+                ggplot2::geom_tile(color = "white", linewidth = 0.6) +
+                ggplot2::geom_text(ggplot2::aes(label = sprintf("%.2f", prop)), size = 2.8) +
+                ggplot2::scale_fill_distiller(
+                    palette = "YlOrRd", direction = 1,
+                    labels = scales::percent_format(accuracy = 1), name = "Prop."
+                ) +
+                ggplot2::labs(
+                    title = sprintf("Rótulos por neurônio — %s | %s | Fold %d", ds, nbhd, fold),
+                    x = NULL, y = "Neurônio"
+                ) +
+                ggplot2::theme_minimal(base_size = 11) +
+                ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 35, hjust = 1))
+
+            ggplot2::ggsave(file.path(OUTPUT_PATH, sprintf("%s_neuron_label_heatmap.png", pfx)),
+                p_nlf,
+                width = 10, height = 4, dpi = 150
+            )
+
+            # PNG: co-ocorrência de rótulos
+            p_cooc <- as.data.frame(cooc) |>
+                tibble::rownames_to_column("rotulo_a") |>
+                tidyr::pivot_longer(-rotulo_a, names_to = "rotulo_b", values_to = "n") |>
+                ggplot2::ggplot(ggplot2::aes(x = rotulo_a, y = rotulo_b, fill = n)) +
+                ggplot2::geom_tile(color = "white", linewidth = 0.6) +
+                ggplot2::geom_text(ggplot2::aes(label = n), size = 3) +
+                ggplot2::scale_fill_distiller(palette = "Blues", direction = 1, name = "Co-oc.") +
+                ggplot2::labs(
+                    title = sprintf("Co-ocorrência de rótulos — %s | %s | Fold %d", ds, nbhd, fold),
+                    x = NULL, y = NULL
+                ) +
+                ggplot2::theme_minimal(base_size = 11) +
+                ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 35, hjust = 1))
+
+            ggplot2::ggsave(file.path(OUTPUT_PATH, sprintf("%s_cooccurrence.png", pfx)),
+                p_cooc,
+                width = 7, height = 6, dpi = 150
+            )
+
+            eval_results[[length(eval_results) + 1]] <- data.frame(
+                dataset       = ds,
+                neighborhood  = nbhd,
+                topology      = bp$topology,
+                fold          = fold,
+                rlen          = bp$rlen,
+                radius        = bp$radius,
+                alpha_start   = bp$alpha_start,
+                alpha_end     = bp$alpha_end,
+                empty_neurons = empty_neurons,
+                qe_test       = qe_test,
+                train_time_s  = train_time_s
+            )
+        }
+    }
+}
+
+eval_df <- dplyr::bind_rows(eval_results)
+write.csv(eval_df, file.path(OUTPUT_PATH, "evaluation_results.csv"), row.names = FALSE)
+
+cat("\n=== RESULTADOS DE AVALIACAO - QE MÍNIMO ===\n")
+print(eval_df)
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# Para cada (dataset, vizinhança, fold):
+#   - Antes do corte : CCC e AC sobre o dendrograma
+#   - Após o corte   : Silhouette, Entropia dos labelsets e Hellinger (k=2)
+#   - Entre folds    : Consistência (SD das proporções de rótulos) — calculada ao final
+
+partition2_data <- list()
+hierarchy_results <- list() # CCC e AC por fold (pré-corte)
+partition_quality_res <- list() # Silhouette, Entropia, Hellinger por (fold, k)
+label_freq_all_folds <- list() # acumula label_freq de todos os combos/folds/ks
+
+for (ds in TARGET_DATASETS) {
+    label_names <- datasets_config[[ds]]$label_names
+
+    for (nbhd in TARGET_NEIGHBORHOODS) {
+        combo <- sprintf("%s_%s", ds, nbhd)
+        label_freq_folds <- list()
+        labelset_freq_folds <- list()
+
+        for (fold in 1:3) {
+            fold_key <- paste0("fold", fold)
+            model_info <- trained_models[[ds]][[nbhd]][[fold_key]]
+            if (is.null(model_info)) next
+
+            model <- model_info$model
+            Y_tr <- model_info$Y_tr
+            n_neur <- model$grid$xdim * model$grid$ydim
+            max_k <- n_neur - 1
+
+            codebook <- model$codes[[1]]
+            dend <- hclust(dist(codebook), method = "complete")
+
+            # --- Métricas pré-corte: CCC e AC ---
+            ccc_val <- compute_ccc(codebook, dend)
+            ac_val <- compute_ac(codebook, method = "complete")
+
+            hierarchy_results[[length(hierarchy_results) + 1]] <- data.frame(
+                dataset      = ds,
+                neighborhood = nbhd,
+                fold         = fold,
+                ccc          = ccc_val,
+                ac           = ac_val
+            )
+
+            cat(sprintf(
+                "  [%s | %s | Fold %d] CCC=%.4f | AC=%.4f\n",
+                ds, nbhd, fold, ccc_val, ac_val
+            ))
+
+            pdf_path <- file.path(OUTPUT_PATH, sprintf("%s_fold%d_partitions.pdf", combo, fold))
+            pdf(pdf_path, width = 11, height = 8.5)
+
+            # --- Visão geral do modelo ---
+            par(mfrow = c(2, 2))
+            plot(model,
+                type = "counts",
+                main = sprintf("%s | %s | Fold %d - Counts", ds, nbhd, fold)
+            )
+            plot(model,
+                type = "changes",
+                main = "Convergencia do treinamento"
+            )
+
+            # gerar png do mapa de changes
+            png(file.path(OUTPUT_PATH, sprintf("%s_%s_fold%d_changes.png", ds, nbhd, fold)),
+                width = 800, height = 600, res = 120
+            )
+            plot(model,
+                type = "changes",
+                main = sprintf("%s | %s | Fold %d - Changes", ds, nbhd, fold)
+            )
+            dev.off()
+
+            plot(model,
+                type = "dist.neighbours",
+                main = "U-Matrix (distancia entre vizinhos)"
+            )
+            plot(model,
+                type = "codes", codeRendering = "segments",
+                main = "Codebook - Segments"
+            )
+            par(mfrow = c(1, 1))
+
+            # --- Partições k = 2 até max_k ---
+            for (k in 2:max_k) {
+                clusters <- as.integer(cutree(dend, k = k))
+                instance_df <- build_instance_df(model, Y_tr, label_names, clusters)
+                write.csv(
+                    instance_df |>
+                        dplyr::group_by(labelset) |>
+                        dplyr::summarise(
+                            n = dplyr::n(),
+                            mean_distance = mean(distance),
+                            cluster_neuron = paste0("C", unique(cluster), "N", unique(neuron)),
+                            .groups = "drop"
+                        ) |>
+                        dplyr::arrange(cluster_neuron, dplyr::desc(mean_distance)),
+                    file.path(OUTPUT_PATH, sprintf("%s_fold%d_k%d_instance_df.csv", combo, fold, k)),
+                    row.names = FALSE
+                )
+                label_freq <- label_freq_by_cluster(instance_df, label_names)
+                lset_freq <- labelset_freq_by_cluster(instance_df, label_names)
+
+
+
+                label_freq
+                write.csv(label_freq,
+                    file.path(OUTPUT_PATH, sprintf("%s_fold%d_k%d_label_freq.csv", combo, fold, k)),
+                    row.names = FALSE
+                )
+                write.csv(lset_freq,
+                    file.path(OUTPUT_PATH, sprintf("%s_fold%d_k%d_labelset_freq.csv", combo, fold, k)),
+                    row.names = FALSE
+                )   
+
+                # --- Métricas pós-corte ---
+                sil_val <- compute_silhouette(clusters, codebook)
+                entropy_val <- compute_labelset_entropy(lset_freq)
+                hellinger_val <- compute_hellinger(label_freq, label_names)
+
+                partition_quality_res[[length(partition_quality_res) + 1]] <- data.frame(
+                    dataset      = ds,
+                    neighborhood = nbhd,
+                    fold         = fold,
+                    k            = k,
+                    silhouette   = sil_val,
+                    mean_entropy = entropy_val,
+                    hellinger    = hellinger_val
+                )
+
+                cat(sprintf(
+                    "    k=%d: Silhouette=%.4f | Entropia=%.4f | Hellinger=%s\n",
+                    k, sil_val, entropy_val,
+                    ifelse(is.na(hellinger_val), "NA", sprintf("%.4f", hellinger_val))
+                ))
+
+                # Acumula para consistência entre folds (métrica 6)
+                label_freq_all_folds[[length(label_freq_all_folds) + 1]] <- label_freq |>
+                    dplyr::mutate(dataset = ds, neighborhood = nbhd, fold = fold, k = k)
+
+                # --- Visualizações no PDF ---
+                plot(model,
+                    type = "codes", codeRendering = "segments",
+                    bgcol = rainbow(k)[clusters],
+                    main = sprintf("Clusters (k=%d) | %s | %s | Fold %d", k, ds, nbhd, fold)
+                )
+                kohonen::add.cluster.boundaries(model, clusters)
+                pts <- model$grid$pts
+                text(pts[, 1], pts[, 2],
+                    labels = sprintf("N%d\nC%d", seq_len(nrow(pts)), clusters),
+                    cex = 0.75, font = 3
+                )
+
+                plot(dend,
+                    main = sprintf("Dendrograma (k=%d) | %s | %s | Fold %d", k, ds, nbhd, fold),
+                    xlab = "Neuronios", ylab = "Distancia"
+                )
+                rect.hclust(dend, k = k, border = "red")
+
+                # Gerar png dos dendrogramas para cada k
+                png(file.path(OUTPUT_PATH, sprintf("%s_%s_fold%d_k%d_dendrogram.png", ds, nbhd, fold, k)),
+                    width = 800, height = 700, res = 120
+                )
+                plot(dend,
+                    main = sprintf("Dendrograma (k=%d) | %s | %s | Fold %d", k, ds, nbhd, fold),
+                    xlab = "Neuronios", ylab = "Distancia"
+                )
+                rect.hclust(dend, k = k, border = "red")
+                dev.off()
+
+                # Tabela: métricas de qualidade desta partição no PDF
+                quality_row <- data.frame(
+                    Metrica = c(
+                        "Silhouette medio", "Entropia media dos labelsets",
+                        "Hellinger (rotulos)", "CCC (pre-corte)", "AC (pre-corte)"
+                    ),
+                    Valor = c(
+                        sprintf("%.4f", sil_val),
+                        sprintf("%.4f", entropy_val),
+                        ifelse(is.na(hellinger_val), "NA (k>2)", sprintf("%.4f", hellinger_val)),
+                        sprintf("%.4f", ccc_val),
+                        sprintf("%.4f", ac_val)
+                    ),
+                    Ideal = c(
+                        "Próximo de +1", "Próximo de 0", "Próximo de 1",
+                        "Acima de 0.75", "Acima de 0.75"
+                    )
+                )
+                render_table_page(
+                    quality_row,
+                    title = sprintf(
+                        "Metricas de qualidade (k=%d) | %s | %s | Fold %d",
+                        k, ds, nbhd, fold
+                    )
+                )
+
+                render_table_page(
+                    as.data.frame(label_freq),
+                    title = sprintf(
+                        "Frequencia de rotulos por cluster (k=%d) | %s | %s | Fold %d",
+                        k, ds, nbhd, fold
+                    )
+                )
+
+                for (cl_id in sort(unique(lset_freq$cluster))) {
+                    top_ls <- lset_freq |>
+                        dplyr::filter(cluster == cl_id) |>
+                        head(15)
+                    render_table_page(
+                        as.data.frame(top_ls),
+                        title = sprintf(
+                            "Top 15 labelsets — Cluster %d (k=%d) | %s | %s | Fold %d",
+                            cl_id, k, ds, nbhd, fold
+                        )
+                    )
+                }
+
+                # PNG: partição desenhada
+                png(file.path(OUTPUT_PATH, sprintf("%s_%s_fold%d_k%d_partition.png", ds, nbhd, fold, k)),
+                    width = 800, height = 700, res = 120
+                )
+                plot(model,
+                    type = "codes", codeRendering = "segments",
+                    bgcol = rainbow(k)[clusters],
+                    main = sprintf("Partição k=%d | %s | %s | Fold %d", k, ds, nbhd, fold)
+                )
+                kohonen::add.cluster.boundaries(model, clusters)
+                pts <- model$grid$pts
+                # adicionar a contagem de instâncias por neurônio
+                neuron_counts <- table(model$unit.classif)
+                labels <- sprintf("N%d\nC%d\nn=%d", seq_len(nrow(pts)), clusters, neuron_counts[as.character(seq_len(nrow(pts)))])
+
+                text(pts[, 1], pts[, 2],
+                    labels = labels, cex = 1.2, col = 1, font = 2
+                )
+                dev.off()
+
+                if (k == 2) {
+                    label_freq_folds[[fold_key]] <- label_freq |>
+                        dplyr::mutate(fold = fold, dataset = ds, neighborhood = nbhd)
+                    labelset_freq_folds[[fold_key]] <- lset_freq |>
+                        dplyr::mutate(fold = fold, dataset = ds, neighborhood = nbhd)
+                }
+            }
+
+            dev.off()
+            cat(sprintf("  PDF gerado: %s\n", basename(pdf_path)))
+        }
+
+        if (length(label_freq_folds) == 0) next
+
+        lf_p2 <- dplyr::bind_rows(label_freq_folds)
+        lsf_p2 <- dplyr::bind_rows(labelset_freq_folds)
+
+        write.csv(lf_p2,
+            file.path(OUTPUT_PATH, sprintf("%s_p2_label_freq.csv", combo)),
+            row.names = FALSE
+        )
+        write.csv(lsf_p2,
+            file.path(OUTPUT_PATH, sprintf("%s_p2_labelset_freq.csv", combo)),
+            row.names = FALSE
+        )
+
+        partition2_data[[combo]] <- list(
+            label_freq    = lf_p2,
+            labelset_freq = lsf_p2
+        )
+
+        cat(sprintf("  CSVs da particao 2 salvos para: %s\n", combo))
+    }
+}
+
+# --- Consolida e salva métricas pré e pós corte ---
+hierarchy_df <- dplyr::bind_rows(hierarchy_results)
+partition_qual_df <- dplyr::bind_rows(partition_quality_res)
+
+write.csv(hierarchy_df,
+    file.path(OUTPUT_PATH, "quality_hierarchy.csv"),
+    row.names = FALSE
+)
+write.csv(partition_qual_df,
+    file.path(OUTPUT_PATH, "quality_partitions.csv"),
+    row.names = FALSE
+)
+
+cat("\n=== METRICAS PRE-CORTE (CCC e AC) ===\n")
+print(hierarchy_df)
+
+cat("\n=== METRICAS POS-CORTE (Silhouette, Entropia, Hellinger) ===\n")
+print(partition_qual_df)
+#
+#
+#
+#
+#
+# Métrica 6: SD das proporções de rótulos por cluster entre os 3 folds.
+# SD baixo indica que a partição distribui os rótulos de forma estável e
+# reproduzível entre os folds — essencial para confiar nos resultados
+# de cross-validation.
+
+label_freq_consolidated <- dplyr::bind_rows(label_freq_all_folds)
+
+fold_consistency_df <- compute_fold_consistency(label_freq_consolidated, datasets_config)
+
+write.csv(fold_consistency_df,
+    file.path(OUTPUT_PATH, "quality_fold_consistency.csv"),
+    row.names = FALSE
+)
+
+cat("=== CONSISTENCIA ENTRE FOLDS (mean_sd_props — quanto menor, mais estavel) ===\n")
+fold_consistency_df |>
+    dplyr::select(dataset, neighborhood, k, cluster, n_folds, mean_sd_props) |>
+    print()
+#
+#
+#
+#
+#
+# Gráfico 1: CCC e AC por (dataset, neighborhood, fold)
+p_hierarchy <- hierarchy_df |>
+    tidyr::pivot_longer(cols = c(ccc, ac), names_to = "metrica", values_to = "valor") |>
+    dplyr::mutate(
+        metrica = dplyr::recode(metrica,
+            ccc = "Correlacao Cofenotica (CCC)",
+            ac  = "Coeficiente Aglomerativo (AC)"
+        )
+    ) |>
+    ggplot2::ggplot(ggplot2::aes(x = factor(fold), y = valor, fill = neighborhood)) +
+    ggplot2::geom_col(position = "dodge") +
+    ggplot2::geom_hline(yintercept = 0.75, linetype = "dashed", color = "red", linewidth = 0.6) +
+    ggplot2::annotate("text", x = 0.6, y = 0.77, label = "0.75", color = "red", size = 3) +
+    ggplot2::facet_grid(metrica ~ dataset) +
+    ggplot2::scale_fill_brewer(palette = "Set2", name = "Vizinhança") +
+    ggplot2::labs(
+        title = "Métricas Pré-Corte: CCC e AC por Fold",
+        x = "Fold", y = "Valor"
+    ) +
+    ggplot2::theme_minimal(base_size = 11)
+
+# Gráfico 2: Silhouette e Entropia por (dataset, neighborhood, k, fold)
+p_partition <- partition_qual_df |>
+    tidyr::pivot_longer(
+        cols = c(silhouette, mean_entropy),
+        names_to = "metrica", values_to = "valor"
+    ) |>
+    dplyr::mutate(
+        metrica = dplyr::recode(metrica,
+            silhouette   = "Silhouette medio",
+            mean_entropy = "Entropia media dos labelsets"
+        )
+    ) |>
+    ggplot2::ggplot(ggplot2::aes(
+        x     = factor(k),
+        y     = valor,
+        color = neighborhood,
+        group = interaction(neighborhood, fold)
+    )) +
+    ggplot2::geom_line(alpha = 0.6) +
+    ggplot2::geom_point(size = 2) +
+    ggplot2::facet_grid(metrica ~ dataset, scales = "free_y") +
+    ggplot2::scale_color_brewer(palette = "Set1", name = "Vizinhança") +
+    ggplot2::labs(
+        title = "Métricas Pós-Corte: Silhouette e Entropia por k e Fold",
+        x = "k (número de clusters)", y = "Valor"
+    ) +
+    ggplot2::theme_minimal(base_size = 11)
+
+# Gráfico 3: Hellinger (k=2) por fold
+p_hellinger <- partition_qual_df |>
+    dplyr::filter(k == 2) |>
+    ggplot2::ggplot(ggplot2::aes(x = factor(fold), y = hellinger, fill = neighborhood)) +
+    ggplot2::geom_col(position = "dodge") +
+    ggplot2::facet_wrap(~dataset) +
+    ggplot2::scale_fill_brewer(palette = "Set2", name = "Vizinhança") +
+    ggplot2::labs(
+        title = "Distância de Hellinger entre Clusters (k=2) por Fold",
+        x = "Fold", y = "Hellinger"
+    ) +
+    ggplot2::theme_minimal(base_size = 11)
+
+# Gráfico 4: Consistência entre folds (mean_sd_props)
+p_consistency <- fold_consistency_df |>
+    dplyr::select(dataset, neighborhood, k, cluster, mean_sd_props) |>
+    dplyr::mutate(painel = sprintf("k=%d | Cluster %d", k, cluster)) |>
+    ggplot2::ggplot(ggplot2::aes(x = neighborhood, y = mean_sd_props, fill = neighborhood)) +
+    ggplot2::geom_col() +
+    ggplot2::facet_grid(dataset ~ painel) +
+    ggplot2::scale_fill_brewer(palette = "Set2", name = "Vizinhança") +
+    ggplot2::labs(
+        title = "Consistência entre Folds: SD médio das proporções de rótulos",
+        subtitle = "Valores menores indicam partições mais estáveis",
+        x = "Vizinhança", y = "SD médio das proporções"
+    ) +
+    ggplot2::theme_minimal(base_size = 11) +
+    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 30, hjust = 1))
+
+# Salva PNGs
+ggplot2::ggsave(file.path(OUTPUT_PATH, "quality_hierarchy.png"),
+    p_hierarchy,
+    width = 10, height = 6, dpi = 150
+)
+ggplot2::ggsave(file.path(OUTPUT_PATH, "quality_partitions.png"),
+    p_partition,
+    width = 12, height = 7, dpi = 150
+)
+ggplot2::ggsave(file.path(OUTPUT_PATH, "quality_hellinger.png"),
+    p_hellinger,
+    width = 10, height = 5, dpi = 150
+)
+ggplot2::ggsave(file.path(OUTPUT_PATH, "quality_consistency.png"),
+    p_consistency,
+    width = 12, height = 6, dpi = 150
+)
+
+# PDF consolidado de métricas de qualidade
+pdf(file.path(OUTPUT_PATH, "quality_summary.pdf"), width = 12, height = 7)
+print(p_hierarchy)
+print(p_partition)
+print(p_hellinger)
+print(p_consistency)
+dev.off()
+
+cat("Graficos de qualidade salvos.\n")
+#
+#
+#
+#
+library(scales)
+for (ds in TARGET_DATASETS) {
+    label_names <- datasets_config[[ds]]$label_names
+
+    # Coleta dados de ambas vizinhanças para comparação cruzada
+    combos_data <- list()
+    for (nbhd in TARGET_NEIGHBORHOODS) {
+        combo <- sprintf("%s_%s", ds, nbhd)
+        if (!is.null(partition2_data[[combo]])) {
+            combos_data[[nbhd]] <- partition2_data[[combo]]
+        }
+    }
+
+    for (nbhd in TARGET_NEIGHBORHOODS) {
+        combo <- sprintf("%s_%s", ds, nbhd)
+        p2 <- partition2_data[[combo]]
+        if (is.null(p2)) next
+
+        lf <- p2$label_freq
+        lsf <- p2$labelset_freq
+
+        cat(sprintf("\n=== PARTICAO 2: %s | %s ===\n", toupper(ds), toupper(nbhd)))
+        lf |>
+            dplyr::group_by(cluster) |>
+            dplyr::summarise(
+                total_instancias = sum(n_instancias),
+                dplyr::across(dplyr::all_of(label_names), sum),
+                .groups = "drop"
+            ) |>
+            print()
+
+        # ── Proporções por fold ──────────────────────────────────────────────────
+        lf_prop <- lf |>
+            dplyr::mutate(dplyr::across(
+                dplyr::all_of(label_names),
+                ~ .x / n_instancias,
+                .names = "prop_{.col}"
+            )) |>
+            tidyr::pivot_longer(
+                cols         = dplyr::starts_with("prop_"),
+                names_to     = "rotulo",
+                names_prefix = "prop_",
+                values_to    = "proporcao"
+            )
+
+        # Média e SD das proporções entre folds
+        lf_summary <- lf_prop |>
+            dplyr::group_by(cluster, rotulo) |>
+            dplyr::summarise(
+                media = mean(proporcao),
+                sd = sd(proporcao),
+                .groups = "drop"
+            ) |>
+            dplyr::mutate(cluster = factor(cluster))
+
+        # ── G1: Proporções médias + barras de erro (±1 DP entre folds) ──────────
+        p1_prop <- lf_summary |>
+            ggplot2::ggplot(ggplot2::aes(x = rotulo, y = media, fill = cluster)) +
+            ggplot2::geom_col(
+                position = ggplot2::position_dodge(width = 0.8), width = 0.7
+            ) +
+            ggplot2::geom_errorbar(
+                ggplot2::aes(ymin = pmax(media - sd, 0), ymax = media + sd),
+                position = ggplot2::position_dodge(width = 0.8),
+                width = 0.25, linewidth = 0.5, color = "grey30"
+            ) +
+            ggplot2::scale_fill_brewer(palette = "Set1", name = "Cluster") +
+            ggplot2::scale_y_continuous(
+                labels = scales::percent_format(accuracy = 1),
+                expand = ggplot2::expansion(mult = c(0, 0.08))
+            ) +
+            ggplot2::labs(
+                title = sprintf("Proporção média de rótulos por cluster — %s | %s", ds, nbhd),
+                subtitle = "Barras de erro = ±1 DP entre folds · quanto mais sobrepostas, mais instável a partição",
+                x = NULL, y = "Proporção de instâncias com o rótulo"
+            ) +
+            ggplot2::theme_minimal(base_size = 11) +
+            ggplot2::theme(
+                axis.text.x     = ggplot2::element_text(angle = 35, hjust = 1),
+                legend.position = "top"
+            )
+
+        # ── G2: Heatmap rótulo × cluster (proporção média + DP) ─────────────────
+        p2_heat <- lf_summary |>
+            ggplot2::ggplot(ggplot2::aes(x = rotulo, y = cluster, fill = media)) +
+            ggplot2::geom_tile(color = "white", linewidth = 0.6) +
+            ggplot2::geom_text(
+                ggplot2::aes(label = sprintf("%.2f\n±%.2f", media, sd)),
+                size = 3.2
+            ) +
+            ggplot2::scale_fill_distiller(
+                palette = "YlOrRd", direction = 1,
+                name = "Proporção\nmédia",
+                labels = scales::percent_format(accuracy = 1)
+            ) +
+            ggplot2::labs(
+                title = sprintf("Heatmap de rótulos por cluster — %s | %s", ds, nbhd),
+                subtitle = "Células: proporção média (linha 1) ± DP entre folds (linha 2)",
+                x = "Rótulo", y = "Cluster"
+            ) +
+            ggplot2::theme_minimal(base_size = 11) +
+            ggplot2::theme(
+                axis.text.x = ggplot2::element_text(angle = 35, hjust = 1),
+                panel.grid  = ggplot2::element_blank()
+            )
+
+        # ── G3: Estabilidade — perfil por fold sobreposto por cluster ────────────
+        p3_stability <- lf_prop |>
+            dplyr::mutate(cluster = factor(cluster)) |>
+            ggplot2::ggplot(ggplot2::aes(
+                x     = rotulo,
+                y     = proporcao,
+                color = factor(fold),
+                group = factor(fold)
+            )) +
+            ggplot2::geom_line(alpha = 0.85, linewidth = 0.8) +
+            ggplot2::geom_point(size = 2.4) +
+            ggplot2::facet_wrap(~ paste("Cluster", cluster), ncol = 2) +
+            ggplot2::scale_color_brewer(palette = "Dark2", name = "Fold") +
+            ggplot2::scale_y_continuous(
+                labels = scales::percent_format(accuracy = 1),
+                expand = ggplot2::expansion(mult = c(0, 0.08))
+            ) +
+            ggplot2::labs(
+                title = sprintf("Estabilidade entre folds — %s | %s", ds, nbhd),
+                subtitle = "Linhas sobrepostas = partição reproduzível · linhas dispersas = instabilidade",
+                x = NULL, y = "Proporção"
+            ) +
+            ggplot2::theme_minimal(base_size = 11) +
+            ggplot2::theme(
+                axis.text.x     = ggplot2::element_text(angle = 35, hjust = 1),
+                legend.position = "top"
+            )
+
+        # ── G4: Top labelsets como proporção dentro do cluster ───────────────────
+        lsf_prop <- lsf |>
+            dplyr::group_by(fold, cluster) |>
+            dplyr::mutate(prop_cluster = frequencia / sum(frequencia)) |>
+            dplyr::slice_max(frequencia, n = 8, with_ties = FALSE) |>
+            dplyr::ungroup() |>
+            dplyr::mutate(painel = sprintf("Fold %d — Cluster %d", fold, cluster))
+
+        p4_lsets <- lsf_prop |>
+            ggplot2::ggplot(ggplot2::aes(
+                x    = stats::reorder(labelset, prop_cluster),
+                y    = prop_cluster,
+                fill = factor(cluster)
+            )) +
+            ggplot2::geom_col() +
+            ggplot2::geom_text(
+                ggplot2::aes(label = sprintf("%.1f%%", prop_cluster * 100)),
+                hjust = -0.1, size = 2.7
+            ) +
+            ggplot2::coord_flip(clip = "off") +
+            ggplot2::facet_wrap(~painel, scales = "free_y", ncol = 2) +
+            ggplot2::scale_fill_brewer(palette = "Set1", name = "Cluster") +
+            ggplot2::scale_y_continuous(
+                labels = scales::percent_format(accuracy = 1),
+                expand = ggplot2::expansion(mult = c(0, 0.20))
+            ) +
+            ggplot2::labs(
+                title = sprintf("Top 8 labelsets por cluster — %s | %s", ds, nbhd),
+                subtitle = "Eixo x = % das instâncias do cluster com aquele labelset",
+                x = NULL, y = "Proporção no cluster"
+            ) +
+            ggplot2::theme_minimal(base_size = 10) +
+            ggplot2::theme(
+                axis.text.y     = ggplot2::element_text(size = 7.5, family = "mono"),
+                legend.position = "top"
+            )
+
+        # ── G5: Dominância — cobertura do labelset mais frequente por cluster ────
+        dominance_df <- lsf |>
+            dplyr::group_by(fold, cluster) |>
+            dplyr::summarise(
+                top1_freq   = max(frequencia),
+                total_freq  = sum(frequencia),
+                top1_label  = labelset[which.max(frequencia)],
+                dominancia  = top1_freq / total_freq,
+                n_labelsets = dplyr::n(),
+                .groups     = "drop"
+            ) |>
+            dplyr::mutate(cluster = factor(cluster))
+
+        p5_dominance <- dominance_df |>
+            ggplot2::ggplot(ggplot2::aes(
+                x = factor(fold), y = dominancia, fill = cluster
+            )) +
+            ggplot2::geom_col(
+                position = ggplot2::position_dodge(0.8), width = 0.65
+            ) +
+            ggplot2::geom_text(
+                ggplot2::aes(label = sprintf("%.1f%%\n%s", dominancia * 100, top1_label)),
+                position = ggplot2::position_dodge(0.8),
+                vjust = -0.25, size = 2.6, lineheight = 0.85
+            ) +
+            ggplot2::scale_fill_brewer(palette = "Set1", name = "Cluster") +
+            ggplot2::scale_y_continuous(
+                labels = scales::percent_format(accuracy = 1),
+                expand = ggplot2::expansion(mult = c(0, 0.28))
+            ) +
+            ggplot2::labs(
+                title = sprintf("Dominância do labelset mais frequente — %s | %s", ds, nbhd),
+                subtitle = "% das instâncias do cluster cobertas pelo labelset modal · rótulo indicado acima de cada barra",
+                x = "Fold", y = "Dominância"
+            ) +
+            ggplot2::theme_minimal(base_size = 11) +
+            ggplot2::theme(legend.position = "top")
+
+        # ── Salva PNGs e PDF consolidado ─────────────────────────────────────────
+        plots_to_save <- list(
+            list(plot = p1_prop, file = sprintf("%s_p2_prop_errorbar.png", combo), w = 11, h = 5.5),
+            list(plot = p2_heat, file = sprintf("%s_p2_heatmap.png", combo), w = 10, h = 4.0),
+            list(plot = p3_stability, file = sprintf("%s_p2_stability.png", combo), w = 11, h = 6.0),
+            list(plot = p4_lsets, file = sprintf("%s_p2_labelsets_prop.png", combo), w = 14, h = 9.0),
+            list(plot = p5_dominance, file = sprintf("%s_p2_dominance.png", combo), w = 10, h = 5.5)
+        )
+
+        for (item in plots_to_save) {
+            ggplot2::ggsave(
+                file.path(OUTPUT_PATH, item$file), item$plot,
+                width = item$w, height = item$h, dpi = 150
+            )
+        }
+
+        pdf(file.path(OUTPUT_PATH, sprintf("%s_p2_analysis.pdf", combo)), width = 14, height = 9)
+        for (item in plots_to_save) print(item$plot)
+        dev.off()
+
+        cat(sprintf("  Outputs da particao 2 salvos para: %s\n", combo))
+    }
+
+    # ── G6: Comparação gaussian vs bubble (mesmo dataset) ───────────────────────
+    if (length(combos_data) == 2) {
+        lf_both <- purrr::imap_dfr(combos_data, function(p2_nbhd, nbhd) {
+            p2_nbhd$label_freq |> dplyr::mutate(neighborhood = nbhd)
+        }) |>
+            dplyr::mutate(dplyr::across(
+                dplyr::all_of(label_names),
+                ~ .x / n_instancias,
+                .names = "prop_{.col}"
+            )) |>
+            tidyr::pivot_longer(
+                cols         = dplyr::starts_with("prop_"),
+                names_to     = "rotulo",
+                names_prefix = "prop_",
+                values_to    = "proporcao"
+            ) |>
+            dplyr::group_by(neighborhood, cluster, rotulo) |>
+            dplyr::summarise(media = mean(proporcao), .groups = "drop") |>
+            dplyr::mutate(
+                cluster = factor(cluster),
+                grupo = interaction(cluster, neighborhood, sep = " · "),
+                neighborhood = factor(neighborhood, levels = TARGET_NEIGHBORHOODS)
+            )
+
+        p6_compare <- lf_both |>
+            ggplot2::ggplot(ggplot2::aes(
+                x    = rotulo,
+                y    = media,
+                fill = grupo
+            )) +
+            ggplot2::geom_col(
+                position = ggplot2::position_dodge(width = 0.85), width = 0.75
+            ) +
+            ggplot2::scale_fill_brewer(palette = "Paired", name = "Cluster · Vizinhança") +
+            ggplot2::scale_y_continuous(
+                labels = scales::percent_format(accuracy = 1),
+                expand = ggplot2::expansion(mult = c(0, 0.08))
+            ) +
+            ggplot2::labs(
+                title = sprintf("Comparação entre vizinhanças — %s", ds),
+                subtitle = "Avalia se gaussian e bubble produzem partições semanticamente equivalentes (proporções médias entre folds)",
+                x = NULL, y = "Proporção média"
+            ) +
+            ggplot2::theme_minimal(base_size = 11) +
+            ggplot2::theme(
+                axis.text.x     = ggplot2::element_text(angle = 35, hjust = 1),
+                legend.position = "top"
+            )
+
+        ggplot2::ggsave(
+            file.path(OUTPUT_PATH, sprintf("%s_p2_neighborhood_comparison.png", ds)),
+            p6_compare,
+            width = 12, height = 6, dpi = 150
+        )
+
+        # Comparação bubble vs gaussian por neurônio
+        nlf_both <- purrr::imap_dfr(
+            setNames(TARGET_NEIGHBORHOODS, TARGET_NEIGHBORHOODS),
+            function(nm, ...) {
+                purrr::map_dfr(1:3, function(f) {
+                    path <- file.path(OUTPUT_PATH, sprintf("%s_%s_fold%d_neuron_label_freq.csv", ds, nm, f))
+                    if (file.exists(path)) read.csv(path) |> dplyr::mutate(neighborhood = nm, fold = f)
+                })
+            }
+        ) |>
+            tidyr::pivot_longer(dplyr::starts_with("prop_"),
+                names_to = "rotulo", names_prefix = "prop_", values_to = "prop"
+            ) |>
+            dplyr::group_by(neighborhood, neuron, rotulo) |>
+            dplyr::summarise(media = mean(prop), .groups = "drop")
+
+        p_topo <- nlf_both |>
+            ggplot2::ggplot(ggplot2::aes(x = rotulo, y = factor(neuron), fill = media)) +
+            ggplot2::geom_tile(color = "white", linewidth = 0.6) +
+            ggplot2::geom_text(ggplot2::aes(label = sprintf("%.2f", media)), size = 2.6) +
+            ggplot2::scale_fill_distiller(
+                palette = "YlOrRd", direction = 1,
+                labels = scales::percent_format(accuracy = 1), name = "Prop. média"
+            ) +
+            ggplot2::facet_wrap(~neighborhood) +
+            ggplot2::labs(
+                title = sprintf("Comparação de topologia — %s: rótulos por neurônio", ds),
+                subtitle = "Média entre os 3 folds · facetas = vizinhança",
+                x = NULL, y = "Neurônio"
+            ) +
+            ggplot2::theme_minimal(base_size = 11) +
+            ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 35, hjust = 1))
+
+        ggplot2::ggsave(file.path(OUTPUT_PATH, sprintf("%s_topology_neuron_comparison.png", ds)),
+            p_topo,
+            width = 14, height = 5, dpi = 150
+        )
+
+        pdf(
+            file.path(OUTPUT_PATH, sprintf("%s_p2_neighborhood_comparison.pdf", ds)),
+            width = 14, height = 8
+        )
+        print(p6_compare)
+        dev.off()
+
+        cat(sprintf("\n  Comparacao entre vizinhancas salva para: %s\n", ds))
+    }
+}
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+cat("=== OUTPUTS GERADOS ===\n\n")
+
+cat("CSVs — Avaliacao do modelo:\n")
+cat("  evaluation_results.csv              — QE por fold, dataset e vizinhanca\n\n")
+
+cat("CSVs — Metricas de qualidade do clustering:\n")
+cat("  quality_hierarchy.csv               — CCC e AC por fold (pre-corte)\n")
+cat("  quality_partitions.csv              — Silhouette, Entropia e Hellinger por (fold, k)\n")
+cat("  quality_fold_consistency.csv        — SD das proporcoes de rotulos entre folds\n\n")
+
+cat("CSVs — Particao 2:\n")
+cat("  {ds}_{nbhd}_p2_label_freq.csv       — frequencia de rotulos na particao 2\n")
+cat("  {ds}_{nbhd}_p2_labelset_freq.csv    — frequencia de labelsets na particao 2\n\n")
+
+cat("PDFs:\n")
+cat("  {ds}_{nbhd}_fold{n}_partitions.pdf  — visualizacoes e metricas de todas as particoes\n")
+cat("  {ds}_{nbhd}_p2_analysis.pdf         — analise comparativa da particao 2\n")
+cat("  quality_summary.pdf                 — sumario visual de todas as metricas de qualidade\n\n")
+
+cat("PNGs (para o relatorio):\n")
+cat("  quality_hierarchy.png               — CCC e AC\n")
+cat("  quality_partitions.png              — Silhouette e Entropia por k\n")
+cat("  quality_hellinger.png               — Hellinger (k=2)\n")
+cat("  quality_consistency.png             — Consistencia entre folds\n")
+cat("  {ds}_{nbhd}_p2_label_freq.png       — frequencia de rotulos na particao 2\n")
+cat("  {ds}_{nbhd}_p2_labelset_freq.png    — top labelsets na particao 2\n\n")
+
+cat(sprintf("Diretorio de saida: %s\n", OUTPUT_PATH))
+
+sessionInfo()
+#
+#
+#
+#

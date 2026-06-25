@@ -14,12 +14,12 @@ library(grid)
 library(cluster) # silhouette, agnes
 library(scales)
 
-# GRIDSEARCH_PATH <- "/home/zetta/Documentos/tcc-final/linux-output/gridsearch"
-# BASE_PATH <- "/home/zetta/Documentos/tcc-final/data"
-# OUTPUT_PATH <- "/home/zetta/Documentos/tcc-final/linux-output/evaluation"
-GRIDSEARCH_PATH <- "E:/git-tcc/tcc-final/outputs/gridsearch"
-BASE_PATH <- "E:/git-tcc/tcc-final/data"
-OUTPUT_PATH <- "E:/git-tcc/tcc-final/outputs/evaluation"
+GRIDSEARCH_PATH <- "/home/zetta/Documentos/tcc-final/linux-output/gridsearch"
+BASE_PATH <- "/home/zetta/Documentos/tcc-final/data"
+OUTPUT_PATH <- "/home/zetta/Documentos/tcc-final/linux-output/evaluation"
+# GRIDSEARCH_PATH <- "E:/git-tcc/tcc-final/outputs/gridsearch"
+# BASE_PATH <- "E:/git-tcc/tcc-final/data"
+# OUTPUT_PATH <- "E:/git-tcc/tcc-final/outputs/evaluation"
 SEED <- 1234L
 TARGET_DATASETS <- c("emotions", "scene")
 TARGET_NEIGHBORHOODS <- c("gaussian", "bubble")
@@ -360,15 +360,12 @@ for (ds in TARGET_DATASETS) {
             Y_ts <- as.matrix(datasets[[ds]][[fold_key]][["ts"]]$labels)
             label_names <- datasets_config[[ds]]$label_names
 
+            t0_train <- proc.time()
             model <- tryCatch(
-                {
-                    train_som(Y_tr, bp$topology, nbhd, bp$rlen, bp$radius, bp$alpha_start, bp$alpha_end)
-                },
-                error = function(e) {
-                    message("Erro no fold ", fold, ": ", e$message)
-                    NULL
-                }
+                train_som(Y_tr, bp$topology, nbhd, bp$rlen, bp$radius, bp$alpha_start, bp$alpha_end),
+                error = function(e) { message("Erro no fold ", fold, ": ", e$message); NULL }
             )
+            train_time_s <- round((proc.time() - t0_train)[[3]], 2)
 
             if (is.null(model)) next
 
@@ -487,7 +484,8 @@ for (ds in TARGET_DATASETS) {
                 alpha_start   = bp$alpha_start,
                 alpha_end     = bp$alpha_end,
                 empty_neurons = empty_neurons,
-                qe_test       = qe_test
+                qe_test       = qe_test,
+                train_time_s  = train_time_s
             )
         }
     }
@@ -635,6 +633,23 @@ for (ds in TARGET_DATASETS) {
                 label_freq <- label_freq_by_cluster(instance_df, label_names)
                 lset_freq <- labelset_freq_by_cluster(instance_df, label_names)
 
+
+
+                label_freq_prop <- label_freq |>
+                    dplyr::mutate(dplyr::across(
+                        dplyr::all_of(label_names), ~ .x / n_instancias,
+                        .names = "prop_{.col}"
+                    ))
+                write.csv(label_freq_prop,
+                    file.path(OUTPUT_PATH, sprintf("%s_fold%d_k%d_label_freq_prop.csv", combo, fold, k)),
+                    row.names = FALSE
+                )
+                
+                write.csv(lset_freq,
+                    file.path(OUTPUT_PATH, sprintf("%s_fold%d_k%d_labelset_freq.csv", combo, fold, k)),
+                    row.names = FALSE
+                )   
+
                 # --- Métricas pós-corte ---
                 sil_val <- compute_silhouette(clusters, codebook)
                 entropy_val <- compute_labelset_entropy(lset_freq)
@@ -751,8 +766,9 @@ for (ds in TARGET_DATASETS) {
                 # adicionar a contagem de instâncias por neurônio
                 neuron_counts <- table(model$unit.classif)
                 labels <- sprintf("N%d\nC%d\nn=%d", seq_len(nrow(pts)), clusters, neuron_counts[as.character(seq_len(nrow(pts)))])
+
                 text(pts[, 1], pts[, 2],
-                    labels = labels, cex = 1, font = 2
+                    labels = labels, cex = 1.2, col = 1, font = 2
                 )
                 dev.off()
 
