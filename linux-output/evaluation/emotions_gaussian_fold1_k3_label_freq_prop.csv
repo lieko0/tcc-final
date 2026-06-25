@@ -1,0 +1,4 @@
+"cluster","n_instancias","amazed.suprised","happy.pleased","relaxing.calm","quiet.still","sad.lonely","angry.aggresive","prop_amazed.suprised","prop_happy.pleased","prop_relaxing.calm","prop_quiet.still","prop_sad.lonely","prop_angry.aggresive"
+1,76,26,50,45,2,3,1,0.342105263157895,0.657894736842105,0.592105263157895,0.0263157894736842,0.0394736842105263,0.0131578947368421
+2,61,0,0,42,48,49,1,0,0,0.688524590163934,0.786885245901639,0.80327868852459,0.0163934426229508
+3,60,31,4,0,0,5,60,0.516666666666667,0.0666666666666667,0,0,0.0833333333333333,1

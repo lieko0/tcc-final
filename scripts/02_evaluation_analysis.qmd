@@ -363,7 +363,10 @@ for (ds in TARGET_DATASETS) {
             t0_train <- proc.time()
             model <- tryCatch(
                 train_som(Y_tr, bp$topology, nbhd, bp$rlen, bp$radius, bp$alpha_start, bp$alpha_end),
-                error = function(e) { message("Erro no fold ", fold, ": ", e$message); NULL }
+                error = function(e) {
+                    message("Erro no fold ", fold, ": ", e$message)
+                    NULL
+                }
             )
             train_time_s <- round((proc.time() - t0_train)[[3]], 2)
 
@@ -634,7 +637,6 @@ for (ds in TARGET_DATASETS) {
                 lset_freq <- labelset_freq_by_cluster(instance_df, label_names)
 
 
-
                 label_freq_prop <- label_freq |>
                     dplyr::mutate(dplyr::across(
                         dplyr::all_of(label_names), ~ .x / n_instancias,
@@ -644,11 +646,11 @@ for (ds in TARGET_DATASETS) {
                     file.path(OUTPUT_PATH, sprintf("%s_fold%d_k%d_label_freq_prop.csv", combo, fold, k)),
                     row.names = FALSE
                 )
-                
+
                 write.csv(lset_freq,
                     file.path(OUTPUT_PATH, sprintf("%s_fold%d_k%d_labelset_freq.csv", combo, fold, k)),
                     row.names = FALSE
-                )   
+                )
 
                 # --- Métricas pós-corte ---
                 sil_val <- compute_silhouette(clusters, codebook)

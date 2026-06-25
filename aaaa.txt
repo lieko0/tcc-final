@@ -1,0 +1,13 @@
+dando inicio, o trabalho de conclusão de curso é intitulado "investigação e análise de agrupamentos de rótulos correlacionados a partir de mapas auto-organizáveis de kohonen".
+
+a apresentação está dividida da seguinte forma, introdução geral de qual o objetivo do trabalho.
+
+contextualização do que é classificação multirrótulo, passadno pela definição, características, o que é correlação entre rótulos
+
+falar um pouco sobre o mapa de kohonen, o que é, como funciona, parametros e informações pós treinamento, e também sobre
+
+passando um pouquinho sobre os trabalahos correlatos e onde esse trabalho se situa
+
+metodologia utilizado e os resultados encontrados
+
+por fim o que se pode concluir do trabalho e que fica apresentado como opções de trabalhos futuros
